@@ -13,9 +13,9 @@
 
   /* Surfaces & Backgrounds (Frosted Glass) */
   --bg-page: #FDF7F8;
-  --bg-surface: rgba(255, 255, 255, 0.68);
-  --bg-elevated: rgba(253, 247, 248, 0.72);
-  --bg-subtle: rgba(246, 234, 239, 0.74);
+  --bg-surface: rgba(255, 255, 255, 0.84);
+  --bg-elevated: rgba(253, 247, 248, 0.88);
+  --bg-subtle: rgba(246, 234, 239, 0.88);
 
   /* Text Hierarchy */
   --text-primary: #261820;
@@ -50,9 +50,9 @@
 /* Dark Mode — Deep Velvet Plum (#1A1016) with Luminous Rose & Champagne */
 .dark {
   --bg-page: #1A1016;
-  --bg-surface: rgba(36, 23, 31, 0.68);
-  --bg-elevated: rgba(36, 23, 31, 0.74);
-  --bg-subtle: rgba(46, 30, 40, 0.76);
+  --bg-surface: rgba(36, 23, 31, 0.84);
+  --bg-elevated: rgba(36, 23, 31, 0.88);
+  --bg-subtle: rgba(46, 30, 40, 0.88);
 
   --text-primary: #FAF2F5;
   --text-secondary: #CBB6C0;
@@ -117,8 +117,8 @@ body::before {
 
 .glass-card {
   background: var(--bg-surface);
-  backdrop-filter: blur(22px) saturate(160%);
-  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  backdrop-filter: blur(32px) saturate(150%);
+  -webkit-backdrop-filter: blur(32px) saturate(150%);
   border: 1px solid var(--border-glass);
   box-shadow: 0 12px 36px -12px rgba(142, 58, 89, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
@@ -129,8 +129,8 @@ body::before {
 
 .glass-nav {
   background: var(--bg-elevated);
-  backdrop-filter: blur(24px) saturate(170%);
-  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  backdrop-filter: blur(34px) saturate(160%);
+  -webkit-backdrop-filter: blur(34px) saturate(160%);
   border-bottom: 1px solid var(--border-glass);
 }
 
