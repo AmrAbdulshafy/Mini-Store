@@ -481,7 +481,7 @@ export function AdminDashboardClient({
 
               {bellOpen && (
                 <div
-                  className="glass-card absolute end-0 z-50 mt-2 w-80 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border shadow-2xl"
+                  className="fixed inset-x-3 top-[calc(env(safe-area-inset-top)+3.75rem)] z-50 overflow-hidden rounded-2xl border bg-[#FAF7F2]/98 shadow-2xl backdrop-blur-2xl sm:absolute sm:inset-x-auto sm:end-0 sm:top-auto sm:mt-2 sm:w-80 dark:bg-[#171315]/98"
                   style={{ borderColor: 'var(--border-glass)' }}
                 >
                   <div className="flex items-center justify-between border-b px-4 py-3" style={{ borderColor: 'var(--border-glass)' }}>
