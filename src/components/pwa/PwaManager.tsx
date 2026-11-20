@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Download, RefreshCw, Share, WifiOff, X } from 'lucide-react';
+import { Download, MoreVertical, RefreshCw, Share, WifiOff, X } from 'lucide-react';
 import { useApp } from '@/components/providers/AppProvider';
 import { Modal } from '@/components/ui/Modal';
 
@@ -23,7 +23,7 @@ export function PwaManager() {
   const [isIos, setIsIos] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showBanner, setShowBanner] = useState(false);
-  const [showIosGuide, setShowIosGuide] = useState(false);
+  const [showInstallGuide, setShowInstallGuide] = useState(false);
   const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
 
   useEffect(() => {
@@ -31,6 +31,7 @@ export function PwaManager() {
       window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
     const ios = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+    const mobile = ios || /android/i.test(window.navigator.userAgent);
 
     const initFrame = requestAnimationFrame(() => {
       setIsStandalone(standalone);
@@ -43,7 +44,6 @@ export function PwaManager() {
     window.addEventListener('online', onOnline);
     window.addEventListener('offline', onOffline);
 
-    // Register Service Worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('/sw.js', { scope: '/' })
@@ -66,57 +66,66 @@ export function PwaManager() {
         });
     }
 
-    // Listen for Chromium beforeinstallprompt
+    let isDismissed = false;
+    try {
+      const dismissedAt = Number(localStorage.getItem(DISMISS_KEY) || '0');
+      if (dismissedAt && Date.now() - dismissedAt < DISMISS_TTL_MS) {
+        isDismissed = true;
+      }
+    } catch {
+      // ignore
+    }
+
+    // Show discreet install banner on mobile (iOS/Android) after 3s if not standalone & not dismissed
+    let mobileTimer: ReturnType<typeof setTimeout> | null = null;
+    if (!standalone && !isDismissed && mobile) {
+      mobileTimer = setTimeout(() => {
+        setShowBanner(true);
+      }, 3000);
+    }
+
     const onBeforeInstall = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-
-      if (standalone) return;
-      try {
-        const dismissedAt = Number(localStorage.getItem(DISMISS_KEY) || '0');
-        if (dismissedAt && Date.now() - dismissedAt < DISMISS_TTL_MS) {
-          return;
-        }
-      } catch {
-        // ignore
+      if (!standalone && !isDismissed) {
+        setTimeout(() => {
+          setShowBanner(true);
+        }, 3000);
       }
-
-      // Discreetly show after 20s of engagement (not immediately on load)
-      setTimeout(() => {
-        setShowBanner(true);
-      }, 20000);
     };
     window.addEventListener('beforeinstallprompt', onBeforeInstall);
 
     const onAppInstalled = () => {
       setIsStandalone(true);
       setShowBanner(false);
+      setShowInstallGuide(false);
       setDeferredPrompt(null);
     };
     window.addEventListener('appinstalled', onAppInstalled);
 
-    // Manual trigger from Footer "Install App" button
-    const onManualInstall = () => {
-      if (standalone) return;
-      if (deferredPrompt) {
-        void deferredPrompt.prompt();
-      } else if (ios) {
-        setShowIosGuide(true);
-      } else {
-        setShowBanner(true);
-      }
-    };
-    window.addEventListener('esraa:install-app', onManualInstall);
-
     return () => {
       cancelAnimationFrame(initFrame);
+      if (mobileTimer) clearTimeout(mobileTimer);
       window.removeEventListener('online', onOnline);
       window.removeEventListener('offline', onOffline);
       window.removeEventListener('beforeinstallprompt', onBeforeInstall);
       window.removeEventListener('appinstalled', onAppInstalled);
-      window.removeEventListener('esraa:install-app', onManualInstall);
     };
-  }, [deferredPrompt]);
+  }, []);
+
+  // Separate listener for manual "Install App" clicks so it always reads latest deferredPrompt
+  useEffect(() => {
+    const onManualInstall = () => {
+      if (isStandalone) return;
+      if (deferredPrompt) {
+        void deferredPrompt.prompt();
+      } else {
+        setShowInstallGuide(true);
+      }
+    };
+    window.addEventListener('esraa:install-app', onManualInstall);
+    return () => window.removeEventListener('esraa:install-app', onManualInstall);
+  }, [deferredPrompt, isStandalone]);
 
   const handleDismiss = () => {
     setShowBanner(false);
@@ -137,9 +146,9 @@ export function PwaManager() {
         handleDismiss();
       }
       setDeferredPrompt(null);
-    } else if (isIos) {
+    } else {
       setShowBanner(false);
-      setShowIosGuide(true);
+      setShowInstallGuide(true);
     }
   };
 
@@ -209,8 +218,8 @@ export function PwaManager() {
       )}
 
       {/* Discreet Install Prompt (never on /admin, never if already standalone) */}
-      {!isAdmin && !isStandalone && showBanner && (deferredPrompt || isIos) && (
-        <div className="fixed bottom-5 start-5 z-40 max-w-sm rounded-lg border border-[var(--border-glass)] bg-[var(--bg-surface)] p-4 shadow-xl">
+      {!isAdmin && !isStandalone && showBanner && (
+        <div className="fixed bottom-5 start-5 z-40 max-w-xs rounded-lg border border-[var(--border-glass)] bg-[var(--bg-surface)] p-4 shadow-xl sm:max-w-sm">
           <div className="flex items-start justify-between gap-3">
             <div className="space-y-1">
               <p className="font-display text-sm font-semibold">
@@ -252,50 +261,90 @@ export function PwaManager() {
         </div>
       )}
 
-      {/* iOS Safari Add-to-Home-Screen Instructions Modal */}
+      {/* Install Instructions Modal (iOS Safari + Android/Desktop fallback) */}
       <Modal
-        open={showIosGuide}
-        onClose={() => setShowIosGuide(false)}
+        open={showInstallGuide}
+        onClose={() => setShowInstallGuide(false)}
         maxWidthClass="max-w-md"
-        title={lang === 'ar' ? 'التثبيت على الآيفون والآيباد' : 'Install on iOS Safari'}
+        title={
+          isIos
+            ? lang === 'ar'
+              ? 'التثبيت على الآيفون والآيباد'
+              : 'Install on iOS Safari'
+            : lang === 'ar'
+              ? 'تثبيت تطبيق إسراء سيكريت'
+              : 'Install Esraa Secret App'
+        }
       >
-        <div className="space-y-4 text-sm text-[var(--text-secondary)]">
-          <p>
-            {lang === 'ar'
-              ? 'لتثبيت إسراء سيكريت على شاشتك الرئيسية في متصفح Safari:'
-              : 'To install Esraa Secret on your iPhone or iPad home screen:'}
-          </p>
-          <ol className="space-y-3 text-xs leading-relaxed">
-            <li className="flex items-center gap-2.5">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-[var(--border-glass)] font-semibold">
-                1
-              </span>
-              <span className="flex items-center gap-1.5">
-                {lang === 'ar' ? 'اضغط على أيقونة المشاركة' : 'Tap the Share button'}
-                <Share className="inline h-4 w-4 text-[var(--accent)]" />
-                {lang === 'ar' ? 'في شريط المتصفح.' : 'in Safari’s toolbar.'}
-              </span>
-            </li>
-            <li className="flex items-center gap-2.5">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-[var(--border-glass)] font-semibold">
-                2
-              </span>
-              <span>
-                {lang === 'ar'
-                  ? 'اختر "إضافة إلى الشاشة الرئيسية" (Add to Home Screen).'
-                  : 'Scroll down and tap "Add to Home Screen".'}
-              </span>
-            </li>
-            <li className="flex items-center gap-2.5">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-[var(--border-glass)] font-semibold">
-                3
-              </span>
-              <span>
-                {lang === 'ar' ? 'اضغط "إضافة" في الزاوية العلوية.' : 'Tap "Add" in the top corner.'}
-              </span>
-            </li>
-          </ol>
-        </div>
+        {isIos ? (
+          <div className="space-y-4 text-sm text-[var(--text-secondary)]">
+            <p>
+              {lang === 'ar'
+                ? 'لتثبيت إسراء سيكريت على شاشتك الرئيسية في متصفح Safari:'
+                : 'To install Esraa Secret on your iPhone or iPad home screen:'}
+            </p>
+            <ol className="space-y-3 text-xs leading-relaxed">
+              <li className="flex items-center gap-2.5">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-[var(--border-glass)] font-semibold">
+                  1
+                </span>
+                <span className="flex items-center gap-1.5">
+                  {lang === 'ar' ? 'اضغط على أيقونة المشاركة' : 'Tap the Share button'}
+                  <Share className="inline h-4 w-4 text-[var(--accent)]" />
+                  {lang === 'ar' ? 'في شريط المتصفح.' : 'in Safari’s toolbar.'}
+                </span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-[var(--border-glass)] font-semibold">
+                  2
+                </span>
+                <span>
+                  {lang === 'ar'
+                    ? 'اختر "إضافة إلى الشاشة الرئيسية" (Add to Home Screen).'
+                    : 'Scroll down and tap "Add to Home Screen".'}
+                </span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-[var(--border-glass)] font-semibold">
+                  3
+                </span>
+                <span>
+                  {lang === 'ar' ? 'اضغط "إضافة" في الزاوية العلوية.' : 'Tap "Add" in the top corner.'}
+                </span>
+              </li>
+            </ol>
+          </div>
+        ) : (
+          <div className="space-y-4 text-sm text-[var(--text-secondary)]">
+            <p>
+              {lang === 'ar'
+                ? 'لتثبيت التطبيق على هاتفك (Android) أو جهازك:'
+                : 'To install Esraa Secret on your phone or desktop browser:'}
+            </p>
+            <ol className="space-y-3 text-xs leading-relaxed">
+              <li className="flex items-center gap-2.5">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-[var(--border-glass)] font-semibold">
+                  1
+                </span>
+                <span className="flex items-center gap-1.5">
+                  {lang === 'ar' ? 'افتح قائمة المتصفح' : 'Open your browser menu'}
+                  <MoreVertical className="inline h-4 w-4 text-[var(--accent)]" />
+                  {lang === 'ar' ? 'في الأعلى.' : 'at the top corner.'}
+                </span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-[var(--border-glass)] font-semibold">
+                  2
+                </span>
+                <span>
+                  {lang === 'ar'
+                    ? 'اختر "تثبيت التطبيق" أو "إضافة إلى الشاشة الرئيسية" (Add to Home screen).'
+                    : 'Select "Install app" or "Add to Home screen".'}
+                </span>
+              </li>
+            </ol>
+          </div>
+        )}
       </Modal>
     </>
   );
