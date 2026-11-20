@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Cairo, Cormorant_Garamond, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { getStoreSettings } from '@/lib/store-data';
@@ -6,6 +6,7 @@ import { AppProvider } from '@/components/providers/AppProvider';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { GuestChatWidget } from '@/components/chat/GuestChatWidget';
+import { PwaManager } from '@/components/pwa/PwaManager';
 
 const cairo = Cairo({
   subsets: ['arabic', 'latin'],
@@ -28,11 +29,34 @@ const cormorant = Cormorant_Garamond({
 
 export const dynamic = 'force-dynamic';
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#F5F1EC' },
+    { media: '(prefers-color-scheme: dark)', color: '#191619' },
+  ],
+};
+
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getStoreSettings();
   return {
     title: `${settings.store_name_ar} | ${settings.store_name_en}`,
     description: `${settings.tagline_en} — ${settings.tagline_ar}`,
+    applicationName: 'Esraa Secret',
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: 'black-translucent',
+      title: 'Esraa Secret',
+    },
+    icons: {
+      icon: [
+        { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+        { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+      ],
+      apple: [{ url: '/icons/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+    },
   };
 }
 
@@ -62,6 +86,7 @@ export default async function RootLayout({
             <Footer />
           </div>
           <GuestChatWidget />
+          <PwaManager />
         </AppProvider>
       </body>
     </html>

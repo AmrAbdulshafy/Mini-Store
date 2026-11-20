@@ -84,6 +84,10 @@ export function GuestChatWidget() {
     e.preventDefault();
     const trimmed = body.trim();
     if (!trimmed || sending || conversation?.status === 'closed') return;
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      setError(t.chat.errorSend);
+      return;
+    }
 
     setSending(true);
     setError(null);

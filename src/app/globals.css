@@ -86,6 +86,7 @@ html {
 body {
   background-color: var(--bg-page);
   color: var(--text-primary);
+  padding-bottom: env(safe-area-inset-bottom);
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 

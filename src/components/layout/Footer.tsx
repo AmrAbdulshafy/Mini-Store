@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Mail, MapPin, MessageCircle, Phone, ShieldCheck } from 'lucide-react';
+import { Download, Mail, MapPin, MessageCircle, Phone, ShieldCheck } from 'lucide-react';
 import { useApp } from '@/components/providers/AppProvider';
 import { BrandLogo, EsraaMonogram } from '@/components/brand/BrandLogo';
 import { buildWhatsAppGeneralUrl } from '@/lib/whatsapp';
@@ -121,13 +121,23 @@ export function Footer() {
           <p>
             © {new Date().getFullYear()} {storeName}. {t.footer.rights}.
           </p>
-          <Link
-            href="/admin"
-            className="flex items-center gap-1.5 opacity-70 transition-opacity hover:opacity-100"
-          >
-            <ShieldCheck className="h-3.5 w-3.5" />
-            <span>{t.nav.admin}</span>
-          </Link>
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new Event('esraa:install-app'))}
+              className="flex items-center gap-1.5 opacity-75 transition-opacity hover:opacity-100"
+            >
+              <Download className="h-3.5 w-3.5" />
+              <span>{lang === 'ar' ? 'تثبيت التطبيق' : 'Install App'}</span>
+            </button>
+            <Link
+              href="/admin"
+              className="flex items-center gap-1.5 opacity-70 transition-opacity hover:opacity-100"
+            >
+              <ShieldCheck className="h-3.5 w-3.5" />
+              <span>{t.nav.admin}</span>
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

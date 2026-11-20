@@ -48,6 +48,10 @@ export function HomepageClient({
   const handleInquirySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim() || submitting) return;
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      setSubmitState('error');
+      return;
+    }
     setSubmitting(true);
     setSubmitState('idle');
     try {
