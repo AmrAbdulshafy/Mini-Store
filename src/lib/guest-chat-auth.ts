@@ -4,7 +4,14 @@ import { cookies } from 'next/headers';
 export const GUEST_COOKIE_NAME = 'boutique_guest_chat_token';
 
 function getSecret(): string {
-  return process.env.GUEST_CHAT_SECRET || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'fallback-dev-secret-change-me';
+  const secret = process.env.GUEST_CHAT_SECRET;
+  if (secret && secret.length >= 16) {
+    return secret;
+  }
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('GUEST_CHAT_SECRET is required in production');
+  }
+  return process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'fallback-dev-secret-change-me';
 }
 
 export function hashGuestToken(rawToken: string): string {

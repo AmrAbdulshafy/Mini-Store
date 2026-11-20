@@ -42,8 +42,29 @@ export function HomepageClient({
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [message, setMessage] = useState('');
+  const [website, setWebsite] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitState, setSubmitState] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const getOrCreateIdempotencyKey = () => {
+    const storageKey = 'esraa_inquiry_idempotency_key';
+    if (typeof window !== 'undefined') {
+      const existing = window.sessionStorage.getItem(storageKey);
+      if (existing && /^[0-9a-f-]{36}$/i.test(existing)) {
+        return existing;
+      }
+      const fresh = window.crypto.randomUUID();
+      window.sessionStorage.setItem(storageKey, fresh);
+      return fresh;
+    }
+    return '';
+  };
+
+  const rotateIdempotencyKey = () => {
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.setItem('esraa_inquiry_idempotency_key', window.crypto.randomUUID());
+    }
+  };
 
   const handleInquirySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,6 +76,7 @@ export function HomepageClient({
     setSubmitting(true);
     setSubmitState('idle');
     try {
+      const idempotencyKey = getOrCreateIdempotencyKey();
       const res = await fetch('/api/inquiries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -63,9 +85,12 @@ export function HomepageClient({
           customerPhone,
           message,
           channel: 'contact_form',
+          idempotencyKey,
+          website,
         }),
       });
       if (!res.ok) throw new Error('failed');
+      rotateIdempotencyKey();
       setSubmitState('success');
       setCustomerName('');
       setCustomerPhone('');
@@ -435,6 +460,16 @@ export function HomepageClient({
             <p className="mt-1 text-sm text-[var(--text-secondary)]">{t.sections.contactSub}</p>
 
             <form onSubmit={handleInquirySubmit} className="mt-6 space-y-4">
+              <input
+                type="text"
+                name="website"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                className="hidden"
+              />
               <div className="grid gap-4 sm:grid-cols-2">
                 <input
                   type="text"

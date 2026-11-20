@@ -1,18 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { getGuestTokenFromCookie, hashGuestToken } from '@/lib/guest-chat-auth';
+import { enforceRateLimit, extractTrustedClientIp, hashRateLimitKey } from '@/lib/rate-limit';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     const rawToken = await getGuestTokenFromCookie();
     if (!rawToken) {
       return NextResponse.json({ error: 'Missing guest chat session' }, { status: 401 });
     }
 
-    const tokenHash = hashGuestToken(rawToken);
-    const supabase = await createClient();
+    const clientIp = extractTrustedClientIp(req);
+    if (!clientIp) {
+      return NextResponse.json({ error: 'Unable to verify request origin' }, { status: 403 });
+    }
 
-    const { data, error } = await supabase.rpc('guest_chat_get_messages', {
+    const tokenHash = hashGuestToken(rawToken);
+
+    const tokenLimit = await enforceRateLimit(hashRateLimitKey('chat_get:tok', tokenHash), 45, 60);
+    if (!tokenLimit.ok) {
+      return tokenLimit.response;
+    }
+
+    const ipLimit = await enforceRateLimit(hashRateLimitKey('chat_get:ip', clientIp), 120, 60);
+    if (!ipLimit.ok) {
+      return ipLimit.response;
+    }
+
+    const supabaseAdmin = createAdminClient();
+    const { data, error } = await supabaseAdmin.rpc('guest_chat_get_messages', {
       p_token_hash: tokenHash,
     });
 
@@ -33,6 +49,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing guest chat session' }, { status: 401 });
     }
 
+    const clientIp = extractTrustedClientIp(req);
+    if (!clientIp) {
+      return NextResponse.json({ error: 'Unable to verify request origin' }, { status: 403 });
+    }
+
     const body = await req.json().catch(() => null);
     const text = typeof body?.body === 'string' ? body.body.trim() : '';
     const guestName = typeof body?.guestName === 'string' ? body.guestName.trim().slice(0, 60) : null;
@@ -45,9 +66,19 @@ export async function POST(req: NextRequest) {
     }
 
     const tokenHash = hashGuestToken(rawToken);
-    const supabase = await createClient();
 
-    const { data, error } = await supabase.rpc('guest_chat_send_message', {
+    const tokenLimit = await enforceRateLimit(hashRateLimitKey('chat_post:tok', tokenHash), 12, 60);
+    if (!tokenLimit.ok) {
+      return tokenLimit.response;
+    }
+
+    const ipLimit = await enforceRateLimit(hashRateLimitKey('chat_post:ip', clientIp), 30, 60);
+    if (!ipLimit.ok) {
+      return ipLimit.response;
+    }
+
+    const supabaseAdmin = createAdminClient();
+    const { data, error } = await supabaseAdmin.rpc('guest_chat_send_message', {
       p_token_hash: tokenHash,
       p_body: text,
       p_guest_name: guestName,
