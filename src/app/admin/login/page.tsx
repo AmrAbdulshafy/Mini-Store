@@ -88,8 +88,8 @@ export default function AdminLoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@lamsaboutique.eg"
-              className="w-full rounded-2xl border bg-transparent px-4 py-3 text-sm outline-none focus:border-[var(--accent)]"
+              placeholder="admin@esraasecret.com"
+              className="w-full rounded-2xl border bg-transparent px-4 py-3 text-sm outline-none placeholder:text-[var(--text-secondary)]/60 focus:border-[var(--accent)]"
               style={{ borderColor: 'var(--border-glass)' }}
             />
           </div>
