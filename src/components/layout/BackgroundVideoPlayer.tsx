@@ -33,7 +33,7 @@ export function BackgroundVideoPlayer() {
 
     const tryAutoplayUnmuted = () => {
       if (userExplicitlyMutedRef.current) return;
-      vid.volume = 0.25;
+      vid.volume = 0.45;
       vid.muted = false;
       const p = vid.play();
       if (p && typeof p.then === 'function') {
@@ -86,7 +86,7 @@ export function BackgroundVideoPlayer() {
       } catch {
         // ignore
       }
-      vid.volume = 0.25;
+      vid.volume = 0.45;
       vid.muted = false;
       vid.play().catch(() => {});
       setMuted(false);
@@ -117,10 +117,9 @@ export function BackgroundVideoPlayer() {
           className="h-full w-full object-cover object-center opacity-90 brightness-115 contrast-105"
         />
         <div
-          className="absolute inset-0"
+          className="absolute inset-0 backdrop-blur-[6px]"
           style={{
-            background:
-              'linear-gradient(180deg, color-mix(in srgb, var(--bg-page) 20%, transparent) 0%, color-mix(in srgb, var(--bg-page) 36%, transparent) 100%)',
+            backgroundColor: 'color-mix(in srgb, var(--accent) 15%, transparent)',
           }}
         />
       </div>
