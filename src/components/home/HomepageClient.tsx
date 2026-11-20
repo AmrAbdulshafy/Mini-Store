@@ -1,0 +1,433 @@
+'use client';
+
+import React, { useState } from 'react';
+import Link from 'next/link';
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle2,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Phone,
+  Send,
+  Sparkles,
+  Tag,
+} from 'lucide-react';
+import type { Collection, CollectionSlug, HomepageBanner, Product } from '@/types/database';
+import { useApp } from '@/components/providers/AppProvider';
+import { ProductCard } from '@/components/products/ProductCard';
+import { buildWhatsAppGeneralUrl } from '@/lib/whatsapp';
+
+export function HomepageClient({
+  collections,
+  products,
+  banners,
+}: {
+  collections: Collection[];
+  products: Product[];
+  banners: HomepageBanner[];
+}) {
+  const { lang, setCollectionTheme, settings, t } = useApp();
+  const ArrowIcon = lang === 'ar' ? ArrowLeft : ArrowRight;
+
+  const heroBanner = banners.find((b) => b.placement === 'hero');
+  const promoBanner = banners.find((b) => b.placement === 'promo');
+
+  const featuredProducts = products.filter((p) => p.is_featured).slice(0, 4);
+  const newArrivals = products.filter((p) => p.is_new_arrival).slice(0, 4);
+  const specialOffers = products.filter((p) => p.is_special_offer || (p.previous_price && p.previous_price > p.price)).slice(0, 4);
+
+  // Quick Contact Form state
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
+  const [message, setMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submitState, setSubmitState] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const handleInquirySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!message.trim() || submitting) return;
+    setSubmitting(true);
+    setSubmitState('idle');
+    try {
+      const res = await fetch('/api/inquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerName,
+          customerPhone,
+          message,
+          channel: 'contact_form',
+        }),
+      });
+      if (!res.ok) throw new Error('failed');
+      setSubmitState('success');
+      setCustomerName('');
+      setCustomerPhone('');
+      setMessage('');
+    } catch {
+      setSubmitState('error');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const waGeneral = buildWhatsAppGeneralUrl(
+    settings.whatsapp_number,
+    lang === 'ar'
+      ? `مرحباً ${settings.store_name_ar}، أود الاستفسار عن المنتجات المتوفرة.`
+      : `Hello ${settings.store_name_en}, I would like to inquire about your available products.`
+  );
+
+  return (
+    <div className="space-y-20 pb-12">
+      {/* HERO SECTION */}
+      <section className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8 lg:pt-10">
+        <div className="glass-card relative overflow-hidden rounded-[2rem] p-6 sm:p-10 lg:p-14">
+          <div className="grid items-center gap-10 lg:grid-cols-12">
+            <div className="space-y-6 lg:col-span-6">
+              <span className="inline-flex items-center gap-2 rounded-full bg-[var(--accent-soft)] px-4 py-1.5 text-xs font-semibold text-[var(--accent-strong)]">
+                <Sparkles className="h-3.5 w-3.5" />
+                {t.hero.badge}
+              </span>
+
+              <h1 className="font-display text-3xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-[3.25rem]">
+                {heroBanner
+                  ? lang === 'ar'
+                    ? heroBanner.title_ar
+                    : heroBanner.title_en
+                  : lang === 'ar'
+                    ? settings.store_name_ar
+                    : settings.store_name_en}
+              </h1>
+
+              <p className="max-w-xl text-base leading-relaxed text-[var(--text-secondary)] sm:text-lg">
+                {heroBanner
+                  ? lang === 'ar'
+                    ? heroBanner.subtitle_ar
+                    : heroBanner.subtitle_en
+                  : lang === 'ar'
+                    ? settings.tagline_ar
+                    : settings.tagline_en}
+              </p>
+
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <Link
+                  href={heroBanner?.cta_link || '/catalog'}
+                  className="inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5"
+                  style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-secondary))' }}
+                >
+                  <span>
+                    {heroBanner
+                      ? lang === 'ar'
+                        ? heroBanner.cta_text_ar || t.hero.explore
+                        : heroBanner.cta_text_en || t.hero.explore
+                      : t.hero.explore}
+                  </span>
+                  <ArrowIcon className="h-4 w-4" />
+                </Link>
+
+                <a
+                  href={waGeneral}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border bg-[var(--bg-page)]/70 px-6 py-3.5 text-sm font-semibold transition-colors hover:bg-[var(--accent-soft)]"
+                  style={{ borderColor: 'var(--border-glass)' }}
+                >
+                  <MessageCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                  <span>{t.hero.contactUs}</span>
+                </a>
+              </div>
+
+              <p className="text-xs text-[var(--text-secondary)] opacity-85">
+                {t.hero.noCheckoutNote}
+              </p>
+            </div>
+
+            <div className="lg:col-span-6">
+              <div className="relative aspect-[16/11] overflow-hidden rounded-3xl shadow-2xl">
+                <img
+                  src={heroBanner?.image_url || '/images/hero-boutique.png'}
+                  alt={lang === 'ar' ? settings.store_name_ar : settings.store_name_en}
+                  className="h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* THREE COLLECTION IDENTITIES */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-8 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+          <div>
+            <h2 className="font-display text-2xl font-bold sm:text-3xl">{t.collections.title}</h2>
+            <p className="mt-1 text-sm text-[var(--text-secondary)]">{t.collections.subtitle}</p>
+          </div>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-3">
+          {collections.map((col) => {
+            const name = lang === 'ar' ? col.name_ar : col.name_en;
+            const desc = lang === 'ar' ? col.description_ar : col.description_en;
+            const slug = col.slug as CollectionSlug;
+            const swatch =
+              slug === 'women'
+                ? 'from-[#f4d2d8] via-[#e8d5c4] to-[#d9c2ea]'
+                : slug === 'men'
+                  ? 'from-[#1f334d] via-[#2c3542] to-[#5e6b4c]'
+                  : 'from-[#f1e9dc] via-[#9ab395] to-[#c06c4d]';
+
+            return (
+              <Link
+                key={col.id}
+                href={`/catalog?collection=${col.slug}`}
+                onMouseEnter={() => setCollectionTheme(slug)}
+                onClick={() => setCollectionTheme(slug)}
+                className="glass-card group relative overflow-hidden rounded-3xl p-5 transition-all duration-300 hover:-translate-y-1.5"
+              >
+                <div className="aspect-[16/10] overflow-hidden rounded-2xl bg-[var(--bg-subtle)]">
+                  <img
+                    src={col.hero_image_url || `/images/collection-${col.slug}.svg`}
+                    alt={name}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
+                <div className="mt-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-display text-xl font-bold">{name}</h3>
+                    <span className={`h-3 w-10 rounded-full bg-gradient-to-r ${swatch}`} />
+                  </div>
+                  <p className="line-clamp-2 text-xs leading-relaxed text-[var(--text-secondary)]">
+                    {desc}
+                  </p>
+                  <span className="inline-flex items-center gap-1.5 pt-1 text-xs font-semibold text-[var(--accent)]">
+                    <span>{t.collections.exploreCollection}</span>
+                    <ArrowIcon className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* FEATURED PRODUCTS */}
+      {featuredProducts.length > 0 && (
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-8 flex items-end justify-between gap-4">
+            <div>
+              <h2 className="font-display text-2xl font-bold sm:text-3xl">{t.sections.featured}</h2>
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">{t.sections.featuredSub}</p>
+            </div>
+            <Link
+              href="/catalog?sort=featured"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--accent)] hover:underline"
+            >
+              <span>{t.sections.viewAll}</span>
+              <ArrowIcon className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {featuredProducts.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* PROMOTIONAL BANNER */}
+      {promoBanner && (
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div
+            className="glass-card relative overflow-hidden rounded-[2rem] p-7 sm:p-10"
+            style={{
+              background:
+                'linear-gradient(135deg, var(--accent-soft), var(--champagne))',
+            }}
+          >
+            <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+              <div className="max-w-2xl space-y-2.5">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--bg-page)]/80 px-3 py-1 text-xs font-semibold text-[var(--accent-strong)]">
+                  <Tag className="h-3.5 w-3.5" />
+                  {t.product.offerBadge}
+                </span>
+                <h2 className="font-display text-2xl font-bold sm:text-3xl">
+                  {lang === 'ar' ? promoBanner.title_ar : promoBanner.title_en}
+                </h2>
+                <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+                  {lang === 'ar' ? promoBanner.subtitle_ar : promoBanner.subtitle_en}
+                </p>
+              </div>
+              <Link
+                href={promoBanner.cta_link || '/catalog?offer=true'}
+                className="shrink-0 rounded-full px-7 py-3.5 text-sm font-semibold text-white shadow-md transition-transform hover:scale-105"
+                style={{ backgroundColor: 'var(--accent)' }}
+              >
+                {lang === 'ar'
+                  ? promoBanner.cta_text_ar || t.sections.viewAll
+                  : promoBanner.cta_text_en || t.sections.viewAll}
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* NEW ARRIVALS */}
+      {newArrivals.length > 0 && (
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-8 flex items-end justify-between gap-4">
+            <div>
+              <h2 className="font-display text-2xl font-bold sm:text-3xl">{t.sections.newArrivals}</h2>
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">{t.sections.newArrivalsSub}</p>
+            </div>
+            <Link
+              href="/catalog?sort=newest"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--accent)] hover:underline"
+            >
+              <span>{t.sections.viewAll}</span>
+              <ArrowIcon className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {newArrivals.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* SPECIAL OFFERS */}
+      {specialOffers.length > 0 && (
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-8 flex items-end justify-between gap-4">
+            <div>
+              <h2 className="font-display text-2xl font-bold sm:text-3xl">{t.sections.specialOffers}</h2>
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">{t.sections.specialOffersSub}</p>
+            </div>
+            <Link
+              href="/catalog?offer=true"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--accent)] hover:underline"
+            >
+              <span>{t.sections.viewAll}</span>
+              <ArrowIcon className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {specialOffers.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* BRAND INTRODUCTION & CONTACT SECTION */}
+      <section id="contact" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid gap-8 lg:grid-cols-12">
+          {/* Brand Intro + Direct Channels */}
+          <div className="glass-card flex flex-col justify-between rounded-3xl p-7 sm:p-9 lg:col-span-6">
+            <div className="space-y-4">
+              <h2 className="font-display text-2xl font-bold sm:text-3xl">
+                {t.sections.aboutTitle}
+              </h2>
+              <p className="text-sm leading-relaxed text-[var(--text-secondary)] sm:text-base">
+                {t.sections.aboutBody}
+              </p>
+            </div>
+
+            <div className="mt-8 grid gap-3 sm:grid-cols-2">
+              <a
+                href={waGeneral}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-2xl bg-emerald-600 px-4 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-700"
+              >
+                <MessageCircle className="h-5 w-5" />
+                <span>{t.contact.whatsapp}</span>
+              </a>
+              <a
+                href={`tel:${settings.phone_number}`}
+                className="flex items-center gap-3 rounded-2xl border px-4 py-3.5 text-sm font-semibold transition-colors hover:bg-[var(--accent-soft)]"
+                style={{ borderColor: 'var(--border-glass)' }}
+              >
+                <Phone className="h-5 w-5 text-[var(--accent)]" />
+                <span dir="ltr">{settings.phone_number}</span>
+              </a>
+              <div className="flex items-center gap-2.5 text-xs text-[var(--text-secondary)] pt-2">
+                <Mail className="h-4 w-4 text-[var(--accent)]" />
+                <span>{settings.email}</span>
+              </div>
+              <div className="flex items-center gap-2.5 text-xs text-[var(--text-secondary)] pt-2">
+                <MapPin className="h-4 w-4 text-[var(--accent)]" />
+                <span>{lang === 'ar' ? settings.address_ar : settings.address_en}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Inquiry Form */}
+          <div className="glass-card rounded-3xl p-7 sm:p-9 lg:col-span-6">
+            <h2 className="font-display text-2xl font-bold">{t.contact.formTitle}</h2>
+            <p className="mt-1 text-sm text-[var(--text-secondary)]">{t.sections.contactSub}</p>
+
+            <form onSubmit={handleInquirySubmit} className="mt-6 space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <input
+                  type="text"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder={t.contact.name}
+                  maxLength={80}
+                  className="rounded-2xl border bg-transparent px-4 py-3 text-sm outline-none focus:border-[var(--accent)]"
+                  style={{ borderColor: 'var(--border-glass)' }}
+                />
+                <input
+                  type="tel"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  placeholder={t.contact.phoneInput}
+                  maxLength={40}
+                  className="rounded-2xl border bg-transparent px-4 py-3 text-sm outline-none focus:border-[var(--accent)]"
+                  style={{ borderColor: 'var(--border-glass)' }}
+                />
+              </div>
+              <textarea
+                rows={3}
+                required
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder={t.contact.message}
+                maxLength={1500}
+                className="w-full rounded-2xl border bg-transparent px-4 py-3 text-sm outline-none focus:border-[var(--accent)]"
+                style={{ borderColor: 'var(--border-glass)' }}
+              />
+
+              {submitState === 'success' && (
+                <div className="flex items-center gap-2 rounded-2xl bg-emerald-500/15 px-4 py-3 text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                  <CheckCircle2 className="h-4 w-4 shrink-0" />
+                  <span>{t.contact.success}</span>
+                </div>
+              )}
+              {submitState === 'error' && (
+                <div className="rounded-2xl bg-rose-500/15 px-4 py-3 text-xs font-medium text-rose-700 dark:text-rose-300">
+                  {t.contact.error}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={submitting || !message.trim()}
+                className="inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-semibold text-white transition-opacity disabled:opacity-50"
+                style={{ backgroundColor: 'var(--accent)' }}
+              >
+                <Send className="h-4 w-4" />
+                <span>{submitting ? t.contact.sending : t.contact.submit}</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
