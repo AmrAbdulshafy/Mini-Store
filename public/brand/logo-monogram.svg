@@ -1,6 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
-  <ellipse cx="60" cy="60" rx="50" ry="54" stroke="#D9A65A" stroke-width="1.75"/>
-  <ellipse cx="60" cy="60" rx="44" ry="48" stroke="#D9829A" stroke-width="0.9" stroke-opacity="0.55"/>
-  <text x="60" y="73" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="42" font-weight="600" letter-spacing="3" fill="#64152F">ES</text>
-  <circle cx="60" cy="22" r="2.5" fill="#D9A65A"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <path d="M32 6L36.5 13.5L32 21L27.5 13.5Z" stroke="#C9A24D" stroke-width="2.1" stroke-linejoin="round"/>
+  <path d="M19 10.5L26 13L32 21L22 18.5Z" stroke="#C9A24D" stroke-width="2.1" stroke-linejoin="round"/>
+  <path d="M45 10.5L42 18.5L32 21L38 13Z" stroke="#C9A24D" stroke-width="2.1" stroke-linejoin="round"/>
+  <path d="M19 21H45L55 32L32 58L9 32Z" stroke="#C9A24D" stroke-width="2.2" stroke-linejoin="round"/>
+  <path d="M9 32H55" stroke="#C9A24D" stroke-width="2" stroke-linecap="round"/>
+  <path d="M19 21L24 32L32 21L40 32L45 21" stroke="#C9A24D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M24 32L32 58L40 32" stroke="#C9A24D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
