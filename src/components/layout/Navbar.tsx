@@ -67,43 +67,6 @@ export function Navbar() {
 
         {/* Controls */}
         <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* Collection Palette Switcher */}
-          <div
-            className="hidden items-center rounded-full border p-0.5 md:flex"
-            style={{ borderColor: 'var(--border-glass)', background: 'var(--bg-subtle)' }}
-            title={t.collections.switchTheme}
-          >
-            {(['women', 'men', 'handmade'] as CollectionSlug[]).map((col) => {
-              const active = collectionTheme === col;
-              const dotColor =
-                col === 'women' ? '#F01878' : col === 'men' ? '#7026D9' : '#FF654F';
-              const label =
-                col === 'women'
-                  ? t.nav.women
-                  : col === 'men'
-                    ? t.nav.men
-                    : t.nav.handmade;
-              return (
-                <button
-                  key={col}
-                  type="button"
-                  onClick={() => setCollectionTheme(col)}
-                  className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-all ${
-                    active
-                      ? 'bg-[var(--bg-page)] text-[var(--text-primary)] shadow-sm'
-                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-                  }`}
-                >
-                  <span
-                    className="h-2 w-2 rounded-full"
-                    style={{ backgroundColor: dotColor }}
-                  />
-                  <span>{label}</span>
-                </button>
-              );
-            })}
-          </div>
-
           {/* Favorites */}
           <Link
             href="/favorites"

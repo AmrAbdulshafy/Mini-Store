@@ -169,7 +169,6 @@ export function HomepageClient({
               titleEn: 'Beauty & Makeup',
               descAr: 'أحمر شفاه مخملي، إضاءات لؤلؤية، ومستحضرات عناية تبرز إشراقتكِ الطبيعية.',
               descEn: 'Velvet lip elixirs, pearl illuminators, and refined daily beauty essentials.',
-              accent: '#F01878',
             },
             {
               href: '/catalog?category=women-perfumes',
@@ -178,7 +177,6 @@ export function HomepageClient({
               titleEn: 'Perfumes',
               descAr: 'عطور زهرية وشرقية وعود فاخر بتركيبات ثابتة تناسب كل مناسبة.',
               descEn: 'Signature floral, oud, and amber fragrances crafted for lasting presence.',
-              accent: '#7026D9',
             },
             {
               href: '/catalog?collection=handmade',
@@ -187,26 +185,18 @@ export function HomepageClient({
               titleEn: 'Handmade Collection',
               descAr: 'حقائب كتان مطرزة، أوشحة حريرية، وقطع خياطة وتطريز مصنوعة يدوياً.',
               descEn: 'Hand-embroidered linens, rolled silk scarves, and artisanal textile pieces.',
-              accent: '#FF654F',
             },
           ].map((pillar) => (
             <Link
               key={pillar.num}
               href={pillar.href}
-              className="glass-card group flex flex-col justify-between rounded-3xl p-6 transition-all duration-300 hover:-translate-y-1"
+              className="glass-card group flex flex-col justify-between rounded-2xl p-6 transition-colors duration-200 hover:bg-[var(--bg-subtle)]/50"
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span
-                    className="font-display text-2xl font-bold opacity-80"
-                    style={{ color: pillar.accent }}
-                  >
+                  <span className="font-display text-xs font-semibold tracking-[0.2em] text-[var(--champagne)]">
                     {pillar.num}
                   </span>
-                  <span
-                    className="h-2.5 w-2.5 rounded-full"
-                    style={{ backgroundColor: pillar.accent }}
-                  />
                 </div>
                 <h2 className="font-display text-xl font-bold">
                   {lang === 'ar' ? pillar.titleAr : pillar.titleEn}

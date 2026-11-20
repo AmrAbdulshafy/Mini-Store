@@ -120,20 +120,17 @@ export function GuestChatWidget() {
       {open ? (
         <div className="glass-card flex h-[480px] w-[340px] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-3xl shadow-2xl sm:w-[370px]">
           {/* Header */}
-          <div
-            className="flex items-center justify-between px-4 py-3.5 text-white"
-            style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-secondary))' }}
-          >
+          <div className="flex items-center justify-between bg-[#141210] px-4 py-3.5 text-[#F6F3EE] dark:bg-[#221F1D]">
             <div>
-              <h3 className="text-sm font-bold">{t.chat.title}</h3>
-              <p className="text-[11px] opacity-90">
+              <h3 className="text-sm font-semibold">{t.chat.title}</h3>
+              <p className="text-[11px] opacity-80">
                 {conversation?.status === 'closed' ? t.chat.closedStatus : t.chat.openStatus}
               </p>
             </div>
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="rounded-full bg-white/20 p-1.5 transition-colors hover:bg-white/30"
+              className="rounded-full bg-white/10 p-1.5 transition-colors hover:bg-white/20"
               aria-label="Close chat"
             >
               <X className="h-4 w-4" />
@@ -258,10 +255,9 @@ export function GuestChatWidget() {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="flex items-center gap-2.5 rounded-full px-5 py-3.5 text-sm font-semibold text-white shadow-xl transition-transform hover:scale-105"
-          style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-secondary))' }}
+          className="cta-luxury flex items-center gap-2.5 rounded-full px-5 py-3.5 text-sm font-semibold shadow-lg"
         >
-          <MessageSquare className="h-5 w-5" />
+          <MessageSquare className="h-4 w-4" />
           <span className="hidden sm:inline">{t.chat.title}</span>
         </button>
       )}

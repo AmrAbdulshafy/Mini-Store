@@ -64,17 +64,17 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
           <div className="pointer-events-none absolute inset-x-3 top-3 flex items-start justify-between gap-2">
             <div className="flex flex-wrap gap-1.5">
               {discountPct && (
-                <span className="rounded-full bg-[#FF654F] px-2.5 py-1 text-[11px] font-bold text-white shadow-sm">
+                <span className="rounded-full bg-[var(--text-primary)] px-2.5 py-1 text-[10px] font-semibold tracking-wider text-[var(--bg-page)]">
                   -{discountPct}%
                 </span>
               )}
               {product.is_new_arrival && (
-                <span className="cta-luxury rounded-full px-2.5 py-1 text-[11px] font-semibold">
+                <span className="rounded-full border border-[var(--border-glass)] bg-[var(--bg-page)]/90 px-2.5 py-1 text-[10px] font-semibold tracking-wider text-[var(--text-primary)] backdrop-blur-sm">
                   {t.product.newBadge}
                 </span>
               )}
               {product.is_featured && (
-                <span className="flex items-center gap-1 rounded-full bg-[#190D25]/75 px-2.5 py-1 text-[11px] font-medium text-[#FFC247] backdrop-blur-md">
+                <span className="flex items-center gap-1 rounded-full bg-[#141210]/80 px-2.5 py-1 text-[10px] font-medium text-[#C2A273] backdrop-blur-sm">
                   <Sparkles className="h-3 w-3" />
                   {t.product.featuredBadge}
                 </span>
@@ -85,19 +85,19 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
               <button
                 type="button"
                 onClick={() => toggleFavorite(product.id)}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-[#F01878] shadow-sm backdrop-blur-md transition-transform hover:scale-110 dark:bg-[#190D25]/75"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--bg-page)]/85 text-[var(--text-primary)] shadow-sm backdrop-blur-md transition-transform hover:scale-105"
                 aria-label={fav ? t.product.removeFromFavorites : t.product.addToFavorites}
               >
-                <Heart className={`h-4 w-4 ${fav ? 'fill-[#F01878] text-[#F01878]' : ''}`} />
+                <Heart className={`h-3.5 w-3.5 ${fav ? 'fill-[#A86F79] text-[#A86F79]' : ''}`} />
               </button>
               <button
                 type="button"
                 onClick={() => setQuickViewOpen(true)}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-[#190D25] shadow-sm backdrop-blur-md transition-transform hover:scale-110 dark:bg-[#190D25]/75 dark:text-[#FFF5F8]"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--bg-page)]/85 text-[var(--text-primary)] shadow-sm backdrop-blur-md transition-transform hover:scale-105"
                 aria-label={lang === 'ar' ? 'معاينة سريعة' : 'Quick View'}
                 title={lang === 'ar' ? 'معاينة سريعة' : 'Quick View'}
               >
-                <Eye className="h-4 w-4" />
+                <Eye className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>

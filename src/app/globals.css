@@ -3,77 +3,37 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* Esraa Secret — Bold Luxury Color System */
-  --es-fuchsia: #F01878;
-  --es-violet: #7026D9;
-  --es-coral: #FF654F;
-  --es-gold: #FFC247;
-  --es-warm-white: #FFF5F8;
-  --es-plum: #190D25;
+  /* Esraa Secret — Elite Global Luxury Palette (Light: Porcelain & Obsidian) */
+  --es-ink: #141210;
+  --es-champagne: #9A7B4F;
+  --es-rose-muted: #A86F79;
 
-  /* Light Mode — Warm White & Bold Jewel Accents */
-  --bg-page: #FFF5F8;
-  --bg-elevated: rgba(255, 255, 255, 0.84);
-  --bg-subtle: #F9E6EE;
-  --text-primary: #190D25;
-  --text-secondary: #5B4268;
-  --border-glass: rgba(112, 38, 217, 0.16);
-  --accent: #F01878;
-  --accent-strong: #C90E61;
-  --accent-soft: rgba(240, 24, 120, 0.12);
-  --accent-secondary: #7026D9;
-  --champagne: #FFC247;
-  --cta-gradient: linear-gradient(135deg, #F01878 0%, #7026D9 100%);
-  --hero-gradient: radial-gradient(circle at 14% 16%, rgba(240, 24, 120, 0.14), transparent 46%),
-    radial-gradient(circle at 86% 18%, rgba(112, 38, 217, 0.12), transparent 45%),
-    radial-gradient(circle at 52% 90%, rgba(255, 194, 71, 0.14), transparent 52%);
+  --bg-page: #FAF8F5;
+  --bg-elevated: rgba(255, 255, 255, 0.92);
+  --bg-subtle: #F2EDE6;
+  --text-primary: #141210;
+  --text-secondary: #68625B;
+  --border-glass: rgba(20, 18, 16, 0.11);
+  --accent: #141210;
+  --accent-strong: #000000;
+  --accent-soft: rgba(20, 18, 16, 0.06);
+  --accent-secondary: #9A7B4F;
+  --champagne: #9A7B4F;
 }
 
-[data-collection="men"] {
-  --accent: #7026D9;
-  --accent-strong: #5317AD;
-  --accent-soft: rgba(112, 38, 217, 0.12);
-  --accent-secondary: #190D25;
-}
-
-[data-collection="handmade"] {
-  --accent: #FF654F;
-  --accent-strong: #DE442E;
-  --accent-soft: rgba(255, 101, 79, 0.13);
-  --accent-secondary: #F01878;
-}
-
-/* Dark Mode — Cinematic Midnight Plum (#190D25) */
+/* Dark Mode — Deep Obsidian & Warm Ivory */
 .dark {
-  --bg-page: #190D25;
-  --bg-elevated: rgba(37, 20, 54, 0.82);
-  --bg-subtle: #251436;
-  --text-primary: #FFF5F8;
-  --text-secondary: #D4C2E0;
-  --border-glass: rgba(255, 194, 71, 0.2);
-  --accent: #F01878;
-  --accent-strong: #FF4D9B;
-  --accent-soft: rgba(240, 24, 120, 0.18);
-  --accent-secondary: #7026D9;
-  --champagne: #FFC247;
-  --cta-gradient: linear-gradient(135deg, #F01878 0%, #7026D9 100%);
-  --hero-gradient: radial-gradient(circle at 16% 18%, rgba(240, 24, 120, 0.24), transparent 48%),
-    radial-gradient(circle at 84% 20%, rgba(112, 38, 217, 0.28), transparent 48%),
-    radial-gradient(circle at 50% 92%, rgba(255, 194, 71, 0.11), transparent 52%);
-}
-
-.dark[data-collection="men"] {
-  --accent: #9A64F2;
-  --accent-strong: #B68CFF;
-  --accent-soft: rgba(112, 38, 217, 0.24);
-  --accent-secondary: #FFC247;
-}
-
-.dark[data-collection="handmade"] {
-  --accent: #FF654F;
-  --accent-strong: #FF8877;
-  --accent-soft: rgba(255, 101, 79, 0.2);
-  --accent-secondary: #FFC247;
+  --bg-page: #0E0D0C;
+  --bg-elevated: rgba(23, 21, 20, 0.92);
+  --bg-subtle: #181614;
+  --text-primary: #F6F3EE;
+  --text-secondary: #A59E95;
+  --border-glass: rgba(246, 243, 238, 0.12);
+  --accent: #F6F3EE;
+  --accent-strong: #FFFFFF;
+  --accent-soft: rgba(246, 243, 238, 0.08);
+  --accent-secondary: #C2A273;
+  --champagne: #C2A273;
 }
 
 html {
@@ -83,49 +43,39 @@ html {
 body {
   background-color: var(--bg-page);
   color: var(--text-primary);
-  background-image: var(--hero-gradient);
-  background-attachment: fixed;
-  transition: background-color 0.35s ease, color 0.35s ease;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .glass-card {
   background: var(--bg-elevated);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border-glass);
-  box-shadow: 0 14px 40px -14px rgba(25, 13, 37, 0.14);
-}
-
-.dark .glass-card {
-  box-shadow: 0 20px 48px -14px rgba(0, 0, 0, 0.65);
 }
 
 .glass-nav {
   background: var(--bg-elevated);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-glass);
 }
 
 .cta-luxury {
-  background: var(--cta-gradient);
-  color: #FFFFFF;
-  box-shadow: 0 10px 26px -8px rgba(240, 24, 120, 0.45);
-  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, filter 0.25s ease;
+  background-color: var(--accent);
+  color: var(--bg-page);
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .cta-luxury:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 16px 32px -8px rgba(112, 38, 217, 0.5);
-  filter: brightness(1.05);
+  opacity: 0.88;
 }
 
 .cta-luxury:active {
-  transform: translateY(0) scale(0.98);
+  transform: scale(0.99);
 }
 
 .font-display {
-  font-family: var(--font-display), var(--font-cairo), serif;
+  font-family: var(--font-display), var(--font-cairo), Georgia, serif;
 }
 
 .font-sans-boutique {
@@ -137,11 +87,11 @@ body {
   font-family: var(--font-cairo), var(--font-jakarta), sans-serif;
 }
 
-/* Motion & Animation System */
+/* Restrained Editorial Motion */
 @keyframes fadeSlideUp {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -152,7 +102,7 @@ body {
 @keyframes modalPanelIn {
   from {
     opacity: 0;
-    transform: translateY(14px) scale(0.96);
+    transform: translateY(8px) scale(0.985);
   }
   to {
     opacity: 1;
@@ -167,33 +117,20 @@ body {
   }
   to {
     opacity: 0;
-    transform: translateY(10px) scale(0.96);
-  }
-}
-
-@keyframes floatGlow {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-6px);
+    transform: translateY(6px) scale(0.985);
   }
 }
 
 .animate-reveal {
-  animation: fadeSlideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.animate-float-slow {
-  animation: floatGlow 5.5s ease-in-out infinite;
+  animation: fadeSlideUp 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .animate-modal-in {
-  animation: modalPanelIn 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: modalPanelIn 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .animate-modal-out {
-  animation: modalPanelOut 0.18s ease-in both;
+  animation: modalPanelOut 0.16s ease-in both;
 }
 
 @media (prefers-reduced-motion: reduce) {
