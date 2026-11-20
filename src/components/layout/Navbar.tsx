@@ -66,11 +66,11 @@ export function Navbar() {
         </nav>
 
         {/* Controls */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           {/* Favorites */}
           <Link
             href="/favorites"
-            className="relative flex h-9 items-center gap-1.5 rounded-full border px-3 text-sm transition-colors hover:bg-[var(--accent-soft)]"
+            className="relative flex h-8 w-8 items-center justify-center gap-1.5 rounded-full border text-sm transition-colors hover:bg-[var(--accent-soft)] sm:h-9 sm:w-auto sm:px-3"
             style={{ borderColor: 'var(--border-glass)' }}
             aria-label={t.nav.favorites}
           >
@@ -90,7 +90,7 @@ export function Navbar() {
           <button
             type="button"
             onClick={toggleLang}
-            className="flex h-9 items-center gap-1.5 rounded-full border px-3 text-xs font-semibold transition-colors hover:bg-[var(--accent-soft)]"
+            className="flex h-8 items-center gap-1 rounded-full border px-2 text-[11px] font-semibold transition-colors hover:bg-[var(--accent-soft)] sm:h-9 sm:gap-1.5 sm:px-3 sm:text-xs"
             style={{ borderColor: 'var(--border-glass)' }}
             aria-label="Toggle language"
           >
@@ -102,7 +102,7 @@ export function Navbar() {
           <button
             type="button"
             onClick={toggleTheme}
-            className="flex h-9 w-9 items-center justify-center rounded-full border transition-colors hover:bg-[var(--accent-soft)]"
+            className="flex h-8 w-8 items-center justify-center rounded-full border transition-colors hover:bg-[var(--accent-soft)] sm:h-9 sm:w-9"
             style={{ borderColor: 'var(--border-glass)' }}
             aria-label={theme === 'dark' ? t.common.lightMode : t.common.darkMode}
           >
@@ -113,11 +113,24 @@ export function Navbar() {
             )}
           </button>
 
+          {/* Install App */}
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event('esraa:install-app'))}
+            className="flex h-8 w-8 items-center justify-center gap-1.5 rounded-full border text-xs font-medium transition-colors hover:bg-[var(--accent-soft)] sm:h-9 sm:w-9 xl:w-auto xl:px-3"
+            style={{ borderColor: 'var(--border-glass)' }}
+            aria-label={lang === 'ar' ? 'تثبيت التطبيق' : 'Install App'}
+            title={lang === 'ar' ? 'تثبيت التطبيق' : 'Install App'}
+          >
+            <Download className="h-3.5 w-3.5 text-[var(--accent)]" />
+            <span className="hidden xl:inline">{lang === 'ar' ? 'تثبيت التطبيق' : 'Install App'}</span>
+          </button>
+
           {/* Login Modal Trigger */}
           <button
             type="button"
             onClick={() => window.dispatchEvent(new Event('esraa:open-login'))}
-            className="hidden h-9 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-colors hover:bg-[var(--accent-soft)] sm:flex"
+            className="flex h-8 w-8 items-center justify-center gap-1.5 rounded-full border text-xs font-medium transition-colors hover:bg-[var(--accent-soft)] sm:h-9 sm:w-9 xl:w-auto xl:px-3"
             style={{ borderColor: 'var(--border-glass)' }}
             aria-label={lang === 'ar' ? 'تسجيل الدخول' : 'Login'}
             title={lang === 'ar' ? 'تسجيل الدخول' : 'Login'}
@@ -130,7 +143,7 @@ export function Navbar() {
           <button
             type="button"
             onClick={() => setMobileOpen((prev) => !prev)}
-            className="flex h-9 w-9 items-center justify-center rounded-full border lg:hidden"
+            className="flex h-8 w-8 items-center justify-center rounded-full border sm:h-9 sm:w-9 lg:hidden"
             style={{ borderColor: 'var(--border-glass)' }}
             aria-label="Menu"
           >
@@ -159,28 +172,6 @@ export function Navbar() {
                 {item.label}
               </Link>
             ))}
-            <button
-              type="button"
-              onClick={() => {
-                setMobileOpen(false);
-                window.dispatchEvent(new Event('esraa:open-login'));
-              }}
-              className="flex items-center gap-2 rounded-2xl px-4 py-2.5 text-start text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--accent-soft)]"
-            >
-              <LogIn className="h-4 w-4 text-[var(--accent)]" />
-              <span>{lang === 'ar' ? 'تسجيل الدخول' : 'Login'}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setMobileOpen(false);
-                window.dispatchEvent(new Event('esraa:install-app'));
-              }}
-              className="flex items-center gap-2 rounded-2xl px-4 py-2.5 text-start text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--accent-soft)]"
-            >
-              <Download className="h-4 w-4 text-[var(--accent)]" />
-              <span>{lang === 'ar' ? 'تثبيت التطبيق' : 'Install App'}</span>
-            </button>
             <div className="mt-2 flex items-center gap-2 pt-2 border-t" style={{ borderColor: 'var(--border-glass)' }}>
               <span className="text-xs text-[var(--text-secondary)]">{t.collections.switchTheme}:</span>
               {(['women', 'men', 'handmade'] as CollectionSlug[]).map((col) => (
