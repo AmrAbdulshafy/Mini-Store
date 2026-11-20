@@ -104,8 +104,8 @@ export function BackgroundVideoPlayer() {
 
   return (
     <>
-      {/* Full-Website Background Video Layer */}
-      <div className="pointer-events-none fixed inset-0 -z-20 overflow-hidden bg-[var(--bg-page)]">
+      {/* Full-Website Responsive Background Video Layer */}
+      <div className="pointer-events-none fixed inset-0 -z-20 h-[100dvh] w-full overflow-hidden bg-[var(--bg-page)]">
         <video
           ref={videoRef}
           src="/videos/esraa-luxury-ad.mp4"
@@ -114,13 +114,13 @@ export function BackgroundVideoPlayer() {
           loop
           playsInline
           onVolumeChange={(e) => setMuted(e.currentTarget.muted)}
-          className="h-full w-full object-cover opacity-55"
+          className="h-full w-full object-cover object-center opacity-90 brightness-115 contrast-105"
         />
         <div
           className="absolute inset-0"
           style={{
             background:
-              'linear-gradient(180deg, color-mix(in srgb, var(--bg-page) 62%, transparent) 0%, color-mix(in srgb, var(--bg-page) 78%, transparent) 100%)',
+              'linear-gradient(180deg, color-mix(in srgb, var(--bg-page) 20%, transparent) 0%, color-mix(in srgb, var(--bg-page) 36%, transparent) 100%)',
           }}
         />
       </div>
