@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Heart, Menu, Moon, ShieldCheck, Sun, X, Languages } from 'lucide-react';
+import { Download, Heart, Menu, Moon, ShieldCheck, Sun, X, Languages } from 'lucide-react';
 import { useApp } from '@/components/providers/AppProvider';
 import { BrandLogo } from '@/components/brand/BrandLogo';
 import type { CollectionSlug } from '@/types/database';
@@ -166,6 +166,28 @@ export function Navbar() {
               <ShieldCheck className="h-4 w-4 text-[var(--accent)]" />
               <span>{t.nav.admin}</span>
             </Link>
+            <button
+              type="button"
+              onClick={() => {
+                setMobileOpen(false);
+                window.dispatchEvent(new Event('esraa:install-app'));
+              }}
+              className="flex items-center gap-2 rounded-2xl px-4 py-2.5 text-start text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--accent-soft)]"
+            >
+              <Download className="h-4 w-4 text-[var(--accent)]" />
+              <span>{lang === 'ar' ? 'تثبيت التطبيق' : 'Install App'}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMobileOpen(false);
+                window.dispatchEvent(new Event('esraa:install-app'));
+              }}
+              className="flex items-center gap-2 rounded-2xl px-4 py-2.5 text-start text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--accent-soft)]"
+            >
+              <Download className="h-4 w-4 text-[var(--accent)]" />
+              <span>{lang === 'ar' ? 'تثبيت التطبيق' : 'Install App'}</span>
+            </button>
             <div className="mt-2 flex items-center gap-2 pt-2 border-t" style={{ borderColor: 'var(--border-glass)' }}>
               <span className="text-xs text-[var(--text-secondary)]">{t.collections.switchTheme}:</span>
               {(['women', 'men', 'handmade'] as CollectionSlug[]).map((col) => (

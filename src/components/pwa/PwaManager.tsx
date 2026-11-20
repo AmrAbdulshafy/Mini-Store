@@ -30,7 +30,9 @@ export function PwaManager() {
     const standalone =
       window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
-    const ios = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+    const ios =
+      /iphone|ipad|ipod/i.test(window.navigator.userAgent) ||
+      (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1);
     const mobile = ios || /android/i.test(window.navigator.userAgent);
 
     const initFrame = requestAnimationFrame(() => {
