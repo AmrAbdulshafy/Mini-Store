@@ -7,6 +7,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { GuestChatWidget } from '@/components/chat/GuestChatWidget';
 import { PwaManager } from '@/components/pwa/PwaManager';
+import { LoginModal } from '@/components/auth/LoginModal';
 
 const cairo = Cairo({
   subsets: ['arabic', 'latin'],
@@ -87,6 +88,7 @@ export default async function RootLayout({
           </div>
           <GuestChatWidget />
           <PwaManager />
+          <LoginModal />
         </AppProvider>
       </body>
     </html>

@@ -113,9 +113,10 @@ export function Navbar() {
             )}
           </button>
 
-          {/* Login Link */}
-          <Link
-            href="/admin/login"
+          {/* Login Modal Trigger */}
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event('esraa:open-login'))}
             className="hidden h-9 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-colors hover:bg-[var(--accent-soft)] sm:flex"
             style={{ borderColor: 'var(--border-glass)' }}
             aria-label={lang === 'ar' ? 'تسجيل الدخول' : 'Login'}
@@ -123,7 +124,7 @@ export function Navbar() {
           >
             <LogIn className="h-3.5 w-3.5 text-[var(--accent)]" />
             <span className="hidden xl:inline">{lang === 'ar' ? 'تسجيل الدخول' : 'Login'}</span>
-          </Link>
+          </button>
 
           {/* Mobile Menu Button */}
           <button
@@ -158,14 +159,17 @@ export function Navbar() {
                 {item.label}
               </Link>
             ))}
-            <Link
-              href="/admin/login"
-              onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--accent-soft)]"
+            <button
+              type="button"
+              onClick={() => {
+                setMobileOpen(false);
+                window.dispatchEvent(new Event('esraa:open-login'));
+              }}
+              className="flex items-center gap-2 rounded-2xl px-4 py-2.5 text-start text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--accent-soft)]"
             >
               <LogIn className="h-4 w-4 text-[var(--accent)]" />
               <span>{lang === 'ar' ? 'تسجيل الدخول' : 'Login'}</span>
-            </Link>
+            </button>
             <button
               type="button"
               onClick={() => {

@@ -122,7 +122,10 @@ export function GuestChatWidget() {
   return (
     <div className="fixed bottom-5 end-5 z-50">
       {open ? (
-        <div className="glass-card flex h-[480px] w-[340px] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-xl shadow-2xl sm:w-[370px]">
+        <div
+          className="flex h-[480px] w-[340px] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-xl border bg-white/95 shadow-2xl backdrop-blur-2xl sm:w-[370px] dark:bg-[#24171F]/95"
+          style={{ borderColor: 'var(--border-glass)' }}
+        >
           {/* Header */}
           <div className="flex items-center justify-between bg-[#141210] px-4 py-3.5 text-[#F6F3EE] dark:bg-[#221F1D]">
             <div>

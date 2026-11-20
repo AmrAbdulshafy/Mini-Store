@@ -130,13 +130,14 @@ export function Footer() {
               <Download className="h-3.5 w-3.5" />
               <span>{lang === 'ar' ? 'تثبيت التطبيق' : 'Install App'}</span>
             </button>
-            <Link
-              href="/admin/login"
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new Event('esraa:open-login'))}
               className="flex items-center gap-1.5 opacity-70 transition-opacity hover:opacity-100"
             >
               <LogIn className="h-3.5 w-3.5" />
               <span>{lang === 'ar' ? 'تسجيل الدخول' : 'Login'}</span>
-            </Link>
+            </button>
           </div>
         </div>
       </div>
