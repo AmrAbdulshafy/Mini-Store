@@ -142,8 +142,11 @@ export function useAdminChatNotifications({
             typeof document !== 'undefined' &&
             document.visibilityState === 'visible';
 
+          // Always play ring sound for incoming customer messages (deduplicated by msg.id above)
+          playChatRingSound();
+
           if (isViewingThisConversation) {
-            // Avoid duplicate unread notification when the exact conversation is already open & visible
+            // Avoid duplicate unread bell notification when the exact conversation is already open & visible
             return;
           }
 
@@ -158,8 +161,6 @@ export function useAdminChatNotifications({
             };
             return [item, ...prev].slice(0, 25);
           });
-
-          playChatRingSound();
 
           // Fire mobile-safe Browser Notification when admin dashboard is in the background
           if (
