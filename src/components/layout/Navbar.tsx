@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Download, Heart, Menu, Moon, ShieldCheck, Sun, X, Languages } from 'lucide-react';
+import { Download, Heart, LogIn, Menu, Moon, Sun, X, Languages } from 'lucide-react';
 import { useApp } from '@/components/providers/AppProvider';
 import { BrandLogo } from '@/components/brand/BrandLogo';
 import type { CollectionSlug } from '@/types/database';
@@ -113,16 +113,16 @@ export function Navbar() {
             )}
           </button>
 
-          {/* Admin Link */}
+          {/* Login Link */}
           <Link
-            href="/admin"
+            href="/admin/login"
             className="hidden h-9 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-colors hover:bg-[var(--accent-soft)] sm:flex"
             style={{ borderColor: 'var(--border-glass)' }}
-            aria-label={t.nav.admin}
-            title={t.nav.admin}
+            aria-label={lang === 'ar' ? 'تسجيل الدخول' : 'Login'}
+            title={lang === 'ar' ? 'تسجيل الدخول' : 'Login'}
           >
-            <ShieldCheck className="h-3.5 w-3.5 text-[var(--accent)]" />
-            <span className="hidden xl:inline">{t.nav.admin}</span>
+            <LogIn className="h-3.5 w-3.5 text-[var(--accent)]" />
+            <span className="hidden xl:inline">{lang === 'ar' ? 'تسجيل الدخول' : 'Login'}</span>
           </Link>
 
           {/* Mobile Menu Button */}
@@ -159,24 +159,13 @@ export function Navbar() {
               </Link>
             ))}
             <Link
-              href="/admin"
+              href="/admin/login"
               onClick={() => setMobileOpen(false)}
               className="flex items-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--accent-soft)]"
             >
-              <ShieldCheck className="h-4 w-4 text-[var(--accent)]" />
-              <span>{t.nav.admin}</span>
+              <LogIn className="h-4 w-4 text-[var(--accent)]" />
+              <span>{lang === 'ar' ? 'تسجيل الدخول' : 'Login'}</span>
             </Link>
-            <button
-              type="button"
-              onClick={() => {
-                setMobileOpen(false);
-                window.dispatchEvent(new Event('esraa:install-app'));
-              }}
-              className="flex items-center gap-2 rounded-2xl px-4 py-2.5 text-start text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--accent-soft)]"
-            >
-              <Download className="h-4 w-4 text-[var(--accent)]" />
-              <span>{lang === 'ar' ? 'تثبيت التطبيق' : 'Install App'}</span>
-            </button>
             <button
               type="button"
               onClick={() => {

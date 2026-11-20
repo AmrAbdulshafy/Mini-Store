@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Download, Mail, MapPin, MessageCircle, Phone, ShieldCheck } from 'lucide-react';
+import { Download, LogIn, Mail, MapPin, MessageCircle, Phone } from 'lucide-react';
 import { useApp } from '@/components/providers/AppProvider';
 import { BrandLogo, EsraaMonogram } from '@/components/brand/BrandLogo';
 import { buildWhatsAppGeneralUrl } from '@/lib/whatsapp';
@@ -131,11 +131,11 @@ export function Footer() {
               <span>{lang === 'ar' ? 'تثبيت التطبيق' : 'Install App'}</span>
             </button>
             <Link
-              href="/admin"
+              href="/admin/login"
               className="flex items-center gap-1.5 opacity-70 transition-opacity hover:opacity-100"
             >
-              <ShieldCheck className="h-3.5 w-3.5" />
-              <span>{t.nav.admin}</span>
+              <LogIn className="h-3.5 w-3.5" />
+              <span>{lang === 'ar' ? 'تسجيل الدخول' : 'Login'}</span>
             </Link>
           </div>
         </div>
