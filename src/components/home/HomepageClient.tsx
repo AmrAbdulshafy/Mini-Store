@@ -284,31 +284,51 @@ export function HomepageClient({
         </section>
       )}
 
-      {/* PROMOTIONAL BANNER */}
+      {/* PROMOTIONAL CAMPAIGN AD BANNER */}
       {promoBanner && (
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="glass-card rounded-lg bg-[var(--bg-subtle)] p-7 sm:p-10">
-            <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-              <div className="max-w-2xl space-y-2.5">
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-[0.18em] text-[var(--accent)] uppercase">
-                  <Tag className="h-3.5 w-3.5 text-[var(--champagne)]" />
-                  {t.product.offerBadge}
-                </span>
-                <h2 className="font-display text-2xl font-semibold sm:text-3xl">
+          <div className="glass-card editorial-sheen group overflow-hidden rounded-lg bg-[var(--bg-subtle)]">
+            <div className="grid items-center gap-0 lg:grid-cols-12">
+              <div className="space-y-4 p-7 sm:p-10 lg:col-span-7 lg:p-12">
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-[0.2em] text-[var(--accent)] uppercase">
+                    <Tag className="h-3.5 w-3.5 text-[var(--champagne)]" />
+                    {t.product.offerBadge}
+                  </span>
+                  <span className="h-px flex-1 max-w-16 bg-[var(--champagne)]/50" />
+                </div>
+
+                <h2 className="font-display text-2xl font-semibold leading-snug sm:text-3xl lg:text-4xl">
                   {lang === 'ar' ? promoBanner.title_ar : promoBanner.title_en}
                 </h2>
-                <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+
+                <p className="max-w-xl text-sm leading-relaxed text-[var(--text-secondary)]">
                   {lang === 'ar' ? promoBanner.subtitle_ar : promoBanner.subtitle_en}
                 </p>
+
+                <div className="pt-2">
+                  <Link
+                    href={promoBanner.cta_link || '/catalog?offer=true'}
+                    className="cta-luxury inline-flex items-center gap-2 rounded-md px-7 py-3.5 text-xs font-semibold tracking-wider uppercase"
+                  >
+                    <span>
+                      {lang === 'ar'
+                        ? promoBanner.cta_text_ar || t.sections.viewAll
+                        : promoBanner.cta_text_en || t.sections.viewAll}
+                    </span>
+                    <ArrowIcon className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+                  </Link>
+                </div>
               </div>
-              <Link
-                href={promoBanner.cta_link || '/catalog?offer=true'}
-                className="cta-luxury shrink-0 rounded-md px-7 py-3.5 text-xs font-semibold tracking-wider uppercase"
-              >
-                {lang === 'ar'
-                  ? promoBanner.cta_text_ar || t.sections.viewAll
-                  : promoBanner.cta_text_en || t.sections.viewAll}
-              </Link>
+
+              <div className="relative aspect-[16/10] h-full overflow-hidden lg:col-span-5 lg:aspect-auto lg:min-h-[300px]">
+                <img
+                  src={promoBanner.image_url || '/images/hero-boutique.png'}
+                  alt={lang === 'ar' ? promoBanner.title_ar : promoBanner.title_en}
+                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#191619]/35 via-transparent to-transparent" />
+              </div>
             </div>
           </div>
         </section>

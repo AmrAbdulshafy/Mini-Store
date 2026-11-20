@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { Eye, Heart, MessageCircle } from 'lucide-react';
 import type { Product } from '@/types/database';
 import { useApp } from '@/components/providers/AppProvider';
@@ -40,16 +39,21 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
         className="glass-card animate-reveal group flex flex-col overflow-hidden rounded-lg transition-colors duration-200 hover:border-[var(--border-strong)]"
         style={{ animationDelay: `${Math.min(index * 45, 240)}ms` }}
       >
-        {/* Image Container */}
+        {/* Image Container — opens Product Modal on current page */}
         <div className="relative aspect-[4/4.5] overflow-hidden bg-[var(--bg-subtle)]">
-          <Link href={`/products/${product.slug}`} className="block h-full w-full">
+          <button
+            type="button"
+            onClick={() => setQuickViewOpen(true)}
+            className="block h-full w-full cursor-pointer text-start"
+            aria-label={name}
+          >
             <img
               src={primaryImage}
               alt={name}
               className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
               loading="lazy"
             />
-          </Link>
+          </button>
 
           {/* Restrained Editorial Badges */}
           <div className="pointer-events-none absolute inset-x-3 top-3 flex items-start justify-between gap-2">
@@ -104,11 +108,15 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
               </span>
             </div>
 
-            <Link href={`/products/${product.slug}`} className="block">
+            <button
+              type="button"
+              onClick={() => setQuickViewOpen(true)}
+              className="block w-full text-start"
+            >
               <h3 className="font-display line-clamp-1 text-base font-semibold tracking-wide transition-colors group-hover:text-[var(--accent)] sm:text-lg">
                 {name}
               </h3>
-            </Link>
+            </button>
 
             <div className="flex items-baseline gap-2 pt-0.5">
               <span className="text-sm font-semibold text-[var(--text-primary)]">

@@ -179,6 +179,31 @@ body {
   animation: fadeSlideUp 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+@keyframes subtleSweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.editorial-sheen {
+  position: relative;
+  overflow: hidden;
+}
+
+.editorial-sheen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 45%;
+  background: linear-gradient(90deg, transparent, rgba(196, 167, 121, 0.14), transparent);
+  transform: translateX(-100%);
+  animation: subtleSweep 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
 .animate-modal-in {
   animation: modalPanelIn 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
