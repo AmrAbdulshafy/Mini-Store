@@ -195,8 +195,8 @@ export function PwaManager() {
               </p>
               <p className="text-[11px] text-[var(--text-secondary)]">
                 {lang === 'ar'
-                  ? 'أعد التحميل للحصول على أحدث تجربة من إسراء سيكريت.'
-                  : 'Reload to apply the latest Esraa Secret update.'}
+                  ? 'أعد التحميل للحصول على أحدث تجربة من إسراء بوتيك.'
+                  : 'Reload to apply the latest Esraa Boutique update.'}
               </p>
             </div>
             <button
