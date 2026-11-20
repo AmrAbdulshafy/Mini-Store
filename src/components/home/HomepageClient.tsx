@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft,
@@ -13,8 +13,6 @@ import {
   Send,
   Sparkles,
   Tag,
-  Volume2,
-  VolumeX,
 } from 'lucide-react';
 import type { Collection, CollectionSlug, HomepageBanner, Product } from '@/types/database';
 import { useApp } from '@/components/providers/AppProvider';
@@ -35,9 +33,6 @@ export function HomepageClient({
 
   const heroBanner = banners.find((b) => b.placement === 'hero');
   const promoBanner = banners.find((b) => b.placement === 'promo');
-  const videoAds = banners.filter(
-    (b) => b.is_active && (b.placement === 'video_ad' || b.media_type === 'video') && b.video_url
-  );
 
   const featuredProducts = products.filter((p) => p.is_featured).slice(0, 4);
   const newArrivals = products.filter((p) => p.is_new_arrival).slice(0, 4);
@@ -49,22 +44,6 @@ export function HomepageClient({
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitState, setSubmitState] = useState<'idle' | 'success' | 'error'>('idle');
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [musicMuted, setMusicMuted] = useState(true);
-
-  const toggleMusic = () => {
-    const vid = videoRef.current;
-    if (!vid) return;
-    if (musicMuted) {
-      vid.volume = 0.25;
-      vid.muted = false;
-      vid.play().catch(() => {});
-      setMusicMuted(false);
-    } else {
-      vid.muted = true;
-      setMusicMuted(true);
-    }
-  };
 
   const handleInquirySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -355,107 +334,6 @@ export function HomepageClient({
                 <div className="absolute inset-0 bg-gradient-to-t from-[#191619]/35 via-transparent to-transparent" />
               </div>
             </div>
-          </div>
-        </section>
-      )}
-
-      {/* ANIMATED VIDEO ADS SHOWCASE */}
-      {videoAds.length > 0 && (
-        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-8 flex items-end justify-between gap-4">
-            <div>
-              <h2 className="font-display text-2xl font-bold sm:text-3xl">
-                {lang === 'ar' ? 'إعلانات الفيديو الحصرية' : 'Exclusive Video Campaigns'}
-              </h2>
-              <p className="mt-1 text-sm text-[var(--text-secondary)]">
-                {lang === 'ar'
-                  ? 'عروض مرئية مختارة لأحدث إصدارات البوتيك'
-                  : 'Curated motion spotlights from our latest boutique drops'}
-              </p>
-            </div>
-          </div>
-          <div className={`grid gap-6 ${videoAds.length > 1 ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
-            {videoAds.map((ad, idx) => (
-              <div
-                key={ad.id}
-                className="glass-card card-modern animate-glow-pulse animate-reveal overflow-hidden rounded-2xl"
-                style={{ animationDelay: `${idx * 90}ms` }}
-              >
-                <div className="relative aspect-video w-full overflow-hidden bg-black/60">
-                  <video
-                    ref={idx === 0 ? videoRef : undefined}
-                    src={ad.video_url || undefined}
-                    poster={ad.image_url || undefined}
-                    autoPlay
-                    muted={idx === 0 ? musicMuted : true}
-                    loop
-                    playsInline
-                    className="h-full w-full object-cover"
-                  />
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/15" />
-                  <button
-                    type="button"
-                    onClick={toggleMusic}
-                    aria-label={
-                      musicMuted
-                        ? lang === 'ar'
-                          ? 'تشغيل الموسيقى'
-                          : 'Unmute Music'
-                        : lang === 'ar'
-                          ? 'كتم الموسيقى'
-                          : 'Mute Music'
-                    }
-                    title={
-                      musicMuted
-                        ? lang === 'ar'
-                          ? 'تشغيل الموسيقى'
-                          : 'Unmute Music'
-                        : lang === 'ar'
-                          ? 'كتم الموسيقى'
-                          : 'Mute Music'
-                    }
-                    className="absolute bottom-4 end-4 z-10 flex items-center gap-2 rounded-full border border-white/25 bg-black/55 px-3.5 py-2 text-xs font-medium text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-black/75"
-                  >
-                    {musicMuted ? (
-                      <>
-                        <VolumeX className="h-4 w-4 text-[var(--accent)]" />
-                        <span>{lang === 'ar' ? 'تشغيل الصوت' : 'Unmute'}</span>
-                      </>
-                    ) : (
-                      <>
-                        <Volume2 className="h-4 w-4 text-[var(--accent)]" />
-                        <span>{lang === 'ar' ? 'كتم الصوت' : 'Mute'}</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-                <div className="flex flex-wrap items-center justify-between gap-4 p-5 sm:p-6">
-                  <div className="space-y-1">
-                    <h3 className="font-display text-xl font-semibold">
-                      {lang === 'ar' ? ad.title_ar : ad.title_en}
-                    </h3>
-                    {(ad.subtitle_ar || ad.subtitle_en) && (
-                      <p className="text-xs text-[var(--text-secondary)]">
-                        {lang === 'ar' ? ad.subtitle_ar : ad.subtitle_en}
-                      </p>
-                    )}
-                  </div>
-                  {ad.cta_link && (
-                    <Link
-                      href={ad.cta_link}
-                      className="cta-luxury inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-xs font-semibold tracking-wide"
-                    >
-                      <span>
-                        {lang === 'ar'
-                          ? ad.cta_text_ar || t.sections.viewAll
-                          : ad.cta_text_en || t.sections.viewAll}
-                      </span>
-                      <ArrowIcon className="h-3.5 w-3.5" />
-                    </Link>
-                  )}
-                </div>
-              </div>
-            ))}
           </div>
         </section>
       )}

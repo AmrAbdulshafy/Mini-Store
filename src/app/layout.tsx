@@ -8,6 +8,7 @@ import { Footer } from '@/components/layout/Footer';
 import { GuestChatWidget } from '@/components/chat/GuestChatWidget';
 import { PwaManager } from '@/components/pwa/PwaManager';
 import { LoginModal } from '@/components/auth/LoginModal';
+import { BackgroundVideoPlayer } from '@/components/layout/BackgroundVideoPlayer';
 
 const cairo = Cairo({
   subsets: ['arabic', 'latin'],
@@ -80,6 +81,7 @@ export default async function RootLayout({
     >
       <body className="font-sans-boutique min-h-screen antialiased">
         <AppProvider initialSettings={settings}>
+          <BackgroundVideoPlayer />
           <div className="flex min-h-screen flex-col">
             <Navbar />
             <main className="flex-1">{children}</main>
