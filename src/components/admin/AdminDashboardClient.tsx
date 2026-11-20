@@ -139,6 +139,7 @@ export function AdminDashboardClient({
   const [colModalOpen, setColModalOpen] = useState(false);
   const [viewCat, setViewCat] = useState<Category | null>(null);
   const [viewCol, setViewCol] = useState<Collection | null>(null);
+  const [deleteColTarget, setDeleteColTarget] = useState<Collection | null>(null);
   const [editConv, setEditConv] = useState<Conversation | null>(null);
   const [deleteConvTarget, setDeleteConvTarget] = useState<Conversation | null>(null);
   const [colForm, setColForm] = useState({
@@ -1179,10 +1180,10 @@ export function AdminDashboardClient({
                         />
                         {lang === 'ar' ? 'مفعل' : 'Active'}
                       </label>
-                      {can(currentAdmin, 'collections', 'delete') && !['women', 'men', 'handmade'].includes(col.slug) && (
+                      {can(currentAdmin, 'collections', 'delete') && (
                         <button
                           type="button"
-                          onClick={() => void handleDeleteCollection(col.id)}
+                          onClick={() => setDeleteColTarget(col)}
                           className="rounded-lg p-1.5 text-rose-500 hover:bg-rose-500/10"
                           title={lang === 'ar' ? 'حذف التشكيلة' : 'Delete Collection'}
                         >
@@ -1292,6 +1293,25 @@ export function AdminDashboardClient({
                   </button>
                 </form>
               </Modal>
+
+              <ConfirmDialog
+                open={Boolean(deleteColTarget)}
+                onClose={() => setDeleteColTarget(null)}
+                onConfirm={async () => {
+                  if (!deleteColTarget) return;
+                  await handleDeleteCollection(deleteColTarget.id);
+                  setDeleteColTarget(null);
+                }}
+                title={lang === 'ar' ? 'حذف التشكيلة' : 'Delete Collection'}
+                message={
+                  lang === 'ar'
+                    ? `هل أنت متأكد من حذف التشكيلة "${deleteColTarget?.name_ar || ''}"؟`
+                    : `Delete collection "${deleteColTarget?.name_en || ''}"?`
+                }
+                confirmLabel={lang === 'ar' ? 'حذف' : 'Delete'}
+                cancelLabel={lang === 'ar' ? 'إلغاء' : 'Cancel'}
+                danger
+              />
             </div>
           )}
 
