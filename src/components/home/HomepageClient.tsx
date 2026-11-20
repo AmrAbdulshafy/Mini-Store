@@ -88,15 +88,15 @@ export function HomepageClient({
     <div className="space-y-20 pb-12">
       {/* HERO SECTION */}
       <section className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8 lg:pt-10">
-        <div className="glass-card relative overflow-hidden rounded-lg p-6 sm:p-10 lg:p-14">
+        <div className="glass-card animate-reveal relative overflow-hidden rounded-3xl p-6 sm:p-10 lg:p-14">
           <div className="grid items-center gap-10 lg:grid-cols-12">
             <div className="space-y-6 lg:col-span-6">
-              <span className="inline-flex items-center gap-2 border-b border-[var(--champagne)] pb-1 text-[11px] font-semibold tracking-[0.2em] text-[var(--accent)] uppercase">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[var(--border-glass)] bg-[var(--accent-soft)] px-3.5 py-1 text-[11px] font-semibold tracking-[0.2em] text-[var(--accent-strong)] uppercase">
                 <Sparkles className="h-3 w-3 text-[var(--champagne)]" />
                 {t.hero.badge}
               </span>
 
-              <h1 className="font-display text-3xl font-semibold leading-tight tracking-tight sm:text-5xl">
+              <h1 className="font-display text-gradient-luxury text-4xl font-bold leading-[1.12] tracking-tight sm:text-5xl lg:text-6xl">
                 {heroBanner
                   ? lang === 'ar'
                     ? heroBanner.title_ar
@@ -119,7 +119,7 @@ export function HomepageClient({
               <div className="flex flex-wrap items-center gap-3 pt-1">
                 <Link
                   href={heroBanner?.cta_link || '/catalog'}
-                  className="cta-luxury inline-flex items-center gap-2 rounded-md px-7 py-3.5 text-xs font-semibold tracking-wider uppercase"
+                  className="cta-luxury inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-xs font-semibold tracking-wider uppercase"
                 >
                   <span>
                     {heroBanner
@@ -135,7 +135,7 @@ export function HomepageClient({
                   href={waGeneral}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-md border border-[var(--border-glass)] bg-[var(--bg-page)] px-6 py-3.5 text-xs font-semibold tracking-wider uppercase transition-colors hover:bg-[var(--bg-subtle)]"
+                  className="inline-flex items-center gap-2 rounded-xl border border-[var(--border-glass)] bg-[var(--bg-subtle)] px-6 py-3.5 text-xs font-semibold tracking-wider uppercase transition-all hover:-translate-y-0.5 hover:border-[var(--border-strong)]"
                 >
                   <MessageCircle className="h-4 w-4 text-[var(--accent)]" />
                   <span>{t.hero.contactUs}</span>
@@ -148,12 +148,13 @@ export function HomepageClient({
             </div>
 
             <div className="lg:col-span-6">
-              <div className="relative aspect-[16/11] overflow-hidden rounded-lg border border-[var(--border-glass)]">
+              <div className="animate-float-slow relative aspect-[16/11] overflow-hidden rounded-2xl border border-[var(--border-glass)] shadow-2xl">
                 <img
                   src={heroBanner?.image_url || '/images/hero-boutique.png'}
                   alt={lang === 'ar' ? settings.store_name_ar : settings.store_name_en}
                   className="h-full w-full object-cover"
                 />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
               </div>
             </div>
           </div>
