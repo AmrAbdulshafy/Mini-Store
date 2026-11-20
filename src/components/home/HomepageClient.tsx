@@ -115,8 +115,7 @@ export function HomepageClient({
               <div className="flex flex-wrap items-center gap-3 pt-1">
                 <Link
                   href={heroBanner?.cta_link || '/catalog'}
-                  className="inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5"
-                  style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-secondary))' }}
+                  className="cta-luxury inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold"
                 >
                   <span>
                     {heroBanner
@@ -170,7 +169,7 @@ export function HomepageClient({
               titleEn: 'Beauty & Makeup',
               descAr: 'أحمر شفاه مخملي، إضاءات لؤلؤية، ومستحضرات عناية تبرز إشراقتكِ الطبيعية.',
               descEn: 'Velvet lip elixirs, pearl illuminators, and refined daily beauty essentials.',
-              accent: '#D9829A',
+              accent: '#F01878',
             },
             {
               href: '/catalog?category=women-perfumes',
@@ -179,7 +178,7 @@ export function HomepageClient({
               titleEn: 'Perfumes',
               descAr: 'عطور زهرية وشرقية وعود فاخر بتركيبات ثابتة تناسب كل مناسبة.',
               descEn: 'Signature floral, oud, and amber fragrances crafted for lasting presence.',
-              accent: '#D9A65A',
+              accent: '#7026D9',
             },
             {
               href: '/catalog?collection=handmade',
@@ -188,7 +187,7 @@ export function HomepageClient({
               titleEn: 'Handmade Collection',
               descAr: 'حقائب كتان مطرزة، أوشحة حريرية، وقطع خياطة وتطريز مصنوعة يدوياً.',
               descEn: 'Hand-embroidered linens, rolled silk scarves, and artisanal textile pieces.',
-              accent: '#64152F',
+              accent: '#FF654F',
             },
           ].map((pillar) => (
             <Link

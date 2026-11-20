@@ -14,6 +14,7 @@ import {
   MessageSquare,
   Package,
   Palette,
+  Pencil,
   Plus,
   Settings,
   Sparkles,
@@ -23,6 +24,8 @@ import {
 import { createClient } from '@/lib/supabase/client';
 import { useApp } from '@/components/providers/AppProvider';
 import { EsraaEmblem } from '@/components/brand/BrandLogo';
+import { Modal } from '@/components/ui/Modal';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { AdminProductsPanel } from '@/components/admin/AdminProductsPanel';
 import { AdminChatInbox } from '@/components/admin/AdminChatInbox';
 import { AdminMediaPanel } from '@/components/admin/AdminMediaPanel';
@@ -88,9 +91,15 @@ export function AdminDashboardClient({
   const [adminUsers, setAdminUsers] = useState(initialAdminUsers);
   const [toast, setToast] = useState<{ msg: string; isError?: boolean } | null>(null);
 
-  // Category quick form
+  // Category modal state
+  const [catModalOpen, setCatModalOpen] = useState(false);
+  const [editingCatId, setEditingCatId] = useState<string | null>(null);
   const [catForm, setCatForm] = useState({ name_ar: '', name_en: '', slug: '', collection_id: collections[0]?.id || '' });
-  // Banner quick form
+  const [deleteCatTarget, setDeleteCatTarget] = useState<Category | null>(null);
+
+  // Banner modal state
+  const [bannerModalOpen, setBannerModalOpen] = useState(false);
+  const [editingBannerId, setEditingBannerId] = useState<string | null>(null);
   const [bannerForm, setBannerForm] = useState({
     placement: 'hero' as 'hero' | 'promo' | 'offer',
     title_ar: '',
@@ -102,6 +111,7 @@ export function AdminDashboardClient({
     cta_link: '/catalog',
     image_url: '/images/hero-boutique.png',
   });
+  const [deleteBannerTarget, setDeleteBannerTarget] = useState<HomepageBanner | null>(null);
 
   const notify = (msg: string, isError = false) => {
     setToast({ msg, isError });
@@ -148,42 +158,83 @@ export function AdminDashboardClient({
     notify(lang === 'ar' ? 'تم حفظ الإعدادات' : 'Settings saved');
   };
 
-  const handleCreateCategory = async (e: React.FormEvent) => {
+  const openCreateCategory = () => {
+    setEditingCatId(null);
+    setCatForm({ name_ar: '', name_en: '', slug: '', collection_id: collections[0]?.id || '' });
+    setCatModalOpen(true);
+  };
+
+  const openEditCategory = (cat: Category) => {
+    setEditingCatId(cat.id);
+    setCatForm({
+      name_ar: cat.name_ar,
+      name_en: cat.name_en,
+      slug: cat.slug,
+      collection_id: cat.collection_id || '',
+    });
+    setCatModalOpen(true);
+  };
+
+  const handleSaveCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     const supabase = createClient();
     const slug =
       catForm.slug.trim() ||
       catForm.name_en.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') ||
       `cat-${Date.now()}`;
-    const { data, error } = await supabase
-      .from('categories')
-      .insert({
-        name_ar: catForm.name_ar.trim(),
-        name_en: catForm.name_en.trim(),
-        slug,
-        collection_id: catForm.collection_id || null,
-        is_active: true,
-      })
-      .select('*')
-      .single();
-    if (error || !data) {
-      notify(error?.message || 'Failed', true);
-      return;
+
+    if (editingCatId) {
+      const { data, error } = await supabase
+        .from('categories')
+        .update({
+          name_ar: catForm.name_ar.trim(),
+          name_en: catForm.name_en.trim(),
+          slug,
+          collection_id: catForm.collection_id || null,
+        })
+        .eq('id', editingCatId)
+        .select('*')
+        .single();
+      if (error || !data) {
+        notify(error?.message || 'Failed', true);
+        return;
+      }
+      setCategories((prev) => prev.map((c) => (c.id === editingCatId ? (data as Category) : c)));
+      setCatModalOpen(false);
+      notify(lang === 'ar' ? 'تم تحديث الفئة' : 'Category updated');
+    } else {
+      const { data, error } = await supabase
+        .from('categories')
+        .insert({
+          name_ar: catForm.name_ar.trim(),
+          name_en: catForm.name_en.trim(),
+          slug,
+          collection_id: catForm.collection_id || null,
+          is_active: true,
+        })
+        .select('*')
+        .single();
+      if (error || !data) {
+        notify(error?.message || 'Failed', true);
+        return;
+      }
+      setCategories((prev) => [...prev, data as Category]);
+      setCatModalOpen(false);
+      notify(lang === 'ar' ? 'تمت إضافة الفئة' : 'Category added');
     }
-    setCategories((prev) => [...prev, data as Category]);
-    setCatForm({ name_ar: '', name_en: '', slug: '', collection_id: collections[0]?.id || '' });
-    notify(lang === 'ar' ? 'تمت إضافة الفئة' : 'Category added');
   };
 
-  const handleDeleteCategory = async (id: string) => {
-    if (!confirm(lang === 'ar' ? 'حذف هذه الفئة؟' : 'Delete this category?')) return;
+  const confirmDeleteCategory = async () => {
+    if (!deleteCatTarget) return;
     const supabase = createClient();
-    const { error } = await supabase.from('categories').delete().eq('id', id);
+    const { error } = await supabase.from('categories').delete().eq('id', deleteCatTarget.id);
     if (error) {
       notify(error.message, true);
       return;
     }
-    setCategories((prev) => prev.filter((c) => c.id !== id));
+    setCategories((prev) => prev.filter((c) => c.id !== deleteCatTarget.id));
+    setDeleteCatTarget(null);
+    notify(lang === 'ar' ? 'تم حذف الفئة' : 'Category deleted');
   };
 
   const handleUpdateCollection = async (col: Collection) => {
@@ -215,21 +266,69 @@ export function AdminDashboardClient({
     setInquiries((prev) => prev.map((inq) => (inq.id === id ? { ...inq, status } : inq)));
   };
 
-  const handleCreateBanner = async (e: React.FormEvent) => {
+  const openCreateBanner = () => {
+    setEditingBannerId(null);
+    setBannerForm({
+      placement: 'hero',
+      title_ar: '',
+      title_en: '',
+      subtitle_ar: '',
+      subtitle_en: '',
+      cta_text_ar: 'تصفح الآن',
+      cta_text_en: 'Explore Now',
+      cta_link: '/catalog',
+      image_url: '/images/hero-boutique.png',
+    });
+    setBannerModalOpen(true);
+  };
+
+  const openEditBanner = (b: HomepageBanner) => {
+    setEditingBannerId(b.id);
+    setBannerForm({
+      placement: b.placement,
+      title_ar: b.title_ar,
+      title_en: b.title_en,
+      subtitle_ar: b.subtitle_ar || '',
+      subtitle_en: b.subtitle_en || '',
+      cta_text_ar: b.cta_text_ar || '',
+      cta_text_en: b.cta_text_en || '',
+      cta_link: b.cta_link || '/catalog',
+      image_url: b.image_url || '/images/hero-boutique.png',
+    });
+    setBannerModalOpen(true);
+  };
+
+  const handleSaveBanner = async (e: React.FormEvent) => {
     e.preventDefault();
     const supabase = createClient();
-    const { data, error } = await supabase
-      .from('homepage_banners')
-      .insert({ ...bannerForm, is_active: true })
-      .select('*')
-      .single();
-    if (error || !data) {
-      notify(error?.message || 'Failed', true);
-      return;
+    if (editingBannerId) {
+      const { data, error } = await supabase
+        .from('homepage_banners')
+        .update(bannerForm)
+        .eq('id', editingBannerId)
+        .select('*')
+        .single();
+      if (error || !data) {
+        notify(error?.message || 'Failed', true);
+        return;
+      }
+      setBanners((prev) => prev.map((b) => (b.id === editingBannerId ? (data as HomepageBanner) : b)));
+      setBannerModalOpen(false);
+      notify(lang === 'ar' ? 'تم تحديث البانر' : 'Banner updated');
+    } else {
+      const { data, error } = await supabase
+        .from('homepage_banners')
+        .insert({ ...bannerForm, is_active: true })
+        .select('*')
+        .single();
+      if (error || !data) {
+        notify(error?.message || 'Failed', true);
+        return;
+      }
+      setBanners((prev) => [...prev, data as HomepageBanner]);
+      setBannerModalOpen(false);
+      notify(lang === 'ar' ? 'تمت إضافة البانر' : 'Banner added');
     }
-    setBanners((prev) => [...prev, data as HomepageBanner]);
-    setBannerForm({ ...bannerForm, title_ar: '', title_en: '', subtitle_ar: '', subtitle_en: '' });
-    notify(lang === 'ar' ? 'تمت إضافة البانر' : 'Banner added');
   };
 
   const handleToggleBanner = async (b: HomepageBanner) => {
@@ -243,11 +342,13 @@ export function AdminDashboardClient({
     }
   };
 
-  const handleDeleteBanner = async (id: string) => {
-    if (!confirm(lang === 'ar' ? 'حذف هذا البانر؟' : 'Delete banner?')) return;
+  const confirmDeleteBanner = async () => {
+    if (!deleteBannerTarget) return;
     const supabase = createClient();
-    await supabase.from('homepage_banners').delete().eq('id', id);
-    setBanners((prev) => prev.filter((x) => x.id !== id));
+    await supabase.from('homepage_banners').delete().eq('id', deleteBannerTarget.id);
+    setBanners((prev) => prev.filter((x) => x.id !== deleteBannerTarget.id));
+    setDeleteBannerTarget(null);
+    notify(lang === 'ar' ? 'تم حذف البانر' : 'Banner deleted');
   };
 
   const unreadChats = conversations.reduce((sum, c) => sum + (c.unread_by_admin || 0), 0);
@@ -395,38 +496,16 @@ export function AdminDashboardClient({
 
           {section === 'categories' && (
             <div className="space-y-5">
-              <form onSubmit={handleCreateCategory} className="glass-card grid gap-3 rounded-3xl p-5 sm:grid-cols-4">
-                <input
-                  required
-                  placeholder="Name AR"
-                  value={catForm.name_ar}
-                  onChange={(e) => setCatForm({ ...catForm, name_ar: e.target.value })}
-                  className="rounded-xl border bg-transparent px-3 py-2 text-xs"
-                  style={{ borderColor: 'var(--border-glass)' }}
-                />
-                <input
-                  required
-                  placeholder="Name EN"
-                  value={catForm.name_en}
-                  onChange={(e) => setCatForm({ ...catForm, name_en: e.target.value })}
-                  className="rounded-xl border bg-transparent px-3 py-2 text-xs"
-                  style={{ borderColor: 'var(--border-glass)' }}
-                />
-                <select
-                  value={catForm.collection_id}
-                  onChange={(e) => setCatForm({ ...catForm, collection_id: e.target.value })}
-                  className="rounded-xl border bg-[var(--bg-page)] px-3 py-2 text-xs"
-                  style={{ borderColor: 'var(--border-glass)' }}
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={openCreateCategory}
+                  className="cta-luxury inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs font-semibold"
                 >
-                  {collections.map((c) => (
-                    <option key={c.id} value={c.id}>{lang === 'ar' ? c.name_ar : c.name_en}</option>
-                  ))}
-                </select>
-                <button type="submit" className="inline-flex items-center justify-center gap-1 rounded-xl px-4 py-2 text-xs font-semibold text-white" style={{ backgroundColor: 'var(--accent)' }}>
-                  <Plus className="h-3.5 w-3.5" />
-                  {lang === 'ar' ? 'إضافة فئة' : 'Add'}
+                  <Plus className="h-4 w-4" />
+                  <span>{lang === 'ar' ? 'إضافة فئة' : 'Add Category'}</span>
                 </button>
-              </form>
+              </div>
 
               <div className="glass-card divide-y rounded-3xl" style={{ borderColor: 'var(--border-glass)' }}>
                 {categories.map((c) => (
@@ -435,12 +514,87 @@ export function AdminDashboardClient({
                       <p className="font-semibold">{c.name_ar} / {c.name_en}</p>
                       <p className="text-[11px] opacity-60">{c.slug}</p>
                     </div>
-                    <button type="button" onClick={() => handleDeleteCategory(c.id)} className="rounded-xl p-2 text-rose-500 hover:bg-rose-500/10">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    <div className="flex items-center gap-1.5">
+                      <button type="button" onClick={() => openEditCategory(c)} className="rounded-xl p-2 hover:bg-[var(--accent-soft)]" title="Edit">
+                        <Pencil className="h-4 w-4" />
+                      </button>
+                      <button type="button" onClick={() => setDeleteCatTarget(c)} className="rounded-xl p-2 text-rose-500 hover:bg-rose-500/10" title="Delete">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
+
+              <Modal
+                open={catModalOpen}
+                onClose={() => setCatModalOpen(false)}
+                maxWidthClass="max-w-lg"
+                title={editingCatId ? (lang === 'ar' ? 'تعديل الفئة' : 'Edit Category') : (lang === 'ar' ? 'إضافة فئة جديدة' : 'New Category')}
+              >
+                <form onSubmit={handleSaveCategory} className="space-y-4 text-xs sm:text-sm">
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold">Name AR *</label>
+                    <input
+                      required
+                      value={catForm.name_ar}
+                      onChange={(e) => setCatForm({ ...catForm, name_ar: e.target.value })}
+                      className="w-full rounded-xl border bg-transparent px-3 py-2"
+                      style={{ borderColor: 'var(--border-glass)' }}
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold">Name EN *</label>
+                    <input
+                      required
+                      value={catForm.name_en}
+                      onChange={(e) => setCatForm({ ...catForm, name_en: e.target.value })}
+                      className="w-full rounded-xl border bg-transparent px-3 py-2"
+                      style={{ borderColor: 'var(--border-glass)' }}
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold">Slug</label>
+                    <input
+                      value={catForm.slug}
+                      onChange={(e) => setCatForm({ ...catForm, slug: e.target.value })}
+                      className="w-full rounded-xl border bg-transparent px-3 py-2"
+                      style={{ borderColor: 'var(--border-glass)' }}
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold">Collection</label>
+                    <select
+                      value={catForm.collection_id}
+                      onChange={(e) => setCatForm({ ...catForm, collection_id: e.target.value })}
+                      className="w-full rounded-xl border bg-[var(--bg-page)] px-3 py-2"
+                      style={{ borderColor: 'var(--border-glass)' }}
+                    >
+                      {collections.map((c) => (
+                        <option key={c.id} value={c.id}>{lang === 'ar' ? c.name_ar : c.name_en}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex justify-end gap-3 pt-2">
+                    <button type="button" onClick={() => setCatModalOpen(false)} className="rounded-full border px-5 py-2 text-xs font-semibold" style={{ borderColor: 'var(--border-glass)' }}>
+                      {lang === 'ar' ? 'إلغاء' : 'Cancel'}
+                    </button>
+                    <button type="submit" className="cta-luxury rounded-full px-6 py-2 text-xs font-semibold">
+                      {lang === 'ar' ? 'حفظ' : 'Save'}
+                    </button>
+                  </div>
+                </form>
+              </Modal>
+
+              <ConfirmDialog
+                open={Boolean(deleteCatTarget)}
+                onClose={() => setDeleteCatTarget(null)}
+                onConfirm={confirmDeleteCategory}
+                title={lang === 'ar' ? 'حذف الفئة' : 'Delete Category'}
+                message={lang === 'ar' ? `حذف الفئة "${deleteCatTarget?.name_ar || ''}"؟` : `Delete category "${deleteCatTarget?.name_en || ''}"?`}
+                confirmLabel={lang === 'ar' ? 'حذف' : 'Delete'}
+                cancelLabel={lang === 'ar' ? 'إلغاء' : 'Cancel'}
+              />
             </div>
           )}
 
@@ -543,40 +697,16 @@ export function AdminDashboardClient({
 
           {section === 'homepage' && (
             <div className="space-y-5">
-              <form onSubmit={handleCreateBanner} className="glass-card space-y-3 rounded-3xl p-5 text-xs">
-                <h3 className="font-bold">{lang === 'ar' ? 'إضافة بانر رئيسي' : 'Add Homepage Banner'}</h3>
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <select
-                    value={bannerForm.placement}
-                    onChange={(e) => setBannerForm({ ...bannerForm, placement: e.target.value as 'hero' | 'promo' | 'offer' })}
-                    className="rounded-xl border bg-[var(--bg-page)] px-3 py-2"
-                    style={{ borderColor: 'var(--border-glass)' }}
-                  >
-                    <option value="hero">Hero</option>
-                    <option value="promo">Promo</option>
-                    <option value="offer">Offer</option>
-                  </select>
-                  <input
-                    required
-                    placeholder="Title AR"
-                    value={bannerForm.title_ar}
-                    onChange={(e) => setBannerForm({ ...bannerForm, title_ar: e.target.value })}
-                    className="rounded-xl border bg-transparent px-3 py-2"
-                    style={{ borderColor: 'var(--border-glass)' }}
-                  />
-                  <input
-                    required
-                    placeholder="Title EN"
-                    value={bannerForm.title_en}
-                    onChange={(e) => setBannerForm({ ...bannerForm, title_en: e.target.value })}
-                    className="rounded-xl border bg-transparent px-3 py-2"
-                    style={{ borderColor: 'var(--border-glass)' }}
-                  />
-                </div>
-                <button type="submit" className="rounded-xl px-5 py-2 font-semibold text-white" style={{ backgroundColor: 'var(--accent)' }}>
-                  {lang === 'ar' ? 'إضافة' : 'Add Banner'}
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={openCreateBanner}
+                  className="cta-luxury inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs font-semibold"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>{lang === 'ar' ? 'إضافة بانر' : 'Add Banner'}</span>
                 </button>
-              </form>
+              </div>
 
               <div className="glass-card divide-y rounded-3xl" style={{ borderColor: 'var(--border-glass)' }}>
                 {banners.map((b) => (
@@ -589,13 +719,106 @@ export function AdminDashboardClient({
                       <button type="button" onClick={() => handleToggleBanner(b)} className="rounded-xl border px-3 py-1" style={{ borderColor: 'var(--border-glass)' }}>
                         {b.is_active ? 'Active' : 'Inactive'}
                       </button>
-                      <button type="button" onClick={() => handleDeleteBanner(b.id)} className="rounded-xl p-2 text-rose-500">
+                      <button type="button" onClick={() => openEditBanner(b)} className="rounded-xl p-2 hover:bg-[var(--accent-soft)]" title="Edit">
+                        <Pencil className="h-4 w-4" />
+                      </button>
+                      <button type="button" onClick={() => setDeleteBannerTarget(b)} className="rounded-xl p-2 text-rose-500 hover:bg-rose-500/10" title="Delete">
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                   </div>
                 ))}
               </div>
+
+              <Modal
+                open={bannerModalOpen}
+                onClose={() => setBannerModalOpen(false)}
+                maxWidthClass="max-w-xl"
+                title={editingBannerId ? (lang === 'ar' ? 'تعديل البانر' : 'Edit Banner') : (lang === 'ar' ? 'إضافة بانر رئيسي' : 'Add Homepage Banner')}
+              >
+                <form onSubmit={handleSaveBanner} className="space-y-4 text-xs sm:text-sm">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold">Placement</label>
+                      <select
+                        value={bannerForm.placement}
+                        onChange={(e) => setBannerForm({ ...bannerForm, placement: e.target.value as 'hero' | 'promo' | 'offer' })}
+                        className="w-full rounded-xl border bg-[var(--bg-page)] px-3 py-2"
+                        style={{ borderColor: 'var(--border-glass)' }}
+                      >
+                        <option value="hero">Hero</option>
+                        <option value="promo">Promo</option>
+                        <option value="offer">Offer</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold">Image URL</label>
+                      <input
+                        value={bannerForm.image_url}
+                        onChange={(e) => setBannerForm({ ...bannerForm, image_url: e.target.value })}
+                        className="w-full rounded-xl border bg-transparent px-3 py-2"
+                        style={{ borderColor: 'var(--border-glass)' }}
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold">Title AR *</label>
+                      <input
+                        required
+                        value={bannerForm.title_ar}
+                        onChange={(e) => setBannerForm({ ...bannerForm, title_ar: e.target.value })}
+                        className="w-full rounded-xl border bg-transparent px-3 py-2"
+                        style={{ borderColor: 'var(--border-glass)' }}
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold">Title EN *</label>
+                      <input
+                        required
+                        value={bannerForm.title_en}
+                        onChange={(e) => setBannerForm({ ...bannerForm, title_en: e.target.value })}
+                        className="w-full rounded-xl border bg-transparent px-3 py-2"
+                        style={{ borderColor: 'var(--border-glass)' }}
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold">Subtitle AR</label>
+                      <input
+                        value={bannerForm.subtitle_ar}
+                        onChange={(e) => setBannerForm({ ...bannerForm, subtitle_ar: e.target.value })}
+                        className="w-full rounded-xl border bg-transparent px-3 py-2"
+                        style={{ borderColor: 'var(--border-glass)' }}
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold">Subtitle EN</label>
+                      <input
+                        value={bannerForm.subtitle_en}
+                        onChange={(e) => setBannerForm({ ...bannerForm, subtitle_en: e.target.value })}
+                        className="w-full rounded-xl border bg-transparent px-3 py-2"
+                        style={{ borderColor: 'var(--border-glass)' }}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-3 pt-2">
+                    <button type="button" onClick={() => setBannerModalOpen(false)} className="rounded-full border px-5 py-2 text-xs font-semibold" style={{ borderColor: 'var(--border-glass)' }}>
+                      {lang === 'ar' ? 'إلغاء' : 'Cancel'}
+                    </button>
+                    <button type="submit" className="cta-luxury rounded-full px-6 py-2 text-xs font-semibold">
+                      {lang === 'ar' ? 'حفظ' : 'Save'}
+                    </button>
+                  </div>
+                </form>
+              </Modal>
+
+              <ConfirmDialog
+                open={Boolean(deleteBannerTarget)}
+                onClose={() => setDeleteBannerTarget(null)}
+                onConfirm={confirmDeleteBanner}
+                title={lang === 'ar' ? 'حذف البانر' : 'Delete Banner'}
+                message={lang === 'ar' ? `حذف البانر "${deleteBannerTarget?.title_ar || ''}"؟` : `Delete banner "${deleteBannerTarget?.title_en || ''}"?`}
+                confirmLabel={lang === 'ar' ? 'حذف' : 'Delete'}
+                cancelLabel={lang === 'ar' ? 'إلغاء' : 'Cancel'}
+              />
             </div>
           )}
 

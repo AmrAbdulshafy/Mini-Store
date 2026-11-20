@@ -16,6 +16,7 @@ import type { CollectionSlug, Product } from '@/types/database';
 import { useApp } from '@/components/providers/AppProvider';
 import { formatPrice, getCollectionLabel } from '@/lib/i18n';
 import { buildWhatsAppProductUrl } from '@/lib/whatsapp';
+import { Modal } from '@/components/ui/Modal';
 
 export function ProductDetailsClient({ product }: { product: Product }) {
   const { lang, isFavorite, toggleFavorite, setCollectionTheme, settings, t } = useApp();
@@ -37,6 +38,7 @@ export function ProductDetailsClient({ product }: { product: Product }) {
         ];
 
   const [activeImage, setActiveImage] = useState(images[0].image_url);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -92,8 +94,12 @@ export function ProductDetailsClient({ product }: { product: Product }) {
       <div className="glass-card grid gap-8 rounded-[2rem] p-5 sm:p-8 lg:grid-cols-12 lg:p-10">
         {/* Image Gallery */}
         <div className="space-y-4 lg:col-span-6">
-          <div className="relative aspect-square overflow-hidden rounded-3xl bg-[var(--bg-subtle)]">
-            <img src={activeImage} alt={name} className="h-full w-full object-cover" />
+          <button
+            type="button"
+            onClick={() => setLightboxOpen(true)}
+            className="relative block w-full aspect-square overflow-hidden rounded-3xl bg-[var(--bg-subtle)] cursor-zoom-in group"
+          >
+            <img src={activeImage} alt={name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
             {discountPct && (
               <span className="absolute top-4 start-4 rounded-full bg-rose-600 px-3 py-1 text-xs font-bold text-white shadow">
                 -{discountPct}%
@@ -104,7 +110,7 @@ export function ProductDetailsClient({ product }: { product: Product }) {
                 {t.product.demoBadge}
               </span>
             )}
-          </div>
+          </button>
 
           {images.length > 1 && (
             <div className="flex gap-3 overflow-x-auto pb-1">
@@ -267,6 +273,12 @@ export function ProductDetailsClient({ product }: { product: Product }) {
           </div>
         </div>
       </div>
+
+      <Modal open={lightboxOpen} onClose={() => setLightboxOpen(false)} maxWidthClass="max-w-3xl" title={name}>
+        <div className="overflow-hidden rounded-2xl bg-[var(--bg-subtle)]">
+          <img src={activeImage} alt={name} className="max-h-[75vh] w-full object-contain" />
+        </div>
+      </Modal>
     </div>
   );
 }

@@ -17,7 +17,6 @@ export function Navbar() {
     collectionTheme,
     setCollectionTheme,
     favorites,
-    settings,
     t,
   } = useApp();
   const pathname = usePathname();
@@ -77,7 +76,7 @@ export function Navbar() {
             {(['women', 'men', 'handmade'] as CollectionSlug[]).map((col) => {
               const active = collectionTheme === col;
               const dotColor =
-                col === 'women' ? '#D9829A' : col === 'men' ? '#273244' : '#5C7259';
+                col === 'women' ? '#F01878' : col === 'men' ? '#7026D9' : '#FF654F';
               const label =
                 col === 'women'
                   ? t.nav.women
