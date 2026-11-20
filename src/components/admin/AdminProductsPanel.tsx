@@ -518,11 +518,11 @@ export function AdminProductsPanel({
             )}
           </div>
 
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="flex flex-col-reverse gap-2.5 pt-2 sm:flex-row sm:justify-end sm:gap-3">
             <button
               type="button"
               onClick={() => setEditing(false)}
-              className="rounded-full border px-5 py-2.5 text-xs font-semibold"
+              className="w-full rounded-md border px-5 py-2.5 text-xs font-semibold sm:w-auto"
               style={{ borderColor: 'var(--border-glass)' }}
             >
               {lang === 'ar' ? 'إلغاء' : 'Cancel'}
@@ -530,7 +530,7 @@ export function AdminProductsPanel({
             <button
               type="submit"
               disabled={saving}
-              className="cta-luxury rounded-full px-6 py-2.5 text-xs font-semibold disabled:opacity-50"
+              className="cta-luxury w-full rounded-md px-6 py-2.5 text-xs font-semibold disabled:opacity-50 sm:w-auto"
             >
               {saving ? '...' : lang === 'ar' ? 'حفظ المنتج' : 'Save Product'}
             </button>

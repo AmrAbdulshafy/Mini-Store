@@ -375,22 +375,22 @@ export function AdminDashboardClient({
     <div className="min-h-screen">
       {/* Top Bar */}
       <header className="glass-nav sticky top-0 z-30">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
-          <div className="flex items-center gap-3">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-2.5 sm:px-6 sm:py-3">
+          <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
             <button
               type="button"
               onClick={() => setMobileSidebarOpen(true)}
-              className="flex h-9 w-9 items-center justify-center rounded-md border lg:hidden"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border lg:hidden"
               style={{ borderColor: 'var(--border-glass)' }}
               aria-label={lang === 'ar' ? 'فتح القائمة' : 'Open menu'}
             >
               <Menu className="h-4 w-4" />
             </button>
             <EsraaEmblem className="h-8 w-8 shrink-0" />
-            <span className="font-display text-base font-bold sm:text-lg">
+            <span className="font-display truncate text-sm font-bold sm:text-lg">
               {lang === 'ar' ? 'لوحة تحكم إسراء سيكريت' : 'Esraa Secret Admin'}
             </span>
-            <span className="hidden rounded-full bg-[var(--accent-soft)] px-2.5 py-0.5 text-[11px] font-semibold text-[var(--accent-strong)] sm:inline">
+            <span className="hidden rounded-full bg-[var(--accent-soft)] px-2.5 py-0.5 text-[11px] font-semibold text-[var(--accent-strong)] md:inline">
               {currentAdmin.email}
             </span>
           </div>
@@ -535,7 +535,7 @@ export function AdminDashboardClient({
         </aside>
 
         {/* Main Content */}
-        <section className="lg:col-span-9">
+        <section className="min-w-0 lg:col-span-9">
           {section === 'overview' && (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {[
@@ -644,11 +644,11 @@ export function AdminDashboardClient({
                       ))}
                     </select>
                   </div>
-                  <div className="flex justify-end gap-3 pt-2">
-                    <button type="button" onClick={() => setCatModalOpen(false)} className="rounded-full border px-5 py-2 text-xs font-semibold" style={{ borderColor: 'var(--border-glass)' }}>
+                  <div className="flex flex-col-reverse gap-2.5 pt-2 sm:flex-row sm:justify-end sm:gap-3">
+                    <button type="button" onClick={() => setCatModalOpen(false)} className="w-full rounded-md border px-5 py-2.5 text-xs font-semibold sm:w-auto" style={{ borderColor: 'var(--border-glass)' }}>
                       {lang === 'ar' ? 'إلغاء' : 'Cancel'}
                     </button>
-                    <button type="submit" className="cta-luxury rounded-full px-6 py-2 text-xs font-semibold">
+                    <button type="submit" className="cta-luxury w-full rounded-md px-6 py-2.5 text-xs font-semibold sm:w-auto">
                       {lang === 'ar' ? 'حفظ' : 'Save'}
                     </button>
                   </div>
@@ -868,11 +868,11 @@ export function AdminDashboardClient({
                       />
                     </div>
                   </div>
-                  <div className="flex justify-end gap-3 pt-2">
-                    <button type="button" onClick={() => setBannerModalOpen(false)} className="rounded-full border px-5 py-2 text-xs font-semibold" style={{ borderColor: 'var(--border-glass)' }}>
+                  <div className="flex flex-col-reverse gap-2.5 pt-2 sm:flex-row sm:justify-end sm:gap-3">
+                    <button type="button" onClick={() => setBannerModalOpen(false)} className="w-full rounded-md border px-5 py-2.5 text-xs font-semibold sm:w-auto" style={{ borderColor: 'var(--border-glass)' }}>
                       {lang === 'ar' ? 'إلغاء' : 'Cancel'}
                     </button>
-                    <button type="submit" className="cta-luxury rounded-full px-6 py-2 text-xs font-semibold">
+                    <button type="submit" className="cta-luxury w-full rounded-md px-6 py-2.5 text-xs font-semibold sm:w-auto">
                       {lang === 'ar' ? 'حفظ' : 'Save'}
                     </button>
                   </div>

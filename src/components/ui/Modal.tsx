@@ -103,33 +103,33 @@ export function Modal({
       <div
         ref={panelRef}
         tabIndex={-1}
-        className={`glass-card relative z-10 flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-2xl sm:rounded-lg shadow-2xl outline-none ${maxWidthClass} ${
+        className={`glass-card relative z-10 flex max-h-[88dvh] w-full flex-col overflow-hidden rounded-t-2xl pb-[env(safe-area-inset-bottom)] shadow-2xl outline-none sm:max-h-[90dvh] sm:rounded-lg sm:pb-0 ${maxWidthClass} ${
           closing ? 'animate-modal-out' : 'animate-modal-in'
         }`}
       >
         {/* Mobile sheet drag handle */}
-        <div className="mx-auto mt-2.5 h-1.5 w-12 rounded-full bg-[var(--text-secondary)]/25 sm:hidden" />
+        <div className="mx-auto mt-2.5 h-1.5 w-12 shrink-0 rounded-full bg-[var(--text-secondary)]/25 sm:hidden" />
 
         {/* Header */}
         {(title || subtitle) && (
           <div
-            className="flex items-start justify-between gap-4 border-b px-5 py-4 sm:px-7 sm:py-5"
+            className="flex shrink-0 items-start justify-between gap-3 border-b px-4 py-3.5 sm:px-7 sm:py-5"
             style={{ borderColor: 'var(--border-glass)' }}
           >
-            <div>
+            <div className="min-w-0">
               {title && (
-                <h2 id={titleId} className="font-display text-xl font-bold sm:text-2xl">
+                <h2 id={titleId} className="font-display truncate text-lg font-bold sm:text-2xl">
                   {title}
                 </h2>
               )}
               {subtitle && (
-                <p className="mt-0.5 text-xs text-[var(--text-secondary)]">{subtitle}</p>
+                <p className="mt-0.5 truncate text-xs text-[var(--text-secondary)]">{subtitle}</p>
               )}
             </div>
             <button
               type="button"
               onClick={onClose}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-colors hover:bg-[var(--accent-soft)]"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border transition-colors hover:bg-[var(--accent-soft)] sm:h-9 sm:w-9"
               style={{ borderColor: 'var(--border-glass)' }}
               aria-label="Close modal"
             >
@@ -139,7 +139,7 @@ export function Modal({
         )}
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-5 py-5 sm:px-7 sm:py-6">{children}</div>
+        <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-7 sm:py-6">{children}</div>
       </div>
     </div>,
     document.body
