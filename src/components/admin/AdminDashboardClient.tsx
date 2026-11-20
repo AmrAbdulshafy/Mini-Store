@@ -24,7 +24,7 @@ import {
   X,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-import { useApp } from '@/components/providers/AppProvider';
+import { DARK_PALETTES, useApp } from '@/components/providers/AppProvider';
 import { EsraaEmblem } from '@/components/brand/BrandLogo';
 import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
@@ -80,7 +80,7 @@ export function AdminDashboardClient({
   initialAdminUsers: AdminUser[];
 }) {
   const router = useRouter();
-  const { lang, toggleLang, theme, toggleTheme } = useApp();
+  const { lang, toggleLang, palette, setPalette } = useApp();
 
   const [section, setSection] = useState<Section>('overview');
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -413,11 +413,23 @@ export function AdminDashboardClient({
             </button>
             <button
               type="button"
-              onClick={toggleTheme}
-              className="rounded-full border px-3 py-1.5 text-xs font-semibold"
+              onClick={() => {
+                const idx = DARK_PALETTES.findIndex((p) => p.id === palette);
+                setPalette(DARK_PALETTES[(idx + 1) % DARK_PALETTES.length].id);
+              }}
+              className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold"
               style={{ borderColor: 'var(--border-glass)' }}
+              title={lang === 'ar' ? 'تبديل لون المظهر' : 'Cycle Dark Palette'}
             >
-              {theme === 'dark' ? '☀️' : '🌙'}
+              <span
+                className="h-3 w-3 rounded-full border border-white/30"
+                style={{ backgroundColor: DARK_PALETTES.find((p) => p.id === palette)?.swatch }}
+              />
+              <span className="hidden sm:inline">
+                {lang === 'ar'
+                  ? DARK_PALETTES.find((p) => p.id === palette)?.labelAr
+                  : DARK_PALETTES.find((p) => p.id === palette)?.labelEn}
+              </span>
             </button>
             <button
               type="button"

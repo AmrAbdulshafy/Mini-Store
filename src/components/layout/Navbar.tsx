@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Download, Heart, LogIn, Menu, Moon, Sun, X, Languages } from 'lucide-react';
-import { useApp } from '@/components/providers/AppProvider';
+import { Check, Download, Heart, LogIn, Menu, Palette, X, Languages } from 'lucide-react';
+import { DARK_PALETTES, useApp } from '@/components/providers/AppProvider';
 import { BrandLogo } from '@/components/brand/BrandLogo';
 import type { CollectionSlug } from '@/types/database';
 
@@ -12,8 +12,8 @@ export function Navbar() {
   const {
     lang,
     toggleLang,
-    theme,
-    toggleTheme,
+    palette,
+    setPalette,
     collectionTheme,
     setCollectionTheme,
     favorites,
@@ -21,6 +21,7 @@ export function Navbar() {
   } = useApp();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
 
   if (pathname?.startsWith('/admin')) {
     return null;
@@ -98,20 +99,62 @@ export function Navbar() {
             <span>{lang === 'ar' ? 'EN' : 'عربي'}</span>
           </button>
 
-          {/* Theme Toggle */}
-          <button
-            type="button"
-            onClick={toggleTheme}
-            className="flex h-8 w-8 items-center justify-center rounded-full border transition-colors hover:bg-[var(--accent-soft)] sm:h-9 sm:w-9"
-            style={{ borderColor: 'var(--border-glass)' }}
-            aria-label={theme === 'dark' ? t.common.lightMode : t.common.darkMode}
-          >
-            {theme === 'dark' ? (
-              <Sun className="h-4 w-4 text-amber-300" />
-            ) : (
-              <Moon className="h-4 w-4 text-[var(--accent)]" />
+          {/* Dark Palette Switcher */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setPaletteOpen((prev) => !prev)}
+              className="flex h-8 w-8 items-center justify-center rounded-full border transition-colors hover:bg-[var(--accent-soft)] sm:h-9 sm:w-9"
+              style={{ borderColor: 'var(--border-glass)' }}
+              aria-label={lang === 'ar' ? 'تغيير لون المظهر' : 'Switch Color Theme'}
+              title={lang === 'ar' ? 'تغيير لون المظهر' : 'Switch Color Theme'}
+            >
+              <Palette className="h-4 w-4 text-[var(--accent)]" />
+            </button>
+
+            {paletteOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setPaletteOpen(false)}
+                />
+                <div
+                  className="glass-card animate-modal-in absolute end-0 top-11 z-50 w-52 rounded-2xl p-2 shadow-2xl"
+                >
+                  <p className="px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                    {lang === 'ar' ? 'الألوان الداكنة' : 'Dark Palettes'}
+                  </p>
+                  <div className="space-y-1">
+                    {DARK_PALETTES.map((p) => {
+                      const active = palette === p.id;
+                      return (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => {
+                            setPalette(p.id);
+                            setPaletteOpen(false);
+                          }}
+                          className={`flex w-full items-center justify-between rounded-xl px-2.5 py-2 text-xs font-medium transition-colors ${
+                            active ? 'bg-[var(--accent-soft)] text-[var(--text-primary)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)]'
+                          }`}
+                        >
+                          <span className="flex items-center gap-2.5">
+                            <span
+                              className="h-4 w-4 rounded-full border border-white/25 shadow-sm"
+                              style={{ background: `linear-gradient(135deg, ${p.bg} 45%, ${p.swatch} 100%)` }}
+                            />
+                            <span>{lang === 'ar' ? p.labelAr : p.labelEn}</span>
+                          </span>
+                          {active && <Check className="h-3.5 w-3.5 text-[var(--accent)]" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
             )}
-          </button>
+          </div>
 
           {/* Install App */}
           <button

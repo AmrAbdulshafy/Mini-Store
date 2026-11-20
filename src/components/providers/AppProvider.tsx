@@ -4,6 +4,29 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 import type { CollectionSlug, Language, StoreSettings, ThemeMode } from '@/types/database';
 import { translations } from '@/lib/i18n';
 
+export type DarkPalette =
+  | 'velvet-plum'
+  | 'dark-pink'
+  | 'dark-violet'
+  | 'dark-velvet'
+  | 'dark-emerald'
+  | 'obsidian-gold';
+
+export const DARK_PALETTES: {
+  id: DarkPalette;
+  labelAr: string;
+  labelEn: string;
+  swatch: string;
+  bg: string;
+}[] = [
+  { id: 'velvet-plum', labelAr: 'بنفسجي مخملي', labelEn: 'Velvet Plum', swatch: '#D993A6', bg: '#1A1016' },
+  { id: 'dark-pink', labelAr: 'وردي داكن', labelEn: 'Dark Pink', swatch: '#F472B6', bg: '#1F0D18' },
+  { id: 'dark-violet', labelAr: 'أرجواني داكن', labelEn: 'Dark Violet', swatch: '#C084FC', bg: '#140F22' },
+  { id: 'dark-velvet', labelAr: 'مخمل قرمزي', labelEn: 'Dark Velvet', swatch: '#FB7185', bg: '#1D0B11' },
+  { id: 'dark-emerald', labelAr: 'زمردي ليلي', labelEn: 'Dark Emerald', swatch: '#5EEAD4', bg: '#0B1A16' },
+  { id: 'obsidian-gold', labelAr: 'أوبسيديان ذهبي', labelEn: 'Obsidian Gold', swatch: '#E2B874', bg: '#111014' },
+];
+
 interface AppContextValue {
   lang: Language;
   setLang: (lang: Language) => void;
@@ -11,6 +34,8 @@ interface AppContextValue {
   theme: ThemeMode;
   setTheme: (theme: ThemeMode) => void;
   toggleTheme: () => void;
+  palette: DarkPalette;
+  setPalette: (palette: DarkPalette) => void;
   collectionTheme: CollectionSlug;
   setCollectionTheme: (col: CollectionSlug) => void;
   favorites: string[];
@@ -26,7 +51,7 @@ const AppContext = createContext<AppContextValue | null>(null);
 
 const FAVORITES_KEY = 'lamsa_boutique_favorites';
 const LANG_KEY = 'lamsa_boutique_lang';
-const THEME_KEY = 'lamsa_boutique_theme';
+const PALETTE_KEY = 'esraa_boutique_palette';
 const COLLECTION_KEY = 'lamsa_boutique_collection';
 
 export function AppProvider({
@@ -37,7 +62,8 @@ export function AppProvider({
   initialSettings: StoreSettings;
 }) {
   const [lang, setLangState] = useState<Language>(initialSettings.default_language || 'ar');
-  const [theme, setThemeState] = useState<ThemeMode>(initialSettings.default_theme || 'light');
+  const theme: ThemeMode = 'dark';
+  const [palette, setPaletteState] = useState<DarkPalette>('velvet-plum');
   const [collectionTheme, setCollectionThemeState] = useState<CollectionSlug>(
     initialSettings.default_collection_theme || 'women'
   );
@@ -50,8 +76,10 @@ export function AppProvider({
         const savedLang = localStorage.getItem(LANG_KEY) as Language | null;
         if (savedLang === 'ar' || savedLang === 'en') setLangState(savedLang);
 
-        const savedTheme = localStorage.getItem(THEME_KEY) as ThemeMode | null;
-        if (savedTheme === 'light' || savedTheme === 'dark') setThemeState(savedTheme);
+        const savedPalette = localStorage.getItem(PALETTE_KEY) as DarkPalette | null;
+        if (savedPalette && DARK_PALETTES.some((p) => p.id === savedPalette)) {
+          setPaletteState(savedPalette);
+        }
 
         const savedCol = localStorage.getItem(COLLECTION_KEY) as CollectionSlug | null;
         if (savedCol === 'women' || savedCol === 'men' || savedCol === 'handmade') {
@@ -80,13 +108,10 @@ export function AppProvider({
 
   useEffect(() => {
     const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-    if (mounted) localStorage.setItem(THEME_KEY, theme);
-  }, [theme, mounted]);
+    root.classList.add('dark');
+    root.setAttribute('data-palette', palette);
+    if (mounted) localStorage.setItem(PALETTE_KEY, palette);
+  }, [palette, mounted]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -96,8 +121,9 @@ export function AppProvider({
 
   const setLang = (next: Language) => setLangState(next);
   const toggleLang = () => setLangState((prev) => (prev === 'ar' ? 'en' : 'ar'));
-  const setTheme = (next: ThemeMode) => setThemeState(next);
-  const toggleTheme = () => setThemeState((prev) => (prev === 'light' ? 'dark' : 'light'));
+  const setTheme = () => {};
+  const toggleTheme = () => {};
+  const setPalette = (next: DarkPalette) => setPaletteState(next);
   const setCollectionTheme = (col: CollectionSlug) => setCollectionThemeState(col);
 
   const toggleFavorite = (productId: string) => {
@@ -131,6 +157,8 @@ export function AppProvider({
       theme,
       setTheme,
       toggleTheme,
+      palette,
+      setPalette,
       collectionTheme,
       setCollectionTheme,
       favorites,
@@ -141,7 +169,7 @@ export function AppProvider({
       t: translations[lang],
       dir: lang === 'ar' ? 'rtl' : 'ltr',
     }),
-    [lang, theme, collectionTheme, favorites, initialSettings]
+    [lang, palette, collectionTheme, favorites, initialSettings]
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

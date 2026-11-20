@@ -74,9 +74,8 @@ export default async function RootLayout({
       lang={settings.default_language}
       dir={initialDir}
       data-collection={settings.default_collection_theme}
-      className={`${cairo.variable} ${jakarta.variable} ${cormorant.variable} ${
-        settings.default_theme === 'dark' ? 'dark' : ''
-      }`}
+      data-palette="velvet-plum"
+      className={`${cairo.variable} ${jakarta.variable} ${cormorant.variable} dark`}
       suppressHydrationWarning
     >
       <body className="font-sans-boutique min-h-screen antialiased">
