@@ -106,6 +106,11 @@ export function BackgroundVideoPlayer() {
     <>
       {/* Full-Website Responsive Background Video Layer */}
       <div className="pointer-events-none fixed inset-0 -z-20 h-[100dvh] w-full overflow-hidden bg-[var(--bg-page)]">
+        {/* Ambient blurred luxury backdrop on mobile portrait so 16:9 video never crops */}
+        <div
+          className="absolute inset-0 scale-110 bg-cover bg-center opacity-50 blur-3xl md:hidden"
+          style={{ backgroundImage: "url('/images/hero-boutique.png')" }}
+        />
         <video
           ref={videoRef}
           src="/videos/esraa-luxury-ad.mp4"
@@ -114,13 +119,13 @@ export function BackgroundVideoPlayer() {
           loop
           playsInline
           onVolumeChange={(e) => setMuted(e.currentTarget.muted)}
-          className="h-full w-full object-cover object-center opacity-90 brightness-115 contrast-105"
+          className="relative h-full w-full object-contain object-center opacity-95 brightness-115 contrast-105 md:object-cover"
         />
         <div
           className="absolute inset-0"
           style={{
             background:
-              'linear-gradient(180deg, color-mix(in srgb, var(--bg-page) 20%, transparent) 0%, color-mix(in srgb, var(--bg-page) 36%, transparent) 100%)',
+              'linear-gradient(180deg, color-mix(in srgb, var(--bg-page) 18%, transparent) 0%, color-mix(in srgb, var(--bg-page) 34%, transparent) 100%)',
           }}
         />
       </div>
