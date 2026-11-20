@@ -274,16 +274,16 @@ export function PwaManager() {
               ? 'التثبيت على الآيفون والآيباد'
               : 'Install on iOS Safari'
             : lang === 'ar'
-              ? 'تثبيت تطبيق إسراء سيكريت'
-              : 'Install Esraa Secret App'
+              ? 'تثبيت تطبيق إسراء بوتيك'
+              : 'Install Esraa Boutique App'
         }
       >
         {isIos ? (
           <div className="space-y-4 text-sm text-[var(--text-secondary)]">
             <p>
               {lang === 'ar'
-                ? 'لتثبيت إسراء سيكريت على شاشتك الرئيسية في متصفح Safari:'
-                : 'To install Esraa Secret on your iPhone or iPad home screen:'}
+                ? 'لتثبيت إسراء بوتيك على شاشتك الرئيسية في متصفح Safari (يتطلب نظام iOS التثبيت يدوياً من زر المشاركة):'
+                : 'To install Esraa Boutique on your iPhone or iPad home screen (iOS requires Safari’s Share menu):'}
             </p>
             <ol className="space-y-3 text-xs leading-relaxed">
               <li className="flex items-center gap-2.5">
@@ -320,8 +320,8 @@ export function PwaManager() {
           <div className="space-y-4 text-sm text-[var(--text-secondary)]">
             <p>
               {lang === 'ar'
-                ? 'لتثبيت التطبيق على هاتفك (Android) أو جهازك:'
-                : 'To install Esraa Secret on your phone or desktop browser:'}
+                ? 'لتثبيت إسراء بوتيك على هاتفك (Android) أو جهازك:'
+                : 'To install Esraa Boutique on your phone or desktop browser:'}
             </p>
             <ol className="space-y-3 text-xs leading-relaxed">
               <li className="flex items-center gap-2.5">

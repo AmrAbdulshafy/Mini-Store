@@ -35,7 +35,7 @@ export function Navbar() {
   ];
 
   return (
-    <header className="glass-nav sticky top-0 z-40">
+    <header className="glass-nav sticky top-0 z-40 pt-[env(safe-area-inset-top)]">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
         {/* Brand */}
         <Link href="/">

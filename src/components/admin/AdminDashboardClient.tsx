@@ -374,7 +374,7 @@ export function AdminDashboardClient({
   return (
     <div className="min-h-screen">
       {/* Top Bar */}
-      <header className="glass-nav sticky top-0 z-30">
+      <header className="glass-nav sticky top-0 z-30 pt-[env(safe-area-inset-top)]">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-2.5 sm:px-6 sm:py-3">
           <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
             <button

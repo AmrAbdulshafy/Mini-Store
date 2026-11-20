@@ -47,7 +47,7 @@ export async function generateMetadata(): Promise<Metadata> {
     applicationName: 'Esraa Boutique',
     appleWebApp: {
       capable: true,
-      statusBarStyle: 'black-translucent',
+      statusBarStyle: 'default',
       title: 'Esraa Boutique',
     },
     icons: {
