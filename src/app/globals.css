@@ -4,36 +4,54 @@
 
 :root,
 .dark,
-[data-palette="velvet-plum"] {
-  /* Original Dark Mode — Deep Velvet Plum with Luminous Rose & Champagne */
-  --bg-page: #1A1016;
-  --bg-surface: rgba(36, 23, 31, 0.84);
-  --bg-elevated: rgba(32, 20, 27, 0.88);
-  --bg-subtle: rgba(48, 31, 41, 0.88);
+[data-palette="obsidian-gold"] {
+  /* Master Theme — Obsidian Gold */
+  --bg-page: #111014;
+  --bg-surface: rgba(26, 24, 30, 0.85);
+  --bg-elevated: rgba(22, 20, 26, 0.9);
+  --bg-subtle: rgba(36, 33, 42, 0.9);
 
   --text-primary: #FAF2F5;
   --text-secondary: #CBB6C0;
   --text-muted: #9A828E;
 
+  --border-glass: rgba(226, 184, 116, 0.22);
+  --border-strong: rgba(226, 184, 116, 0.45);
+
+  --accent: #E2B874;
+  --accent-strong: #F3D9A4;
+  --accent-soft: rgba(226, 184, 116, 0.15);
+  --accent-secondary: #F3D9A4;
+  --champagne: #F3D9A4;
+
+  --btn-primary-bg: #E2B874;
+  --btn-primary-text: #111014;
+  --btn-primary-hover: #F3D9A4;
+  --focus-ring: #E2B874;
+  --disabled-bg: #26232C;
+  --disabled-text: #7A7284;
+
+  --status-success: #6AA887;
+  --status-warning: #E2B874;
+  --status-error: #E57E92;
+}
+
+[data-palette="velvet-plum"] {
+  --bg-page: #1A1016;
+  --bg-surface: rgba(36, 23, 31, 0.84);
+  --bg-elevated: rgba(32, 20, 27, 0.88);
+  --bg-subtle: rgba(48, 31, 41, 0.88);
   --border-glass: rgba(217, 147, 166, 0.2);
   --border-strong: rgba(217, 147, 166, 0.42);
-
   --accent: #D993A6;
   --accent-strong: #EAB3C2;
   --accent-soft: rgba(217, 147, 166, 0.16);
   --accent-secondary: #D4B483;
   --champagne: #D4B483;
-
   --btn-primary-bg: #D993A6;
   --btn-primary-text: #1A1016;
   --btn-primary-hover: #EAB3C2;
   --focus-ring: #D993A6;
-  --disabled-bg: #31212B;
-  --disabled-text: #7A6370;
-
-  --status-success: #6AA887;
-  --status-warning: #D4B483;
-  --status-error: #E57E92;
 }
 
 [data-palette="dark-pink"] {
@@ -88,24 +106,6 @@
   --btn-primary-text: #1D0B11;
   --btn-primary-hover: #FDA4AF;
   --focus-ring: #FB7185;
-}
-
-[data-palette="obsidian-gold"] {
-  --bg-page: #111014;
-  --bg-surface: rgba(26, 24, 30, 0.85);
-  --bg-elevated: rgba(22, 20, 26, 0.9);
-  --bg-subtle: rgba(36, 33, 42, 0.9);
-  --border-glass: rgba(226, 184, 116, 0.22);
-  --border-strong: rgba(226, 184, 116, 0.45);
-  --accent: #E2B874;
-  --accent-strong: #F3D9A4;
-  --accent-soft: rgba(226, 184, 116, 0.15);
-  --accent-secondary: #F3D9A4;
-  --champagne: #F3D9A4;
-  --btn-primary-bg: #E2B874;
-  --btn-primary-text: #111014;
-  --btn-primary-hover: #F3D9A4;
-  --focus-ring: #E2B874;
 }
 
 html {

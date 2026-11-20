@@ -35,10 +35,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#FDF7F8' },
-    { media: '(prefers-color-scheme: dark)', color: '#1A1016' },
-  ],
+  themeColor: '#111014',
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -75,7 +72,7 @@ export default async function RootLayout({
       lang={settings.default_language}
       dir={initialDir}
       data-collection={settings.default_collection_theme}
-      data-palette="velvet-plum"
+      data-palette="obsidian-gold"
       className={`${cairo.variable} ${jakarta.variable} ${cormorant.variable} dark`}
       suppressHydrationWarning
     >

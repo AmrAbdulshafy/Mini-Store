@@ -18,11 +18,11 @@ export const DARK_PALETTES: {
   swatch: string;
   bg: string;
 }[] = [
+  { id: 'obsidian-gold', labelAr: 'أوبسيديان ذهبي', labelEn: 'Obsidian Gold', swatch: '#E2B874', bg: '#111014' },
   { id: 'velvet-plum', labelAr: 'بنفسجي مخملي', labelEn: 'Velvet Plum', swatch: '#D993A6', bg: '#1A1016' },
   { id: 'dark-pink', labelAr: 'وردي داكن', labelEn: 'Dark Pink', swatch: '#F472B6', bg: '#1F0D18' },
   { id: 'dark-violet', labelAr: 'أرجواني داكن', labelEn: 'Dark Violet', swatch: '#C084FC', bg: '#140F22' },
   { id: 'dark-velvet', labelAr: 'مخمل قرمزي', labelEn: 'Dark Velvet', swatch: '#FB7185', bg: '#1D0B11' },
-  { id: 'obsidian-gold', labelAr: 'أوبسيديان ذهبي', labelEn: 'Obsidian Gold', swatch: '#E2B874', bg: '#111014' },
 ];
 
 interface AppContextValue {
@@ -59,9 +59,9 @@ export function AppProvider({
   children: React.ReactNode;
   initialSettings: StoreSettings;
 }) {
-  const [lang, setLangState] = useState<Language>(initialSettings.default_language || 'ar');
+  const [lang, setLangState] = useState<Language>(initialSettings.default_language || 'en');
   const theme: ThemeMode = 'dark';
-  const [palette, setPaletteState] = useState<DarkPalette>('velvet-plum');
+  const [palette, setPaletteState] = useState<DarkPalette>('obsidian-gold');
   const [collectionTheme, setCollectionThemeState] = useState<CollectionSlug>(
     initialSettings.default_collection_theme || 'women'
   );
