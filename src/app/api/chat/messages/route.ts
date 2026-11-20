@@ -56,7 +56,6 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json().catch(() => null);
     const text = typeof body?.body === 'string' ? body.body.trim() : '';
-    const guestName = typeof body?.guestName === 'string' ? body.guestName.trim().slice(0, 60) : null;
 
     if (!text || text.length > 1000) {
       return NextResponse.json(
@@ -81,7 +80,7 @@ export async function POST(req: NextRequest) {
     const { data, error } = await supabaseAdmin.rpc('guest_chat_send_message', {
       p_token_hash: tokenHash,
       p_body: text,
-      p_guest_name: guestName,
+      p_guest_name: null,
     });
 
     if (error) {

@@ -2,6 +2,7 @@
 
 let sharedAudioCtx: AudioContext | null = null;
 let sharedChatAudio: HTMLAudioElement | null = null;
+let audioElementPrimed = false;
 
 function getUnlockedAudioContext(): AudioContext | null {
   if (typeof window === 'undefined') return null;
@@ -19,8 +20,37 @@ function getUnlockedAudioContext(): AudioContext | null {
   return sharedAudioCtx;
 }
 
+function getSharedChatAudio(): HTMLAudioElement | null {
+  if (typeof window === 'undefined') return null;
+  if (!sharedChatAudio) {
+    sharedChatAudio = new Audio('/sounds/chat-notification.mp3');
+    sharedChatAudio.preload = 'auto';
+    sharedChatAudio.volume = 0.85;
+  }
+  return sharedChatAudio;
+}
+
 export function unlockChatNotificationAudio(): void {
   getUnlockedAudioContext();
+  const audio = getSharedChatAudio();
+  if (audio && !audioElementPrimed) {
+    audioElementPrimed = true;
+    const prevMuted = audio.muted;
+    audio.muted = true;
+    const p = audio.play();
+    if (p && typeof p.then === 'function') {
+      p.then(() => {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.muted = prevMuted;
+      }).catch(() => {
+        audio.muted = prevMuted;
+        audioElementPrimed = false;
+      });
+    } else {
+      audio.muted = prevMuted;
+    }
+  }
 }
 
 function playFallbackWebAudioChime(): void {

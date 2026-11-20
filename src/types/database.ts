@@ -136,6 +136,7 @@ export interface Inquiry {
 export interface Conversation {
   id: string;
   guest_name: string | null;
+  guest_phone?: string | null;
   status: 'open' | 'closed';
   unread_by_admin: number;
   unread_by_guest: number;
@@ -152,6 +153,7 @@ export interface ChatMessage {
   sender_admin_id?: string | null;
   body: string;
   created_at: string;
+  commit_seq?: number;
 }
 
 export interface AdminUser {

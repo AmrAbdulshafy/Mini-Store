@@ -31,6 +31,7 @@ import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { AdminProductsPanel } from '@/components/admin/AdminProductsPanel';
 import { AdminChatInbox } from '@/components/admin/AdminChatInbox';
+import { AdminChatBubble } from '@/components/admin/AdminChatBubble';
 import { AdminMediaPanel } from '@/components/admin/AdminMediaPanel';
 import { useAdminChatNotifications } from '@/hooks/useAdminChatNotifications';
 import type {
@@ -92,6 +93,8 @@ export function AdminDashboardClient({
   const [inquiries, setInquiries] = useState(initialInquiries);
   const [conversations, setConversations] = useState(initialConversations);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(initialConversations[0]?.id || null);
+  const [bubbleOpen, setBubbleOpen] = useState(false);
+  const [bubbleMinimized, setBubbleMinimized] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
   const bellRef = useRef<HTMLDivElement>(null);
   const [banners, setBanners] = useState(initialBanners);
@@ -100,8 +103,9 @@ export function AdminDashboardClient({
   const [toast, setToast] = useState<{ msg: string; isError?: boolean } | null>(null);
 
   const openConversationFromNotification = useCallback((conversationId: string) => {
-    setSection('chat');
     setSelectedChatId(conversationId);
+    setBubbleOpen(true);
+    setBubbleMinimized(false);
     setBellOpen(false);
   }, []);
 
@@ -116,7 +120,8 @@ export function AdminDashboardClient({
     lang,
     conversations,
     setConversations,
-    isChatSectionOpen: section === 'chat',
+    isBubbleOpen: bubbleOpen,
+    isBubbleMinimized: bubbleMinimized,
     activeConversationId: selectedChatId,
     onOpenConversation: (convId) => {
       openConversationFromNotification(convId);
@@ -124,19 +129,23 @@ export function AdminDashboardClient({
   });
 
   const handleSelectChat = useCallback(
-    (convId: string | null) => {
+    (convId: string) => {
       setSelectedChatId(convId);
-      if (convId) {
-        dismissConversationNotifications(convId);
-      }
+      setBubbleOpen(true);
+      setBubbleMinimized(false);
+      dismissConversationNotifications(convId);
     },
     [dismissConversationNotifications]
   );
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const chatParam = new URLSearchParams(window.location.search).get('chat');
+    const url = new URL(window.location.href);
+    const chatParam = url.searchParams.get('chat');
     if (chatParam && /^[0-9a-f-]{36}$/i.test(chatParam)) {
+      url.searchParams.delete('chat');
+      const cleanUrl = `${url.pathname}${url.search}${url.hash}`;
+      window.history.replaceState({}, '', cleanUrl || '/admin');
       const timer = setTimeout(() => {
         openConversationFromNotification(chatParam);
       }, 0);
@@ -940,13 +949,9 @@ export function AdminDashboardClient({
           {section === 'chat' && (
             <AdminChatInbox
               lang={lang}
-              adminId={currentAdmin.id}
               conversations={conversations}
-              setConversations={setConversations}
-              onNotify={notify}
               selectedId={selectedChatId}
               onSelectId={handleSelectChat}
-              latestIncomingMessage={latestGuestMessage}
             />
           )}
 
@@ -1225,6 +1230,24 @@ export function AdminDashboardClient({
           )}
         </section>
       </div>
+
+      {/* On-demand Responsive Admin Chat Modal across all dashboard tabs */}
+      <AdminChatBubble
+        lang={lang}
+        adminId={currentAdmin.id}
+        conversationId={selectedChatId}
+        conversation={conversations.find((c) => c.id === selectedChatId) || null}
+        isOpen={bubbleOpen}
+        isMinimized={bubbleMinimized}
+        latestIncomingMessage={latestGuestMessage}
+        setConversations={setConversations}
+        onNotify={notify}
+        onMinimize={() => setBubbleMinimized(true)}
+        onClose={() => {
+          setBubbleOpen(false);
+          setBubbleMinimized(false);
+        }}
+      />
     </div>
   );
 }
