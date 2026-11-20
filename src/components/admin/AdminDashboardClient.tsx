@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   Layers,
   LogOut,
+  Menu,
   MessageSquare,
   Package,
   Palette,
@@ -20,6 +21,7 @@ import {
   Sparkles,
   Trash2,
   Users,
+  X,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useApp } from '@/components/providers/AppProvider';
@@ -81,6 +83,7 @@ export function AdminDashboardClient({
   const { lang, toggleLang, theme, toggleTheme } = useApp();
 
   const [section, setSection] = useState<Section>('overview');
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [products, setProducts] = useState(initialProducts);
   const [categories, setCategories] = useState(initialCategories);
   const [collections, setCollections] = useState(initialCollections);
@@ -374,8 +377,17 @@ export function AdminDashboardClient({
       <header className="glass-nav sticky top-0 z-30">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setMobileSidebarOpen(true)}
+              className="flex h-9 w-9 items-center justify-center rounded-md border lg:hidden"
+              style={{ borderColor: 'var(--border-glass)' }}
+              aria-label={lang === 'ar' ? 'فتح القائمة' : 'Open menu'}
+            >
+              <Menu className="h-4 w-4" />
+            </button>
             <EsraaEmblem className="h-8 w-8 shrink-0" />
-            <span className="font-display text-lg font-bold">
+            <span className="font-display text-base font-bold sm:text-lg">
               {lang === 'ar' ? 'لوحة تحكم إسراء سيكريت' : 'Esraa Secret Admin'}
             </span>
             <span className="hidden rounded-full bg-[var(--accent-soft)] px-2.5 py-0.5 text-[11px] font-semibold text-[var(--accent-strong)] sm:inline">
@@ -430,10 +442,68 @@ export function AdminDashboardClient({
         </div>
       )}
 
+      {/* Mobile Sidebar Drawer */}
+      {mobileSidebarOpen && (
+        <div className="fixed inset-0 z-50 flex lg:hidden" role="dialog" aria-modal="true">
+          <div
+            className="fixed inset-0 bg-[#191619]/60 backdrop-blur-sm"
+            onClick={() => setMobileSidebarOpen(false)}
+            aria-hidden="true"
+          />
+          <aside className="glass-card relative z-10 flex h-full w-72 max-w-[82vw] flex-col border-e p-4 shadow-2xl">
+            <div className="mb-4 flex items-center justify-between border-b pb-3" style={{ borderColor: 'var(--border-glass)' }}>
+              <div className="flex items-center gap-2.5">
+                <EsraaEmblem className="h-7 w-7 shrink-0" />
+                <span className="font-display text-sm font-bold">
+                  {lang === 'ar' ? 'القائمة' : 'Dashboard Menu'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMobileSidebarOpen(false)}
+                className="flex h-8 w-8 items-center justify-center rounded-md border"
+                style={{ borderColor: 'var(--border-glass)' }}
+                aria-label="Close menu"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <nav className="flex flex-1 flex-col gap-1 overflow-y-auto">
+              {navItems.map((item) => {
+                const active = section === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => {
+                      setSection(item.id);
+                      setMobileSidebarOpen(false);
+                    }}
+                    className={`flex items-center justify-between gap-2 rounded-md px-3.5 py-2.5 text-xs font-semibold transition-colors ${
+                      active ? 'cta-luxury' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)]'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2.5">
+                      {item.icon}
+                      <span>{lang === 'ar' ? item.labelAr : item.labelEn}</span>
+                    </span>
+                    {item.badge !== undefined && (
+                      <span className="rounded-sm bg-[var(--bg-page)]/20 px-2 py-0.5 text-[10px]">
+                        {item.badge}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </nav>
+          </aside>
+        </div>
+      )}
+
       <div className="mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-12">
-        {/* Sidebar */}
-        <aside className="glass-card h-fit rounded-3xl p-3 lg:col-span-3">
-          <nav className="flex gap-1 overflow-x-auto lg:flex-col">
+        {/* Desktop Sidebar */}
+        <aside className="glass-card hidden h-fit rounded-lg p-3 lg:sticky lg:top-20 lg:block lg:col-span-3">
+          <nav className="flex flex-col gap-1">
             {navItems.map((item) => {
               const active = section === item.id;
               return (
@@ -441,10 +511,9 @@ export function AdminDashboardClient({
                   key={item.id}
                   type="button"
                   onClick={() => setSection(item.id)}
-                  className={`flex shrink-0 items-center justify-between gap-2 rounded-2xl px-3.5 py-2.5 text-xs font-semibold transition-colors ${
-                    active ? 'text-white' : 'text-[var(--text-secondary)] hover:bg-[var(--accent-soft)]'
+                  className={`flex items-center justify-between gap-2 rounded-md px-3.5 py-2.5 text-xs font-semibold transition-colors ${
+                    active ? 'cta-luxury' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)]'
                   }`}
-                  style={active ? { backgroundColor: 'var(--accent)' } : undefined}
                 >
                   <span className="flex items-center gap-2.5">
                     {item.icon}
@@ -452,8 +521,8 @@ export function AdminDashboardClient({
                   </span>
                   {item.badge !== undefined && (
                     <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] ${
-                        active ? 'bg-white/25 text-white' : 'bg-[var(--bg-subtle)]'
+                      className={`rounded-sm px-2 py-0.5 text-[10px] ${
+                        active ? 'bg-[var(--bg-page)]/20' : 'bg-[var(--bg-subtle)]'
                       }`}
                     >
                       {item.badge}
