@@ -159,6 +159,72 @@ export function HomepageClient({
         </div>
       </section>
 
+      {/* THREE MAIN SHOPPING CATEGORIES */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid gap-5 md:grid-cols-3">
+          {[
+            {
+              href: '/catalog?category=women-makeup',
+              num: '01',
+              titleAr: 'الجمال والمكياج',
+              titleEn: 'Beauty & Makeup',
+              descAr: 'أحمر شفاه مخملي، إضاءات لؤلؤية، ومستحضرات عناية تبرز إشراقتكِ الطبيعية.',
+              descEn: 'Velvet lip elixirs, pearl illuminators, and refined daily beauty essentials.',
+              accent: '#D9829A',
+            },
+            {
+              href: '/catalog?category=women-perfumes',
+              num: '02',
+              titleAr: 'العطور النسائية والرجالية',
+              titleEn: 'Perfumes',
+              descAr: 'عطور زهرية وشرقية وعود فاخر بتركيبات ثابتة تناسب كل مناسبة.',
+              descEn: 'Signature floral, oud, and amber fragrances crafted for lasting presence.',
+              accent: '#D9A65A',
+            },
+            {
+              href: '/catalog?collection=handmade',
+              num: '03',
+              titleAr: 'المجموعة اليدوية',
+              titleEn: 'Handmade Collection',
+              descAr: 'حقائب كتان مطرزة، أوشحة حريرية، وقطع خياطة وتطريز مصنوعة يدوياً.',
+              descEn: 'Hand-embroidered linens, rolled silk scarves, and artisanal textile pieces.',
+              accent: '#64152F',
+            },
+          ].map((pillar) => (
+            <Link
+              key={pillar.num}
+              href={pillar.href}
+              className="glass-card group flex flex-col justify-between rounded-3xl p-6 transition-all duration-300 hover:-translate-y-1"
+            >
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span
+                    className="font-display text-2xl font-bold opacity-80"
+                    style={{ color: pillar.accent }}
+                  >
+                    {pillar.num}
+                  </span>
+                  <span
+                    className="h-2.5 w-2.5 rounded-full"
+                    style={{ backgroundColor: pillar.accent }}
+                  />
+                </div>
+                <h2 className="font-display text-xl font-bold">
+                  {lang === 'ar' ? pillar.titleAr : pillar.titleEn}
+                </h2>
+                <p className="text-xs leading-relaxed text-[var(--text-secondary)]">
+                  {lang === 'ar' ? pillar.descAr : pillar.descEn}
+                </p>
+              </div>
+              <span className="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--accent)]">
+                <span>{t.collections.exploreCollection}</span>
+                <ArrowIcon className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       {/* THREE COLLECTION IDENTITIES */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">

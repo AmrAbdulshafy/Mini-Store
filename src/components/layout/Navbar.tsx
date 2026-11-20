@@ -3,8 +3,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Heart, Menu, Moon, Sparkles, Sun, X, Languages } from 'lucide-react';
+import { Heart, Menu, Moon, Sun, X, Languages } from 'lucide-react';
 import { useApp } from '@/components/providers/AppProvider';
+import { BrandLogo } from '@/components/brand/BrandLogo';
 import type { CollectionSlug } from '@/types/database';
 
 export function Navbar() {
@@ -26,8 +27,6 @@ export function Navbar() {
     return null;
   }
 
-  const storeName = lang === 'ar' ? settings.store_name_ar : settings.store_name_en;
-
   const navLinks = [
     { href: '/', label: t.nav.home },
     { href: '/catalog', label: t.nav.catalog },
@@ -40,21 +39,8 @@ export function Navbar() {
     <header className="glass-nav sticky top-0 z-40">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
         {/* Brand */}
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <span
-            className="flex h-10 w-10 items-center justify-center rounded-2xl text-white shadow-sm transition-transform duration-300 group-hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-secondary))' }}
-          >
-            <Sparkles className="h-5 w-5" />
-          </span>
-          <div className="leading-tight">
-            <span className="font-display block text-lg font-semibold tracking-tight sm:text-xl">
-              {storeName}
-            </span>
-            <span className="hidden text-[11px] opacity-70 sm:block">
-              {lang === 'ar' ? 'بوتيك الجمال والعطور والحرف' : 'Beauty • Fragrance • Craft'}
-            </span>
-          </div>
+        <Link href="/">
+          <BrandLogo lang={lang} />
         </Link>
 
         {/* Desktop Nav */}
@@ -91,7 +77,7 @@ export function Navbar() {
             {(['women', 'men', 'handmade'] as CollectionSlug[]).map((col) => {
               const active = collectionTheme === col;
               const dotColor =
-                col === 'women' ? '#b76e79' : col === 'men' ? '#1f334d' : '#6e876a';
+                col === 'women' ? '#D9829A' : col === 'men' ? '#273244' : '#5C7259';
               const label =
                 col === 'women'
                   ? t.nav.women

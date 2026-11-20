@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useApp } from '@/components/providers/AppProvider';
+import { EsraaEmblem } from '@/components/brand/BrandLogo';
 import { AdminProductsPanel } from '@/components/admin/AdminProductsPanel';
 import { AdminChatInbox } from '@/components/admin/AdminChatInbox';
 import { AdminMediaPanel } from '@/components/admin/AdminMediaPanel';
@@ -272,8 +273,9 @@ export function AdminDashboardClient({
       <header className="glass-nav sticky top-0 z-30">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-3">
+            <EsraaEmblem className="h-8 w-8 shrink-0" />
             <span className="font-display text-lg font-bold">
-              {lang === 'ar' ? 'لوحة تحكم لمسة بوتيك' : 'Lamsa Boutique Admin'}
+              {lang === 'ar' ? 'لوحة تحكم إسراء سيكريت' : 'Esraa Secret Admin'}
             </span>
             <span className="hidden rounded-full bg-[var(--accent-soft)] px-2.5 py-0.5 text-[11px] font-semibold text-[var(--accent-strong)] sm:inline">
               {currentAdmin.email}

@@ -3,109 +3,75 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* Default: Women's Collection Light (Blush pink, cream, champagne, rose gold, lavender) */
-  --bg-page: #fdf9f7;
-  --bg-elevated: rgba(255, 250, 248, 0.78);
-  --bg-subtle: #f7ece8;
-  --text-primary: #2a1e22;
-  --text-secondary: #6b565d;
-  --border-glass: rgba(196, 145, 149, 0.28);
-  --accent: #b76e79;
-  --accent-strong: #9e535f;
-  --accent-soft: rgba(183, 110, 121, 0.14);
-  --accent-secondary: #c9a7eb;
-  --champagne: #e8d5c4;
-  --hero-gradient: radial-gradient(circle at 18% 20%, rgba(244, 210, 216, 0.72), transparent 52%),
-    radial-gradient(circle at 82% 18%, rgba(219, 200, 238, 0.55), transparent 48%),
-    radial-gradient(circle at 50% 88%, rgba(232, 213, 196, 0.65), transparent 55%);
+  /* Esraa Secret Brand Tokens */
+  --es-rose: #D9829A;
+  --es-burgundy: #64152F;
+  --es-champagne: #D9A65A;
+  --es-beige: #F5E7DF;
+  --es-cream: #FFF9F5;
+  --es-dark: #21151B;
+
+  /* Light Mode (Cream, Soft Beige, Rose Pink & Burgundy) */
+  --bg-page: #FFF9F5;
+  --bg-elevated: rgba(255, 249, 245, 0.84);
+  --bg-subtle: #F5E7DF;
+  --text-primary: #21151B;
+  --text-secondary: #6A4B56;
+  --border-glass: rgba(100, 21, 47, 0.14);
+  --accent: #64152F;
+  --accent-strong: #4B0E22;
+  --accent-soft: rgba(217, 130, 154, 0.18);
+  --accent-secondary: #D9829A;
+  --champagne: #D9A65A;
+  --hero-gradient: radial-gradient(circle at 16% 18%, rgba(217, 130, 154, 0.24), transparent 50%),
+    radial-gradient(circle at 84% 20%, rgba(217, 166, 90, 0.2), transparent 46%),
+    radial-gradient(circle at 50% 90%, rgba(245, 231, 223, 0.85), transparent 55%);
 }
 
 [data-collection="men"] {
-  /* Men's Collection Light (Charcoal, deep navy, olive, beige, champagne) */
-  --bg-page: #f5f3ef;
-  --bg-elevated: rgba(250, 248, 244, 0.8);
-  --bg-subtle: #eae6dd;
-  --text-primary: #171c26;
-  --text-secondary: #525965;
-  --border-glass: rgba(36, 52, 77, 0.18);
-  --accent: #1f334d;
-  --accent-strong: #132236;
-  --accent-soft: rgba(31, 51, 77, 0.12);
-  --accent-secondary: #5e6b4c;
-  --champagne: #d6c5a9;
-  --hero-gradient: radial-gradient(circle at 18% 20%, rgba(214, 197, 169, 0.58), transparent 50%),
-    radial-gradient(circle at 82% 24%, rgba(31, 51, 77, 0.16), transparent 48%),
-    radial-gradient(circle at 50% 90%, rgba(94, 107, 76, 0.18), transparent 52%);
+  --accent: #273244;
+  --accent-strong: #17202D;
+  --accent-soft: rgba(217, 166, 90, 0.16);
+  --accent-secondary: #D9A65A;
 }
 
 [data-collection="handmade"] {
-  /* Handmade Collection Light (Warm white, sand, sage green, terracotta) */
-  --bg-page: #fbf8f3;
-  --bg-elevated: rgba(253, 250, 245, 0.8);
-  --bg-subtle: #f1e9dc;
-  --text-primary: #27221d;
-  --text-secondary: #685d53;
-  --border-glass: rgba(133, 152, 128, 0.28);
-  --accent: #6e876a;
-  --accent-strong: #536b50;
-  --accent-soft: rgba(110, 135, 106, 0.15);
-  --accent-secondary: #c06c4d;
-  --champagne: #e3d3bc;
-  --hero-gradient: radial-gradient(circle at 20% 22%, rgba(227, 211, 188, 0.68), transparent 52%),
-    radial-gradient(circle at 84% 20%, rgba(110, 135, 106, 0.24), transparent 46%),
-    radial-gradient(circle at 52% 88%, rgba(192, 108, 77, 0.18), transparent 52%);
+  --accent: #5C7259;
+  --accent-strong: #435741;
+  --accent-soft: rgba(217, 166, 90, 0.16);
+  --accent-secondary: #C8795B;
 }
 
-/* Carefully crafted Dark Modes — rich obsidian & velvet surfaces, NOT inverted light */
+/* Dark Mode — Deep Burgundy / Plum (#21151B) with balanced Champagne Gold (#D9A65A) & Rose (#D9829A) */
 .dark {
-  --bg-page: #120d10;
-  --bg-elevated: rgba(29, 21, 26, 0.78);
-  --bg-subtle: #1d151a;
-  --text-primary: #f7eef0;
-  --text-secondary: #c2aeb4;
-  --border-glass: rgba(232, 188, 196, 0.18);
-  --accent: #e09aa5;
-  --accent-strong: #efb3bc;
-  --accent-soft: rgba(224, 154, 165, 0.16);
-  --accent-secondary: #b99ad9;
-  --champagne: #47363b;
-  --hero-gradient: radial-gradient(circle at 18% 20%, rgba(183, 110, 121, 0.25), transparent 52%),
-    radial-gradient(circle at 84% 20%, rgba(168, 130, 210, 0.18), transparent 48%),
-    radial-gradient(circle at 50% 90%, rgba(120, 86, 72, 0.2), transparent 55%);
+  --bg-page: #21151B;
+  --bg-elevated: rgba(42, 24, 33, 0.82);
+  --bg-subtle: #2E1B24;
+  --text-primary: #FFF9F5;
+  --text-secondary: #DEC8D0;
+  --border-glass: rgba(217, 166, 90, 0.22);
+  --accent: #D9829A;
+  --accent-strong: #F2B2C3;
+  --accent-soft: rgba(217, 130, 154, 0.18);
+  --accent-secondary: #D9A65A;
+  --champagne: #473026;
+  --hero-gradient: radial-gradient(circle at 18% 20%, rgba(100, 21, 47, 0.55), transparent 54%),
+    radial-gradient(circle at 84% 20%, rgba(217, 166, 90, 0.16), transparent 48%),
+    radial-gradient(circle at 50% 90%, rgba(217, 130, 154, 0.14), transparent 56%);
 }
 
 .dark[data-collection="men"] {
-  --bg-page: #0d1117;
-  --bg-elevated: rgba(20, 27, 38, 0.8);
-  --bg-subtle: #141b26;
-  --text-primary: #eff2f6;
-  --text-secondary: #a4b0c0;
-  --border-glass: rgba(214, 197, 169, 0.18);
-  --accent: #d6c5a9;
-  --accent-strong: #e8d9c0;
-  --accent-soft: rgba(214, 197, 169, 0.15);
-  --accent-secondary: #83956e;
-  --champagne: #2c3542;
-  --hero-gradient: radial-gradient(circle at 18% 20%, rgba(45, 72, 110, 0.34), transparent 52%),
-    radial-gradient(circle at 82% 20%, rgba(214, 197, 169, 0.14), transparent 48%),
-    radial-gradient(circle at 50% 90%, rgba(94, 107, 76, 0.18), transparent 55%);
+  --accent: #D9A65A;
+  --accent-strong: #ECC583;
+  --accent-soft: rgba(217, 166, 90, 0.16);
+  --accent-secondary: #D9829A;
 }
 
 .dark[data-collection="handmade"] {
-  --bg-page: #13120f;
-  --bg-elevated: rgba(30, 27, 22, 0.8);
-  --bg-subtle: #1e1b16;
-  --text-primary: #f5efe6;
-  --text-secondary: #bfb4a4;
-  --border-glass: rgba(154, 179, 149, 0.2);
-  --accent: #9ab395;
-  --accent-strong: #b4cbb0;
-  --accent-soft: rgba(154, 179, 149, 0.16);
-  --accent-secondary: #d9886a;
-  --champagne: #3d352a;
-  --hero-gradient: radial-gradient(circle at 18% 20%, rgba(110, 135, 106, 0.24), transparent 52%),
-    radial-gradient(circle at 84% 20%, rgba(192, 108, 77, 0.22), transparent 48%),
-    radial-gradient(circle at 50% 90%, rgba(160, 138, 104, 0.18), transparent 55%);
+  --accent: #A5BE9F;
+  --accent-strong: #C2D6BD;
+  --accent-soft: rgba(165, 190, 159, 0.16);
+  --accent-secondary: #D9A65A;
 }
 
 html {
@@ -125,7 +91,7 @@ body {
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border: 1px solid var(--border-glass);
-  box-shadow: 0 12px 36px -12px rgba(20, 12, 16, 0.12);
+  box-shadow: 0 12px 36px -12px rgba(33, 21, 27, 0.12);
 }
 
 .dark .glass-card {

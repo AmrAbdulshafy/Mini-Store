@@ -3,8 +3,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Mail, MapPin, MessageCircle, Phone, ShieldCheck, Sparkles } from 'lucide-react';
+import { Mail, MapPin, MessageCircle, Phone, ShieldCheck } from 'lucide-react';
 import { useApp } from '@/components/providers/AppProvider';
+import { BrandLogo, EsraaMonogram } from '@/components/brand/BrandLogo';
 import { buildWhatsAppGeneralUrl } from '@/lib/whatsapp';
 
 export function Footer() {
@@ -35,14 +36,9 @@ export function Footer() {
         <div className="grid gap-10 md:grid-cols-4">
           {/* Brand */}
           <div className="md:col-span-2 space-y-3">
-            <div className="flex items-center gap-2.5">
-              <span
-                className="flex h-9 w-9 items-center justify-center rounded-xl text-white"
-                style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-secondary))' }}
-              >
-                <Sparkles className="h-4 w-4" />
-              </span>
-              <span className="font-display text-xl font-semibold">{storeName}</span>
+            <div className="flex items-center gap-4">
+              <BrandLogo lang={lang} />
+              <EsraaMonogram className="h-10 w-10 text-[var(--es-burgundy)] opacity-80 dark:text-[var(--es-champagne)]" />
             </div>
             <p className="max-w-md text-sm leading-relaxed text-[var(--text-secondary)]">
               {tagline}

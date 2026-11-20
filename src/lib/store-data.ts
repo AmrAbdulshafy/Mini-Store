@@ -3,13 +3,13 @@ import type { Category, Collection, HomepageBanner, Product, StoreSettings } fro
 
 const FALLBACK_SETTINGS: StoreSettings = {
   id: 1,
-  store_name_ar: 'لمسة بوتيك',
-  store_name_en: 'Lamsa Boutique',
-  tagline_ar: 'أناقة المرأة، فخامة الرجل، وإبداع الحرف اليدوية',
-  tagline_en: 'Feminine Grace, Masculine Refinement & Artisanal Craft',
+  store_name_ar: 'إسراء سيكريت',
+  store_name_en: 'Esraa Secret',
+  tagline_ar: 'أكثر من مجرد متجر... إنه سر الجمال.',
+  tagline_en: "More Than a Store… It's a Secret of Beauty.",
   whatsapp_number: '201000000000',
   phone_number: '+20 100 000 0000',
-  email: 'hello@lamsaboutique.eg',
+  email: 'hello@esraasecret.com',
   address_ar: 'الزمالك، القاهرة، مصر',
   address_en: 'Zamalek, Cairo, Egypt',
   instagram_url: null,

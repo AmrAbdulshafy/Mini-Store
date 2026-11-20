@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Lock, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Lock } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useApp } from '@/components/providers/AppProvider';
+import { EsraaEmblem } from '@/components/brand/BrandLogo';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -66,14 +67,9 @@ export default function AdminLoginPage() {
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
       <div className="glass-card w-full max-w-md rounded-3xl p-8">
         <div className="mb-6 flex flex-col items-center text-center">
-          <div
-            className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-lg"
-            style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-secondary))' }}
-          >
-            <ShieldCheck className="h-7 w-7" />
-          </div>
+          <EsraaEmblem className="mb-4 h-14 w-14 shadow-lg" />
           <h1 className="font-display text-2xl font-bold">
-            {lang === 'ar' ? 'دخول لوحة تحكم البوتيك' : 'Boutique Admin Sign In'}
+            {lang === 'ar' ? 'دخول لوحة تحكم إسراء سيكريت' : 'Esraa Secret Admin Sign In'}
           </h1>
           <p className="mt-1 text-xs text-[var(--text-secondary)]">
             {lang === 'ar'
