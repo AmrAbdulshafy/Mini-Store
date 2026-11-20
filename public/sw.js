@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'esraa-boutique-v2';
+const CACHE_VERSION = 'esraa-boutique-v3';
 const OFFLINE_URL = '/offline';
 
 const PRECACHE_ASSETS = [

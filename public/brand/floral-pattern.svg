@@ -27,10 +27,8 @@
 
     <!-- Reusable Damask Rose Motif -->
     <g id="damask-rose">
-      <!-- Back sepals & outer leaves -->
-      <path d="M0,-62 C18,-70 36,-54 32,-34 C48,-40 66,-22 54,-2 C70,8 60,34 38,34 C42,54 18,68 0,56 C-18,68 -42,54 -38,34 C-60,34 -70,8 -54,-2 C-66,-22 -48,-40 -32,-34 C-36,-54 -18,-70 0,-62 Z" fill="url(#roseOuter)" stroke="#2E0A17" stroke-width="1.2" opacity="0.92"/>
-      <!-- Engraved outer petal veins -->
-      <g stroke="#2E0A17" stroke-width="0.8" fill="none" opacity="0.55">
+      <path d="M0,-62 C18,-70 36,-54 32,-34 C48,-40 66,-22 54,-2 C70,8 60,34 38,34 C42,54 18,68 0,56 C-18,68 -42,54 -38,34 C-60,34 -70,8 -54,-2 C-66,-22 -48,-40 -32,-34 C-36,-54 -18,-70 0,-62 Z" fill="url(#roseOuter)" stroke="#2E0A17" stroke-width="1.2" opacity="0.94"/>
+      <g stroke="#2E0A17" stroke-width="0.85" fill="none" opacity="0.58">
         <path d="M0,-25 Q-4,-42 0,-56"/>
         <path d="M16,-20 Q30,-34 38,-44"/>
         <path d="M26,-4 Q46,-8 56,2"/>
@@ -40,7 +38,6 @@
         <path d="M-26,-4 Q-46,-8 -56,2"/>
         <path d="M-16,-20 Q-30,-34 -38,-44"/>
       </g>
-      <!-- Outer ruffled highlights -->
       <g stroke="#C66B89" stroke-width="0.7" fill="none" opacity="0.45">
         <path d="M-14,-56 C-6,-62 6,-62 14,-56"/>
         <path d="M36,-32 C46,-28 52,-18 50,-8"/>
@@ -48,19 +45,14 @@
         <path d="M-34,32 C-46,32 -54,22 -50,10"/>
         <path d="M-50,-8 C-52,-18 -46,-28 -36,-32"/>
       </g>
-
-      <!-- Middle cupped petals -->
       <path d="M-34,-18 C-42,-36 -16,-48 0,-38 C16,-48 42,-36 34,-18 C48,-6 40,24 20,24 C18,40 -18,40 -20,24 C-40,24 -48,-6 -34,-18 Z" fill="url(#roseMid)" stroke="#2E0A17" stroke-width="1.1"/>
       <path d="M-26,-10 C-28,-28 -8,-36 0,-26 C8,-36 28,-28 26,-10 C34,2 24,22 10,20 C6,30 -6,30 -10,20 C-24,22 -34,2 -26,-10 Z" fill="url(#roseCore)" stroke="#380E1D" stroke-width="1"/>
-      <!-- Mid petal shading & etching -->
       <g stroke="#2B0815" stroke-width="0.75" fill="none" opacity="0.6">
         <path d="M-22,-18 Q-12,-28 0,-24"/>
         <path d="M22,-18 Q12,-28 0,-24"/>
         <path d="M-28,4 Q-18,16 -8,18"/>
         <path d="M28,4 Q18,16 8,18"/>
       </g>
-
-      <!-- Inner rosebud spiral -->
       <path d="M-16,-4 C-18,-18 2,-24 14,-14 C22,-4 16,14 2,16 C-12,18 -20,6 -16,-4 Z" fill="url(#roseMid)" stroke="#2B0815" stroke-width="1"/>
       <path d="M-9,-2 C-10,-12 4,-15 10,-7 C14,0 8,10 -1,10 C-8,10 -12,4 -9,-2 Z" fill="url(#roseCore)" stroke="#2B0815" stroke-width="0.9"/>
       <path d="M-4,-1 C-4,-6 4,-7 6,-2 C7,2 3,6 -2,5 C-5,4 -5,1 -4,-1 Z" fill="#C96D8C" opacity="0.75" stroke="#2B0815" stroke-width="0.7"/>
@@ -84,25 +76,30 @@
     </g>
   </defs>
 
-  <!-- Subtle dark vignette / damask ground tone (semi-transparent for Light & Dark mode compatibility) -->
-  <g opacity="0.34">
+  <g opacity="0.44">
     <!-- Connecting Baroque Scrollwork across tile boundaries -->
     <use href="#scroll-vine" transform="translate(180,105) rotate(28) scale(1.05)"/>
     <use href="#scroll-vine" transform="translate(180,105) rotate(152) scale(1.05,-1.05)"/>
     <use href="#scroll-vine" transform="translate(180,105) rotate(-145) scale(0.85)"/>
     <use href="#scroll-vine" transform="translate(180,105) rotate(-35) scale(0.85,-0.85)"/>
 
-    <!-- Lower half-drop scrollwork wrapping left/right -->
     <use href="#scroll-vine" transform="translate(0,285) rotate(-28) scale(1.05)"/>
     <use href="#scroll-vine" transform="translate(360,285) rotate(-152) scale(1.05,-1.05)"/>
     <use href="#scroll-vine" transform="translate(0,285) rotate(35) scale(0.85,-0.85)"/>
     <use href="#scroll-vine" transform="translate(360,285) rotate(145) scale(0.85)"/>
 
-    <!-- Top/Bottom edge wrapping leaves -->
-    <use href="#acanthus-leaf" transform="translate(180,360) rotate(-90) scale(0.85)"/>
-    <use href="#acanthus-leaf" transform="translate(180,0) rotate(-90) scale(0.85)"/>
-    <use href="#acanthus-leaf" transform="translate(92,195) rotate(140) scale(0.8)"/>
-    <use href="#acanthus-leaf" transform="translate(268,195) rotate(40) scale(0.8,-0.8)"/>
+    <!-- Extra mid-tile botanical scrollwork -->
+    <use href="#scroll-vine" transform="translate(90,260) rotate(-65) scale(0.68)"/>
+    <use href="#scroll-vine" transform="translate(270,260) rotate(-115) scale(0.68,-0.68)"/>
+    <use href="#scroll-vine" transform="translate(180,310) rotate(-90) scale(0.72)"/>
+
+    <!-- Edge wrapping leaves -->
+    <use href="#acanthus-leaf" transform="translate(180,360) rotate(-90) scale(0.9)"/>
+    <use href="#acanthus-leaf" transform="translate(180,0) rotate(-90) scale(0.9)"/>
+    <use href="#acanthus-leaf" transform="translate(92,195) rotate(140) scale(0.85)"/>
+    <use href="#acanthus-leaf" transform="translate(268,195) rotate(40) scale(0.85,-0.85)"/>
+    <use href="#acanthus-leaf" transform="translate(0,115) rotate(-20) scale(0.78)"/>
+    <use href="#acanthus-leaf" transform="translate(360,115) rotate(-160) scale(0.78,-0.78)"/>
 
     <!-- Primary Center Damask Rose -->
     <g transform="translate(180,105)">
@@ -113,7 +110,7 @@
       <use href="#damask-rose"/>
     </g>
 
-    <!-- Half-drop Offset Damask Rose (Left & Right Edges for seamless tiling) -->
+    <!-- Half-drop Offset Damask Rose (Left & Right Edges) -->
     <g transform="translate(0,285)">
       <use href="#acanthus-leaf" transform="translate(44,-22) rotate(-32) scale(1.05,-1.05)"/>
       <use href="#acanthus-leaf" transform="translate(40,34) rotate(42) scale(0.95)"/>
@@ -125,23 +122,48 @@
       <use href="#damask-rose" transform="scale(0.95)"/>
     </g>
 
-    <!-- Delicate secondary rosebuds -->
-    <g transform="translate(90,22) scale(0.46) rotate(-18)">
+    <!-- Medium Secondary Damask Roses (Dense Cluster) -->
+    <g transform="translate(180,295) scale(0.76) rotate(12)">
+      <use href="#acanthus-leaf" transform="translate(-40,-18) rotate(-140) scale(0.9)"/>
+      <use href="#acanthus-leaf" transform="translate(40,-18) rotate(-40) scale(0.9,-0.9)"/>
       <use href="#damask-rose"/>
     </g>
-    <g transform="translate(270,22) scale(0.46) rotate(18)">
+    <g transform="translate(0,105) scale(0.68) rotate(-15)">
       <use href="#damask-rose"/>
     </g>
-    <g transform="translate(90,382) scale(0.46) rotate(-18)">
+    <g transform="translate(360,105) scale(0.68) rotate(-15)">
       <use href="#damask-rose"/>
     </g>
-    <g transform="translate(270,382) scale(0.46) rotate(18)">
+
+    <!-- Abundant Rosebuds & Smaller Blossoms -->
+    <g transform="translate(88,26) scale(0.5) rotate(-18)">
       <use href="#damask-rose"/>
     </g>
-    <g transform="translate(95,210) scale(0.42) rotate(24)">
+    <g transform="translate(272,26) scale(0.5) rotate(18)">
       <use href="#damask-rose"/>
     </g>
-    <g transform="translate(265,210) scale(0.42) rotate(-24)">
+    <g transform="translate(88,386) scale(0.5) rotate(-18)">
+      <use href="#damask-rose"/>
+    </g>
+    <g transform="translate(272,386) scale(0.5) rotate(18)">
+      <use href="#damask-rose"/>
+    </g>
+    <g transform="translate(92,195) scale(0.52) rotate(24)">
+      <use href="#damask-rose"/>
+    </g>
+    <g transform="translate(268,195) scale(0.52) rotate(-24)">
+      <use href="#damask-rose"/>
+    </g>
+    <g transform="translate(96,298) scale(0.42) rotate(32)">
+      <use href="#damask-rose"/>
+    </g>
+    <g transform="translate(264,298) scale(0.42) rotate(-32)">
+      <use href="#damask-rose"/>
+    </g>
+    <g transform="translate(180,12) scale(0.38) rotate(8)">
+      <use href="#damask-rose"/>
+    </g>
+    <g transform="translate(180,372) scale(0.38) rotate(8)">
       <use href="#damask-rose"/>
     </g>
   </g>

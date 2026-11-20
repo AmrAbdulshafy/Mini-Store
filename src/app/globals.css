@@ -12,7 +12,7 @@
   --es-petal: #EAD7DF;
 
   /* Surfaces & Backgrounds (Frosted Glass) */
-  --bg-page: #FDF7F8;
+  --bg-page: #DFC4CF;
   --bg-surface: rgba(255, 255, 255, 0.84);
   --bg-elevated: rgba(253, 247, 248, 0.88);
   --bg-subtle: rgba(246, 234, 239, 0.88);
@@ -98,9 +98,9 @@ body::before {
   pointer-events: none;
   background-image: url('/brand/floral-pattern.svg');
   background-repeat: repeat;
-  background-size: 360px 360px;
-  opacity: 0.45;
-  filter: brightness(1.75) saturate(1.1);
+  background-size: 240px 240px;
+  opacity: 0.72;
+  filter: brightness(1.08) saturate(1.15);
   transition: opacity 0.25s ease, filter 0.25s ease;
 }
 
