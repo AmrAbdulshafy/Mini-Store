@@ -62,15 +62,30 @@ export function useAdminChatNotifications({
     onOpenRef.current = onOpenConversation;
   }, [onOpenConversation]);
 
-  // Unlock audio context on first user interaction
+  // Unlock audio context & HTMLAudioElement on first user interaction (mobile + desktop)
   useEffect(() => {
     const unlock = () => unlockChatNotificationAudio();
+    window.addEventListener('touchstart', unlock, { once: true, passive: true });
     window.addEventListener('pointerdown', unlock, { once: true, passive: true });
     window.addEventListener('keydown', unlock, { once: true, passive: true });
     return () => {
+      window.removeEventListener('touchstart', unlock);
       window.removeEventListener('pointerdown', unlock);
       window.removeEventListener('keydown', unlock);
     };
+  }, []);
+
+  // Handle Service Worker notification click messages
+  useEffect(() => {
+    if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return;
+    const onMessage = (event: MessageEvent) => {
+      const data = event.data as { type?: string; conversationId?: string } | null;
+      if (data?.type === 'OPEN_CHAT_CONVERSATION' && data.conversationId) {
+        onOpenRef.current(data.conversationId);
+      }
+    };
+    navigator.serviceWorker.addEventListener('message', onMessage);
+    return () => navigator.serviceWorker.removeEventListener('message', onMessage);
   }, []);
 
   const requestBrowserPermission = useCallback(async () => {
@@ -146,7 +161,7 @@ export function useAdminChatNotifications({
 
           playChatRingSound();
 
-          // Fire Browser Notification when admin dashboard is in the background
+          // Fire mobile-safe Browser Notification when admin dashboard is in the background
           if (
             typeof document !== 'undefined' &&
             document.visibilityState !== 'visible' &&
@@ -162,17 +177,46 @@ export function useAdminChatNotifications({
               : isAr
                 ? 'رسالة عميل جديدة — إسراء بوتيك'
                 : 'New customer message — Esraa Boutique';
+            const body = msg.body.slice(0, 140);
 
-            const n = new window.Notification(title, {
-              body: msg.body.slice(0, 140),
-              tag: msg.id,
-              icon: '/icon.svg',
-            });
-            n.onclick = () => {
-              window.focus();
-              onOpenRef.current(convId);
-              n.close();
-            };
+            if ('serviceWorker' in navigator) {
+              void navigator.serviceWorker
+                .getRegistration('/')
+                .then((reg) => {
+                  if (reg) {
+                    return reg.showNotification(title, {
+                      body,
+                      tag: msg.id,
+                      icon: '/icons/icon-192.png',
+                      badge: '/icons/icon-192.png',
+                      data: { conversationId: convId },
+                    });
+                  }
+                  const n = new window.Notification(title, {
+                    body,
+                    tag: msg.id,
+                    icon: '/icons/icon-192.png',
+                  });
+                  n.onclick = () => {
+                    window.focus();
+                    onOpenRef.current(convId);
+                    n.close();
+                  };
+                  return undefined;
+                })
+                .catch(() => {});
+            } else {
+              const n = new window.Notification(title, {
+                body,
+                tag: msg.id,
+                icon: '/icons/icon-192.png',
+              });
+              n.onclick = () => {
+                window.focus();
+                onOpenRef.current(convId);
+                n.close();
+              };
+            }
           }
         }
       )

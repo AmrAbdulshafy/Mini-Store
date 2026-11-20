@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'esraa-boutique-v5';
+const CACHE_VERSION = 'esraa-boutique-v6';
 const OFFLINE_URL = '/offline';
 
 const PRECACHE_ASSETS = [
@@ -108,4 +108,36 @@ self.addEventListener('fetch', (event) => {
       })
     );
   }
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const conversationId = event.notification?.data?.conversationId;
+  const targetUrl = conversationId
+    ? `/admin?chat=${encodeURIComponent(conversationId)}`
+    : '/admin';
+
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+      for (const client of clients) {
+        try {
+          const clientUrl = new URL(client.url);
+          if (clientUrl.origin === self.location.origin && clientUrl.pathname.startsWith('/admin')) {
+            if (conversationId) {
+              client.postMessage({ type: 'OPEN_CHAT_CONVERSATION', conversationId });
+            }
+            if ('focus' in client) {
+              return client.focus();
+            }
+          }
+        } catch {
+          // ignore malformed client URL
+        }
+      }
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(targetUrl);
+      }
+      return undefined;
+    })
+  );
 });

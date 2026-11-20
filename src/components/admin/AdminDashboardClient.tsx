@@ -134,6 +134,17 @@ export function AdminDashboardClient({
   );
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const chatParam = new URLSearchParams(window.location.search).get('chat');
+    if (chatParam && /^[0-9a-f-]{36}$/i.test(chatParam)) {
+      const timer = setTimeout(() => {
+        openConversationFromNotification(chatParam);
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [openConversationFromNotification]);
+
+  useEffect(() => {
     if (!bellOpen) return;
     const onOutside = (e: MouseEvent) => {
       if (bellRef.current && !bellRef.current.contains(e.target as Node)) {
