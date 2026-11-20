@@ -6,6 +6,7 @@ import {
   Check,
   Eye,
   EyeOff,
+  FileText,
   ImagePlus,
   Pencil,
   Plus,
@@ -31,6 +32,7 @@ interface Props {
   categories: Category[];
   collections: Collection[];
   onNotify: (msg: string, isError?: boolean) => void;
+  perms?: { create: boolean; edit: boolean; delete: boolean };
 }
 
 const emptyForm = {
@@ -86,6 +88,7 @@ export function AdminProductsPanel({
   categories,
   collections,
   onNotify,
+  perms = { create: true, edit: true, delete: true },
 }: Props) {
   const [search, setSearch] = useState('');
   const [editing, setEditing] = useState(false);
@@ -120,6 +123,7 @@ export function AdminProductsPanel({
   };
 
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
+  const [viewProduct, setViewProduct] = useState<Product | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
   const [deleteImgTarget, setDeleteImgTarget] = useState<ProductImage | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -368,14 +372,16 @@ export function AdminProductsPanel({
           className="w-full max-w-xs rounded-2xl border bg-transparent px-4 py-2 text-sm outline-none focus:border-[var(--accent)]"
           style={{ borderColor: 'var(--border-glass)' }}
         />
-        <button
-          type="button"
-          onClick={openCreate}
-          className="cta-luxury inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-semibold"
-        >
-          <Plus className="h-4 w-4" />
-          <span>{lang === 'ar' ? 'إضافة منتج' : 'Add Product'}</span>
-        </button>
+        {perms.create && (
+          <button
+            type="button"
+            onClick={openCreate}
+            className="cta-luxury inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-semibold"
+          >
+            <Plus className="h-4 w-4" />
+            <span>{lang === 'ar' ? 'إضافة منتج' : 'Add Product'}</span>
+          </button>
+        )}
       </div>
 
       {/* Add / Edit Product Modal */}
@@ -906,44 +912,58 @@ export function AdminProductsPanel({
                     <div className="flex items-center gap-1.5">
                       <button
                         type="button"
-                        onClick={() => openEdit(p)}
-                        className="rounded-xl p-2 hover:bg-[var(--accent-soft)]"
-                        title="Edit"
+                        onClick={() => setViewProduct(p)}
+                        className="rounded-xl p-2 hover:bg-[var(--bg-subtle)]"
+                        title={lang === 'ar' ? 'عرض التفاصيل' : 'View Details'}
                       >
-                        <Pencil className="h-4 w-4" />
+                        <FileText className="h-4 w-4" />
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => toggleFlag(p, 'is_featured')}
-                        className={`rounded-xl p-2 hover:bg-[var(--accent-soft)] ${p.is_featured ? 'text-[#FFC247]' : 'opacity-40'}`}
-                        title="Featured"
-                      >
-                        <Star className="h-4 w-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => toggleFlag(p, 'is_visible')}
-                        className="rounded-xl p-2 hover:bg-[var(--accent-soft)]"
-                        title="Visibility"
-                      >
-                        {p.is_visible ? <Eye className="h-4 w-4 text-emerald-500" /> : <EyeOff className="h-4 w-4 opacity-50" />}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => toggleFlag(p, 'is_archived')}
-                        className={`rounded-xl p-2 hover:bg-[var(--accent-soft)] ${p.is_archived ? 'text-amber-500' : 'opacity-50'}`}
-                        title="Archive"
-                      >
-                        <Archive className="h-4 w-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setDeleteTarget(p)}
-                        className="rounded-xl p-2 text-rose-500 hover:bg-rose-500/10"
-                        title="Delete"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      {perms.edit && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => openEdit(p)}
+                            className="rounded-xl p-2 hover:bg-[var(--accent-soft)]"
+                            title={lang === 'ar' ? 'تعديل' : 'Edit'}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => toggleFlag(p, 'is_featured')}
+                            className={`rounded-xl p-2 hover:bg-[var(--accent-soft)] ${p.is_featured ? 'text-[#FFC247]' : 'opacity-40'}`}
+                            title="Featured"
+                          >
+                            <Star className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => toggleFlag(p, 'is_visible')}
+                            className="rounded-xl p-2 hover:bg-[var(--accent-soft)]"
+                            title="Visibility"
+                          >
+                            {p.is_visible ? <Eye className="h-4 w-4 text-emerald-500" /> : <EyeOff className="h-4 w-4 opacity-50" />}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => toggleFlag(p, 'is_archived')}
+                            className={`rounded-xl p-2 hover:bg-[var(--accent-soft)] ${p.is_archived ? 'text-amber-500' : 'opacity-50'}`}
+                            title="Archive"
+                          >
+                            <Archive className="h-4 w-4" />
+                          </button>
+                        </>
+                      )}
+                      {perms.delete && (
+                        <button
+                          type="button"
+                          onClick={() => setDeleteTarget(p)}
+                          className="rounded-xl p-2 text-rose-500 hover:bg-rose-500/10"
+                          title="Delete"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -952,6 +972,39 @@ export function AdminProductsPanel({
           </tbody>
         </table>
       </div>
+
+      {/* Product View Modal */}
+      <Modal
+        open={Boolean(viewProduct)}
+        onClose={() => setViewProduct(null)}
+        maxWidthClass="max-w-2xl"
+        title={viewProduct ? (lang === 'ar' ? viewProduct.name_ar : viewProduct.name_en) : ''}
+      >
+        {viewProduct && (
+          <div className="space-y-4 text-xs">
+            <div className="flex flex-wrap gap-2">
+              {(viewProduct.product_images || []).map((img) => (
+                <img
+                  key={img.id}
+                  src={img.image_url}
+                  alt=""
+                  className="h-20 w-20 rounded-xl border object-cover"
+                  style={{ borderColor: 'var(--border-glass)' }}
+                />
+              ))}
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <p><strong>{lang === 'ar' ? 'السعر:' : 'Price:'}</strong> {viewProduct.price} {viewProduct.currency}</p>
+              <p><strong>{lang === 'ar' ? 'الكمية:' : 'Stock:'}</strong> {viewProduct.stock_quantity ?? 0}</p>
+              <p><strong>{lang === 'ar' ? 'التشكيلة:' : 'Collection:'}</strong> {viewProduct.collections ? (lang === 'ar' ? viewProduct.collections.name_ar : viewProduct.collections.name_en) : '-'}</p>
+              <p><strong>{lang === 'ar' ? 'الفئة:' : 'Category:'}</strong> {viewProduct.categories ? (lang === 'ar' ? viewProduct.categories.name_ar : viewProduct.categories.name_en) : '-'}</p>
+            </div>
+            <p className="rounded-xl bg-[var(--bg-subtle)] p-3 leading-relaxed">
+              {lang === 'ar' ? viewProduct.description_ar : viewProduct.description_en}
+            </p>
+          </div>
+        )}
+      </Modal>
 
       {/* Image Lightbox */}
       <Modal

@@ -116,6 +116,9 @@ export interface HomepageBanner {
   media_type?: 'image' | 'video';
   is_active: boolean;
   sort_order: number;
+  glass_enabled?: boolean;
+  glass_blur_px?: number;
+  glass_opacity?: number;
   created_at: string;
   updated_at: string;
 }
@@ -196,12 +199,31 @@ export interface Order {
   order_items?: OrderItem[];
 }
 
+export type RbacResource =
+  | 'overview'
+  | 'orders'
+  | 'products'
+  | 'categories'
+  | 'collections'
+  | 'inquiries'
+  | 'chat'
+  | 'media'
+  | 'homepage'
+  | 'appearance'
+  | 'settings'
+  | 'users';
+
+export type RbacAction = 'view' | 'create' | 'edit' | 'delete';
+
+export type RbacPermissionsMap = Partial<Record<RbacResource, Partial<Record<RbacAction, boolean>>>>;
+
 export interface AdminUser {
   id: string;
   email: string;
   full_name: string | null;
   role: 'super_admin' | 'admin' | 'editor';
   is_active: boolean;
+  permissions?: RbacPermissionsMap | null;
   created_at: string;
   updated_at: string;
 }

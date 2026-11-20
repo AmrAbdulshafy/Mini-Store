@@ -23,6 +23,7 @@ import {
   Pencil,
   Plus,
   Settings,
+  ShieldCheck,
   Sparkles,
   Trash2,
   Users,
@@ -30,6 +31,13 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { DARK_PALETTES, useApp } from '@/components/providers/AppProvider';
+import {
+  RBAC_ACTIONS,
+  RBAC_RESOURCES,
+  ROLE_DEFAULT_PERMISSIONS,
+  can,
+  resolveUserPermissions,
+} from '@/lib/rbac';
 import { EsraaEmblem } from '@/components/brand/BrandLogo';
 import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
@@ -51,6 +59,9 @@ import type {
   Language,
   Order,
   Product,
+  RbacAction,
+  RbacPermissionsMap,
+  RbacResource,
   StoreSettings,
   ThemeMode,
 } from '@/types/database';
@@ -123,7 +134,13 @@ export function AdminDashboardClient({
     role: 'editor' as AdminUser['role'],
   });
   const [deleteUserTarget, setDeleteUserTarget] = useState<AdminUser | null>(null);
+  const [rbacUser, setRbacUser] = useState<AdminUser | null>(null);
+  const [rbacDraft, setRbacDraft] = useState<RbacPermissionsMap>({});
   const [colModalOpen, setColModalOpen] = useState(false);
+  const [viewCat, setViewCat] = useState<Category | null>(null);
+  const [viewCol, setViewCol] = useState<Collection | null>(null);
+  const [editConv, setEditConv] = useState<Conversation | null>(null);
+  const [deleteConvTarget, setDeleteConvTarget] = useState<Conversation | null>(null);
   const [colForm, setColForm] = useState({
     name_ar: '',
     name_en: '',
@@ -229,6 +246,9 @@ export function AdminDashboardClient({
     cta_link: '/catalog',
     image_url: '/images/hero-boutique.png',
     video_url: '',
+    glass_enabled: true,
+    glass_blur_px: 12,
+    glass_opacity: 35,
   });
   const [deleteBannerTarget, setDeleteBannerTarget] = useState<HomepageBanner | null>(null);
 
@@ -532,6 +552,9 @@ export function AdminDashboardClient({
       cta_link: '/catalog',
       image_url: '/images/hero-boutique.png',
       video_url: '',
+      glass_enabled: true,
+      glass_blur_px: 12,
+      glass_opacity: 35,
     });
     setBannerModalOpen(true);
   };
@@ -550,6 +573,9 @@ export function AdminDashboardClient({
       cta_link: b.cta_link || '/catalog',
       image_url: b.image_url || '/images/hero-boutique.png',
       video_url: b.video_url || '',
+      glass_enabled: b.glass_enabled ?? true,
+      glass_blur_px: b.glass_blur_px ?? 12,
+      glass_opacity: b.glass_opacity ?? 35,
     });
     setBannerModalOpen(true);
   };
@@ -610,7 +636,7 @@ export function AdminDashboardClient({
   const unreadChats = conversations.reduce((sum, c) => sum + (c.unread_by_admin || 0), 0);
   const newInquiries = inquiries.filter((i) => i.status === 'new').length;
 
-  const navItems: { id: Section; labelAr: string; labelEn: string; icon: React.ReactNode; badge?: number }[] = [
+  const allNavItems: { id: Section; labelAr: string; labelEn: string; icon: React.ReactNode; badge?: number }[] = [
     { id: 'overview', labelAr: 'التقارير ونظرة عامة', labelEn: 'Reports & Overview', icon: <LayoutDashboard className="h-4 w-4 shrink-0" /> },
     { id: 'orders', labelAr: 'الفواتير والحسابات', labelEn: 'Invoices & Finance', icon: <FileSpreadsheet className="h-4 w-4 shrink-0" />, badge: orders.length || undefined },
     { id: 'products', labelAr: 'المنتجات', labelEn: 'Products', icon: <Package className="h-4 w-4 shrink-0" />, badge: products.length },
@@ -622,8 +648,9 @@ export function AdminDashboardClient({
     { id: 'homepage', labelAr: 'محتوى الرئيسية', labelEn: 'Homepage Content', icon: <Sparkles className="h-4 w-4 shrink-0" /> },
     { id: 'appearance', labelAr: 'المظهر', labelEn: 'Appearance', icon: <Palette className="h-4 w-4 shrink-0" /> },
     { id: 'settings', labelAr: 'إعدادات المتجر', labelEn: 'Store Settings', icon: <Settings className="h-4 w-4 shrink-0" /> },
-    { id: 'users', labelAr: 'المسؤولون', labelEn: 'Admin Users', icon: <Users className="h-4 w-4 shrink-0" /> },
+    { id: 'users', labelAr: 'المسؤولون والصلاحيات', labelEn: 'Admin Users & RBAC', icon: <Users className="h-4 w-4 shrink-0" /> },
   ];
+  const navItems = allNavItems.filter((item) => can(currentAdmin, item.id, 'view'));
 
   return (
     <div className="min-h-screen">
@@ -966,7 +993,7 @@ export function AdminDashboardClient({
             />
           )}
 
-          {section === 'orders' && (
+          {section === 'orders' && can(currentAdmin, 'orders', 'view') && (
             <AdminOrdersPanel
               lang={lang}
               currency={settingsForm.currency || 'EGP'}
@@ -976,10 +1003,15 @@ export function AdminDashboardClient({
               prefillInquiry={prefillInquiry}
               onClearPrefill={() => setPrefillInquiry(null)}
               onNotify={notify}
+              perms={{
+                create: can(currentAdmin, 'orders', 'create'),
+                edit: can(currentAdmin, 'orders', 'edit'),
+                delete: can(currentAdmin, 'orders', 'delete'),
+              }}
             />
           )}
 
-          {section === 'products' && (
+          {section === 'products' && can(currentAdmin, 'products', 'view') && (
             <AdminProductsPanel
               lang={lang}
               products={products}
@@ -987,21 +1019,28 @@ export function AdminDashboardClient({
               categories={categories}
               collections={collections}
               onNotify={notify}
+              perms={{
+                create: can(currentAdmin, 'products', 'create'),
+                edit: can(currentAdmin, 'products', 'edit'),
+                delete: can(currentAdmin, 'products', 'delete'),
+              }}
             />
           )}
 
-          {section === 'categories' && (
+          {section === 'categories' && can(currentAdmin, 'categories', 'view') && (
             <div className="space-y-5">
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={openCreateCategory}
-                  className="cta-luxury inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs font-semibold"
-                >
-                  <Plus className="h-4 w-4" />
-                  <span>{lang === 'ar' ? 'إضافة فئة' : 'Add Category'}</span>
-                </button>
-              </div>
+              {can(currentAdmin, 'categories', 'create') && (
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={openCreateCategory}
+                    className="cta-luxury inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs font-semibold"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>{lang === 'ar' ? 'إضافة فئة' : 'Add Category'}</span>
+                  </button>
+                </div>
+              )}
 
               <div className="glass-card divide-y rounded-3xl" style={{ borderColor: 'var(--border-glass)' }}>
                 {categories.map((c) => (
@@ -1011,12 +1050,19 @@ export function AdminDashboardClient({
                       <p className="text-[11px] opacity-60">{c.slug}</p>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <button type="button" onClick={() => openEditCategory(c)} className="rounded-xl p-2 hover:bg-[var(--accent-soft)]" title="Edit">
-                        <Pencil className="h-4 w-4" />
+                      <button type="button" onClick={() => setViewCat(c)} className="rounded-xl p-2 hover:bg-[var(--bg-subtle)]" title={lang === 'ar' ? 'عرض' : 'View'}>
+                        <Eye className="h-4 w-4" />
                       </button>
-                      <button type="button" onClick={() => setDeleteCatTarget(c)} className="rounded-xl p-2 text-rose-500 hover:bg-rose-500/10" title="Delete">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      {can(currentAdmin, 'categories', 'edit') && (
+                        <button type="button" onClick={() => openEditCategory(c)} className="rounded-xl p-2 hover:bg-[var(--accent-soft)]" title={lang === 'ar' ? 'تعديل' : 'Edit'}>
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                      )}
+                      {can(currentAdmin, 'categories', 'delete') && (
+                        <button type="button" onClick={() => setDeleteCatTarget(c)} className="rounded-xl p-2 text-rose-500 hover:bg-rose-500/10" title={lang === 'ar' ? 'حذف' : 'Delete'}>
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -1030,7 +1076,7 @@ export function AdminDashboardClient({
               >
                 <form onSubmit={handleSaveCategory} className="space-y-4 text-xs sm:text-sm">
                   <div>
-                    <label className="mb-1 block text-xs font-semibold">Name AR *</label>
+                    <label className="mb-1 block text-xs font-semibold">{lang === 'ar' ? 'الاسم (عربي) *' : 'Name AR *'}</label>
                     <input
                       required
                       value={catForm.name_ar}
@@ -1040,7 +1086,7 @@ export function AdminDashboardClient({
                     />
                   </div>
                   <div>
-                    <label className="mb-1 block text-xs font-semibold">Name EN *</label>
+                    <label className="mb-1 block text-xs font-semibold">{lang === 'ar' ? 'الاسم (إنجليزي) *' : 'Name EN *'}</label>
                     <input
                       required
                       value={catForm.name_en}
@@ -1094,23 +1140,33 @@ export function AdminDashboardClient({
             </div>
           )}
 
-          {section === 'collections' && (
+          {section === 'collections' && can(currentAdmin, 'collections', 'view') && (
             <div className="space-y-4">
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setColModalOpen(true)}
-                  className="cta-luxury flex items-center gap-2 rounded-2xl px-4 py-2.5 text-xs font-semibold"
-                >
-                  <Plus className="h-4 w-4" />
-                  <span>{lang === 'ar' ? 'إضافة تشكيلة' : 'Add Collection'}</span>
-                </button>
-              </div>
+              {can(currentAdmin, 'collections', 'create') && (
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setColModalOpen(true)}
+                    className="cta-luxury flex items-center gap-2 rounded-2xl px-4 py-2.5 text-xs font-semibold"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>{lang === 'ar' ? 'إضافة تشكيلة' : 'Add Collection'}</span>
+                  </button>
+                </div>
+              )}
               {collections.map((col) => (
                 <div key={col.id} className="glass-card space-y-3 rounded-3xl p-5 text-xs">
                   <div className="flex items-center justify-between">
                     <span className="font-bold uppercase tracking-wider text-[var(--accent)]">{col.slug}</span>
                     <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setViewCol(col)}
+                        className="rounded-lg p-1.5 hover:bg-[var(--bg-subtle)]"
+                        title={lang === 'ar' ? 'عرض التشكيلة' : 'View Collection'}
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                      </button>
                       <label className="flex items-center gap-1.5">
                         <input
                           type="checkbox"
@@ -1123,7 +1179,7 @@ export function AdminDashboardClient({
                         />
                         {lang === 'ar' ? 'مفعل' : 'Active'}
                       </label>
-                      {!['women', 'men', 'handmade'].includes(col.slug) && (
+                      {can(currentAdmin, 'collections', 'delete') && !['women', 'men', 'handmade'].includes(col.slug) && (
                         <button
                           type="button"
                           onClick={() => void handleDeleteCollection(col.id)}
@@ -1159,14 +1215,16 @@ export function AdminDashboardClient({
                       style={{ borderColor: 'var(--border-glass)' }}
                     />
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => handleUpdateCollection(col)}
-                    className="rounded-xl px-4 py-2 font-semibold text-white"
-                    style={{ backgroundColor: 'var(--accent)' }}
-                  >
-                    {lang === 'ar' ? 'حفظ التشكيلة' : 'Save Collection'}
-                  </button>
+                  {can(currentAdmin, 'collections', 'edit') && (
+                    <button
+                      type="button"
+                      onClick={() => handleUpdateCollection(col)}
+                      className="rounded-xl px-4 py-2 font-semibold text-white"
+                      style={{ backgroundColor: 'var(--accent)' }}
+                    >
+                      {lang === 'ar' ? 'حفظ التشكيلة' : 'Save Collection'}
+                    </button>
+                  )}
                 </div>
               ))}
 
@@ -1404,29 +1462,135 @@ export function AdminDashboardClient({
             </div>
           )}
 
-          {section === 'chat' && (
-            <AdminChatInbox
+          {section === 'chat' && can(currentAdmin, 'chat', 'view') && (
+            <>
+              <AdminChatInbox
+                lang={lang}
+                conversations={conversations}
+                selectedId={selectedChatId}
+                onSelectId={handleSelectChat}
+                onEditConversation={can(currentAdmin, 'chat', 'edit') ? (c) => setEditConv(c) : undefined}
+                onDeleteConversation={can(currentAdmin, 'chat', 'delete') ? (c) => setDeleteConvTarget(c) : undefined}
+              />
+
+              <Modal
+                open={Boolean(editConv)}
+                onClose={() => setEditConv(null)}
+                title={lang === 'ar' ? 'تعديل بيانات المحادثة' : 'Edit Conversation'}
+              >
+                {editConv && (
+                  <form
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      const supabase = createClient();
+                      const { error } = await supabase
+                        .from('conversations')
+                        .update({
+                          guest_name: editConv.guest_name?.trim() || null,
+                          guest_phone: editConv.guest_phone?.trim() || null,
+                          status: editConv.status,
+                        })
+                        .eq('id', editConv.id);
+                      if (error) {
+                        notify(error.message, true);
+                        return;
+                      }
+                      setConversations((prev) =>
+                        prev.map((x) => (x.id === editConv.id ? editConv : x))
+                      );
+                      setEditConv(null);
+                      notify(lang === 'ar' ? 'تم تحديث المحادثة' : 'Conversation updated');
+                    }}
+                    className="space-y-3 text-xs"
+                  >
+                    <input
+                      value={editConv.guest_name || ''}
+                      onChange={(e) => setEditConv({ ...editConv, guest_name: e.target.value })}
+                      placeholder={lang === 'ar' ? 'اسم العميل' : 'Customer Name'}
+                      className="w-full rounded-xl border bg-transparent px-3 py-2.5"
+                      style={{ borderColor: 'var(--border-glass)' }}
+                    />
+                    <input
+                      value={editConv.guest_phone || ''}
+                      onChange={(e) => setEditConv({ ...editConv, guest_phone: e.target.value })}
+                      placeholder={lang === 'ar' ? 'رقم الهاتف' : 'Phone Number'}
+                      className="w-full rounded-xl border bg-transparent px-3 py-2.5"
+                      style={{ borderColor: 'var(--border-glass)' }}
+                    />
+                    <select
+                      value={editConv.status}
+                      onChange={(e) => setEditConv({ ...editConv, status: e.target.value as Conversation['status'] })}
+                      className="w-full rounded-xl border bg-[var(--bg-page)] px-3 py-2.5"
+                      style={{ borderColor: 'var(--border-glass)' }}
+                    >
+                      <option value="open">{lang === 'ar' ? 'مفتوحة' : 'Open'}</option>
+                      <option value="closed">{lang === 'ar' ? 'مغلقة' : 'Closed'}</option>
+                    </select>
+                    <button type="submit" className="cta-luxury w-full rounded-2xl py-2.5 font-semibold">
+                      {lang === 'ar' ? 'حفظ التعديلات' : 'Save Changes'}
+                    </button>
+                  </form>
+                )}
+              </Modal>
+
+              <ConfirmDialog
+                open={Boolean(deleteConvTarget)}
+                onClose={() => setDeleteConvTarget(null)}
+                onConfirm={async () => {
+                  if (!deleteConvTarget) return;
+                  const supabase = createClient();
+                  const { error } = await supabase.from('conversations').delete().eq('id', deleteConvTarget.id);
+                  if (error) {
+                    notify(error.message, true);
+                    return;
+                  }
+                  setConversations((prev) => prev.filter((x) => x.id !== deleteConvTarget.id));
+                  if (selectedChatId === deleteConvTarget.id) {
+                    setSelectedChatId(null);
+                    setBubbleOpen(false);
+                  }
+                  setDeleteConvTarget(null);
+                  notify(lang === 'ar' ? 'تم حذف المحادثة' : 'Conversation deleted');
+                }}
+                title={lang === 'ar' ? 'حذف المحادثة' : 'Delete Conversation'}
+                message={
+                  lang === 'ar'
+                    ? `هل أنت متأكد من حذف محادثة ${deleteConvTarget?.guest_name || 'العميل'}؟`
+                    : `Delete conversation with ${deleteConvTarget?.guest_name || 'Guest'}?`
+                }
+                confirmLabel={lang === 'ar' ? 'حذف' : 'Delete'}
+                cancelLabel={lang === 'ar' ? 'إلغاء' : 'Cancel'}
+                danger
+              />
+            </>
+          )}
+
+          {section === 'media' && can(currentAdmin, 'media', 'view') && (
+            <AdminMediaPanel
               lang={lang}
-              conversations={conversations}
-              selectedId={selectedChatId}
-              onSelectId={handleSelectChat}
+              onNotify={notify}
+              perms={{
+                create: can(currentAdmin, 'media', 'create'),
+                edit: can(currentAdmin, 'media', 'edit'),
+                delete: can(currentAdmin, 'media', 'delete'),
+              }}
             />
           )}
 
-          {section === 'media' && <AdminMediaPanel lang={lang} onNotify={notify} />}
-
-          {section === 'homepage' && (
+          {section === 'homepage' && can(currentAdmin, 'homepage', 'view') && (
             <div className="space-y-5">
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={openCreateBanner}
-                  className="cta-luxury inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs font-semibold"
-                >
-                  <Plus className="h-4 w-4" />
-                  <span>{lang === 'ar' ? 'إضافة بانر' : 'Add Banner'}</span>
-                </button>
-              </div>
+              {can(currentAdmin, 'homepage', 'create') && (
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={openCreateBanner}
+                    className="cta-luxury inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs font-semibold"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>{lang === 'ar' ? 'إضافة بانر' : 'Add Banner'}</span>
+                  </button>
+                </div>
+              )}
 
               <div className="glass-card divide-y rounded-3xl" style={{ borderColor: 'var(--border-glass)' }}>
                 {banners.map((b) => (
@@ -1444,15 +1608,21 @@ export function AdminDashboardClient({
                       >
                         <Eye className="h-4 w-4" />
                       </button>
-                      <button type="button" onClick={() => handleToggleBanner(b)} className="rounded-xl border px-3 py-1" style={{ borderColor: 'var(--border-glass)' }}>
-                        {b.is_active ? (lang === 'ar' ? 'مفعل' : 'Active') : (lang === 'ar' ? 'معطل' : 'Inactive')}
-                      </button>
-                      <button type="button" onClick={() => openEditBanner(b)} className="rounded-xl p-2 hover:bg-[var(--accent-soft)]" title={lang === 'ar' ? 'تعديل' : 'Edit'}>
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button type="button" onClick={() => setDeleteBannerTarget(b)} className="rounded-xl p-2 text-rose-500 hover:bg-rose-500/10" title={lang === 'ar' ? 'حذف' : 'Delete'}>
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      {can(currentAdmin, 'homepage', 'edit') && (
+                        <>
+                          <button type="button" onClick={() => handleToggleBanner(b)} className="rounded-xl border px-3 py-1" style={{ borderColor: 'var(--border-glass)' }}>
+                            {b.is_active ? (lang === 'ar' ? 'مفعل' : 'Active') : (lang === 'ar' ? 'معطل' : 'Inactive')}
+                          </button>
+                          <button type="button" onClick={() => openEditBanner(b)} className="rounded-xl p-2 hover:bg-[var(--accent-soft)]" title={lang === 'ar' ? 'تعديل' : 'Edit'}>
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                        </>
+                      )}
+                      {can(currentAdmin, 'homepage', 'delete') && (
+                        <button type="button" onClick={() => setDeleteBannerTarget(b)} className="rounded-xl p-2 text-rose-500 hover:bg-rose-500/10" title={lang === 'ar' ? 'حذف' : 'Delete'}>
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -1500,43 +1670,76 @@ export function AdminDashboardClient({
                       </select>
                     </div>
                     <div>
-                      <label className="mb-1 block text-xs font-semibold">{lang === 'ar' ? 'رابط الصورة / الملصق أو رفع ملف' : 'Image / Poster URL or Upload'}</label>
-                      <input
-                        value={bannerForm.image_url}
-                        onChange={(e) => setBannerForm({ ...bannerForm, image_url: e.target.value })}
-                        className="w-full rounded-xl border bg-transparent px-3 py-2"
-                        style={{ borderColor: 'var(--border-glass)' }}
-                      />
-                      <input
-                        type="file"
-                        accept="image/*"
-                        disabled={uploadingBannerMedia}
-                        onChange={(e) => {
-                          const f = e.target.files?.[0];
-                          if (f) void uploadBannerMedia(f, 'image');
-                        }}
-                        className="mt-1.5 block w-full text-[11px]"
-                      />
+                      <label className="mb-1 block text-xs font-semibold">
+                        {lang === 'ar' ? 'صورة البانر / ملصق الفيديو' : 'Banner Image / Poster'}
+                      </label>
+                      <div className="flex flex-col gap-2">
+                        <input
+                          value={bannerForm.image_url}
+                          onChange={(e) => setBannerForm({ ...bannerForm, image_url: e.target.value })}
+                          placeholder="https://..."
+                          className="w-full rounded-xl border bg-transparent px-3 py-2"
+                          style={{ borderColor: 'var(--border-glass)' }}
+                        />
+                        <label className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed px-3 py-2 text-xs font-semibold transition-colors hover:bg-[var(--accent-soft)]" style={{ borderColor: 'var(--border-glass)' }}>
+                          <ImageIcon className="h-4 w-4 text-[var(--accent)]" />
+                          <span>
+                            {uploadingBannerMedia
+                              ? lang === 'ar'
+                                ? 'جاري الرفع...'
+                                : 'Uploading...'
+                              : lang === 'ar'
+                                ? 'رفع صورة من الجهاز'
+                                : 'Upload Image File'}
+                          </span>
+                          <input
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp,image/avif"
+                            disabled={uploadingBannerMedia}
+                            onChange={(e) => {
+                              const f = e.target.files?.[0];
+                              if (f) void uploadBannerMedia(f, 'image');
+                            }}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
                     </div>
                     <div>
-                      <label className="mb-1 block text-xs font-semibold">{lang === 'ar' ? 'رابط الفيديو (.mp4 / .webm) أو رفع ملف' : 'Video URL (.mp4 / .webm) or Upload'}</label>
-                      <input
-                        value={bannerForm.video_url}
-                        onChange={(e) => setBannerForm({ ...bannerForm, video_url: e.target.value })}
-                        placeholder="https://.../ad-video.mp4"
-                        className="w-full rounded-xl border bg-transparent px-3 py-2"
-                        style={{ borderColor: 'var(--border-glass)' }}
-                      />
-                      <input
-                        type="file"
-                        accept="video/mp4,video/webm"
-                        disabled={uploadingBannerMedia}
-                        onChange={(e) => {
-                          const f = e.target.files?.[0];
-                          if (f) void uploadBannerMedia(f, 'video');
-                        }}
-                        className="mt-1.5 block w-full text-[11px]"
-                      />
+                      <label className="mb-1 block text-xs font-semibold">
+                        {lang === 'ar' ? 'فيديو الإعلان (.mp4 / .webm)' : 'Banner Video (.mp4 / .webm)'}
+                      </label>
+                      <div className="flex flex-col gap-2">
+                        <input
+                          value={bannerForm.video_url}
+                          onChange={(e) => setBannerForm({ ...bannerForm, video_url: e.target.value })}
+                          placeholder="https://.../ad-video.mp4"
+                          className="w-full rounded-xl border bg-transparent px-3 py-2"
+                          style={{ borderColor: 'var(--border-glass)' }}
+                        />
+                        <label className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed px-3 py-2 text-xs font-semibold transition-colors hover:bg-[var(--accent-soft)]" style={{ borderColor: 'var(--border-glass)' }}>
+                          <Sparkles className="h-4 w-4 text-[var(--accent)]" />
+                          <span>
+                            {uploadingBannerMedia
+                              ? lang === 'ar'
+                                ? 'جاري الرفع...'
+                                : 'Uploading...'
+                              : lang === 'ar'
+                                ? 'رفع فيديو من الجهاز (MP4 / WebM)'
+                                : 'Upload Video File (MP4 / WebM)'}
+                          </span>
+                          <input
+                            type="file"
+                            accept="video/mp4,video/webm"
+                            disabled={uploadingBannerMedia}
+                            onChange={(e) => {
+                              const f = e.target.files?.[0];
+                              if (f) void uploadBannerMedia(f, 'video');
+                            }}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
                     </div>
                     <div>
                       <label className="mb-1 block text-xs font-semibold">{lang === 'ar' ? 'العنوان (عربي) *' : 'Title AR *'}</label>
@@ -1576,6 +1779,57 @@ export function AdminDashboardClient({
                         style={{ borderColor: 'var(--border-glass)' }}
                       />
                     </div>
+                  </div>
+
+                  {/* Transparent Glassy Blur Effect Controls */}
+                  <div className="space-y-3 rounded-2xl border p-4" style={{ borderColor: 'var(--border-glass)' }}>
+                    <label className="flex items-center gap-2 text-xs font-semibold">
+                      <input
+                        type="checkbox"
+                        checked={bannerForm.glass_enabled}
+                        onChange={(e) => setBannerForm({ ...bannerForm, glass_enabled: e.target.checked })}
+                      />
+                      {lang === 'ar'
+                        ? 'تفعيل التأثير الزجاجي الشفاف الضبابي على الإعلان'
+                        : 'Enable Transparent Glassy Blur Effect'}
+                    </label>
+
+                    {bannerForm.glass_enabled && (
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <div>
+                          <div className="mb-1 flex justify-between text-[11px]">
+                            <span>{lang === 'ar' ? 'درجة الضبابية (Blur)' : 'Blur Intensity'}</span>
+                            <span className="font-mono font-bold">{bannerForm.glass_blur_px}px</span>
+                          </div>
+                          <input
+                            type="range"
+                            min={0}
+                            max={40}
+                            value={bannerForm.glass_blur_px}
+                            onChange={(e) =>
+                              setBannerForm({ ...bannerForm, glass_blur_px: Number(e.target.value) })
+                            }
+                            className="w-full accent-[var(--accent)]"
+                          />
+                        </div>
+                        <div>
+                          <div className="mb-1 flex justify-between text-[11px]">
+                            <span>{lang === 'ar' ? 'عتامة الخلفية الزجاجية' : 'Glass Opacity'}</span>
+                            <span className="font-mono font-bold">{bannerForm.glass_opacity}%</span>
+                          </div>
+                          <input
+                            type="range"
+                            min={0}
+                            max={90}
+                            value={bannerForm.glass_opacity}
+                            onChange={(e) =>
+                              setBannerForm({ ...bannerForm, glass_opacity: Number(e.target.value) })
+                            }
+                            className="w-full accent-[var(--accent)]"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div className="flex flex-col-reverse gap-2.5 pt-2 sm:flex-row sm:justify-end sm:gap-3">
                     <button type="button" onClick={() => setBannerModalOpen(false)} className="w-full rounded-md border px-5 py-2.5 text-xs font-semibold sm:w-auto" style={{ borderColor: 'var(--border-glass)' }}>
@@ -1709,8 +1963,21 @@ export function AdminDashboardClient({
                         {u.role} • {u.is_active ? (lang === 'ar' ? 'مفعل' : 'Active') : (lang === 'ar' ? 'معطل' : 'Inactive')}
                       </p>
                     </div>
-                    {currentAdmin.role === 'super_admin' && u.id !== currentAdmin.id && (
-                      <div className="flex items-center gap-2">
+                    {can(currentAdmin, 'users', 'edit') && u.id !== currentAdmin.id && (
+                      <div className="flex flex-wrap items-center gap-2">
+                        {u.role !== 'super_admin' && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setRbacUser(u);
+                              setRbacDraft(resolveUserPermissions(u));
+                            }}
+                            className="inline-flex items-center gap-1 rounded-xl bg-[var(--accent-soft)] px-3 py-1 font-semibold text-[var(--accent-strong)]"
+                          >
+                            <ShieldCheck className="h-3.5 w-3.5" />
+                            <span>{lang === 'ar' ? 'الصلاحيات (RBAC)' : 'Permissions (RBAC)'}</span>
+                          </button>
+                        )}
                         <select
                           value={u.role}
                           onChange={async (e) => {
@@ -1756,6 +2023,108 @@ export function AdminDashboardClient({
                   </div>
                 ))}
               </div>
+
+              <Modal
+                open={Boolean(rbacUser)}
+                onClose={() => setRbacUser(null)}
+                maxWidthClass="max-w-3xl"
+                title={
+                  rbacUser
+                    ? lang === 'ar'
+                      ? `صلاحيات الوصول (RBAC) — ${rbacUser.email}`
+                      : `RBAC Permissions — ${rbacUser.email}`
+                    : ''
+                }
+              >
+                {rbacUser && (
+                  <div className="space-y-4 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="opacity-75">
+                        {lang === 'ar'
+                          ? 'تحكم في صلاحيات العرض والإضافة والتعديل والحذف لكل صفحة:'
+                          : 'Control View / Add / Edit / Delete permissions per page:'}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setRbacDraft(
+                            JSON.parse(JSON.stringify(ROLE_DEFAULT_PERMISSIONS[rbacUser.role])) as RbacPermissionsMap
+                          )
+                        }
+                        className="rounded-xl border px-3 py-1.5 font-semibold hover:bg-[var(--bg-subtle)]"
+                        style={{ borderColor: 'var(--border-glass)' }}
+                      >
+                        {lang === 'ar' ? 'استعادة الافتراضي للدور' : 'Reset to Role Defaults'}
+                      </button>
+                    </div>
+                    <div className="overflow-x-auto rounded-2xl border" style={{ borderColor: 'var(--border-glass)' }}>
+                      <table className="w-full text-start text-xs">
+                        <thead>
+                          <tr className="border-b bg-[var(--bg-subtle)]" style={{ borderColor: 'var(--border-glass)' }}>
+                            <th className="p-3 text-start">{lang === 'ar' ? 'الصفحة / القسم' : 'Page / Resource'}</th>
+                            {RBAC_ACTIONS.map((act) => (
+                              <th key={act.id} className="p-3 text-center">
+                                {lang === 'ar' ? act.labelAr : act.labelEn}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y" style={{ borderColor: 'var(--border-glass)' }}>
+                          {RBAC_RESOURCES.map((res) => (
+                            <tr key={res.id}>
+                              <td className="p-3 font-semibold">{lang === 'ar' ? res.labelAr : res.labelEn}</td>
+                              {RBAC_ACTIONS.map((act) => {
+                                const checked = Boolean(rbacDraft[res.id]?.[act.id]);
+                                return (
+                                  <td key={act.id} className="p-3 text-center">
+                                    <input
+                                      type="checkbox"
+                                      checked={checked}
+                                      onChange={(e) => {
+                                        const val = e.target.checked;
+                                        setRbacDraft((prev) => ({
+                                          ...prev,
+                                          [res.id as RbacResource]: {
+                                            ...(prev[res.id] || {}),
+                                            [act.id as RbacAction]: val,
+                                          },
+                                        }));
+                                      }}
+                                      className="h-4 w-4 accent-[var(--accent)]"
+                                    />
+                                  </td>
+                                );
+                              })}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const supabase = createClient();
+                        const { error } = await supabase
+                          .from('admin_users')
+                          .update({ permissions: rbacDraft })
+                          .eq('id', rbacUser.id);
+                        if (error) {
+                          notify(error.message, true);
+                          return;
+                        }
+                        setAdminUsers((prev) =>
+                          prev.map((x) => (x.id === rbacUser.id ? { ...x, permissions: rbacDraft } : x))
+                        );
+                        setRbacUser(null);
+                        notify(lang === 'ar' ? 'تم حفظ صلاحيات RBAC بنجاح' : 'RBAC permissions saved');
+                      }}
+                      className="cta-luxury w-full rounded-2xl py-2.5 font-semibold"
+                    >
+                      {lang === 'ar' ? 'حفظ الصلاحيات' : 'Save RBAC Permissions'}
+                    </button>
+                  </div>
+                )}
+              </Modal>
 
               <Modal
                 open={userModalOpen}
@@ -1846,6 +2215,36 @@ export function AdminDashboardClient({
               />
             </div>
           )}
+
+          <Modal
+            open={Boolean(viewCat)}
+            onClose={() => setViewCat(null)}
+            title={lang === 'ar' ? 'تفاصيل الفئة' : 'Category Details'}
+          >
+            {viewCat && (
+              <div className="space-y-2 text-xs">
+                <p><strong>{lang === 'ar' ? 'الاسم بالعربية:' : 'Arabic Name:'}</strong> {viewCat.name_ar}</p>
+                <p><strong>{lang === 'ar' ? 'الاسم بالإنجليزية:' : 'English Name:'}</strong> {viewCat.name_en}</p>
+                <p><strong>{lang === 'ar' ? 'المعرف (Slug):' : 'Slug:'}</strong> {viewCat.slug}</p>
+              </div>
+            )}
+          </Modal>
+
+          <Modal
+            open={Boolean(viewCol)}
+            onClose={() => setViewCol(null)}
+            title={lang === 'ar' ? 'تفاصيل التشكيلة' : 'Collection Details'}
+          >
+            {viewCol && (
+              <div className="space-y-2 text-xs">
+                <p><strong>{lang === 'ar' ? 'الاسم بالعربية:' : 'Arabic Name:'}</strong> {viewCol.name_ar}</p>
+                <p><strong>{lang === 'ar' ? 'الاسم بالإنجليزية:' : 'English Name:'}</strong> {viewCol.name_en}</p>
+                <p><strong>{lang === 'ar' ? 'المعرف (Slug):' : 'Slug:'}</strong> {viewCol.slug}</p>
+                <p><strong>{lang === 'ar' ? 'الثيم:' : 'Theme:'}</strong> {viewCol.theme_key}</p>
+                <p><strong>{lang === 'ar' ? 'الحالة:' : 'Status:'}</strong> {viewCol.is_active ? (lang === 'ar' ? 'مفعل' : 'Active') : (lang === 'ar' ? 'معطل' : 'Inactive')}</p>
+              </div>
+            )}
+          </Modal>
 
           <Modal
             open={Boolean(previewBanner)}

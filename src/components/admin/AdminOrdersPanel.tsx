@@ -48,6 +48,7 @@ export function AdminOrdersPanel({
   prefillInquiry,
   onClearPrefill,
   onNotify,
+  perms = { create: true, edit: true, delete: true },
 }: {
   lang: Language;
   currency: string;
@@ -57,6 +58,7 @@ export function AdminOrdersPanel({
   prefillInquiry?: Inquiry | null;
   onClearPrefill?: () => void;
   onNotify: (msg: string, isError?: boolean) => void;
+  perms?: { create: boolean; edit: boolean; delete: boolean };
 }) {
   const isAr = lang === 'ar';
   const [search, setSearch] = useState('');
@@ -345,14 +347,16 @@ export function AdminOrdersPanel({
           </select>
         </div>
 
-        <button
-          type="button"
-          onClick={() => openCreateModal(null)}
-          className="cta-luxury inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold"
-        >
-          <Plus className="h-4 w-4" />
-          <span>{isAr ? 'إنشاء فاتورة جديدة' : 'Create Invoice'}</span>
-        </button>
+        {perms.create && (
+          <button
+            type="button"
+            onClick={() => openCreateModal(null)}
+            className="cta-luxury inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold"
+          >
+            <Plus className="h-4 w-4" />
+            <span>{isAr ? 'إنشاء فاتورة جديدة' : 'Create Invoice'}</span>
+          </button>
+        )}
       </div>
 
       {/* Invoices List */}
@@ -417,24 +421,28 @@ export function AdminOrdersPanel({
                   >
                     <Printer className="h-3.5 w-3.5" />
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => openEditModal(o)}
-                    className="rounded-xl border p-2 hover:bg-[var(--bg-subtle)]"
-                    style={{ borderColor: 'var(--border-glass)' }}
-                    title={isAr ? 'تعديل' : 'Edit'}
-                  >
-                    <Pencil className="h-3.5 w-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setDeleteTarget(o)}
-                    className="rounded-xl border p-2 text-rose-500 hover:bg-rose-500/10"
-                    style={{ borderColor: 'var(--border-glass)' }}
-                    title={isAr ? 'حذف' : 'Delete'}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
+                  {perms.edit && (
+                    <button
+                      type="button"
+                      onClick={() => openEditModal(o)}
+                      className="rounded-xl border p-2 hover:bg-[var(--bg-subtle)]"
+                      style={{ borderColor: 'var(--border-glass)' }}
+                      title={isAr ? 'تعديل' : 'Edit'}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                  {perms.delete && (
+                    <button
+                      type="button"
+                      onClick={() => setDeleteTarget(o)}
+                      className="rounded-xl border p-2 text-rose-500 hover:bg-rose-500/10"
+                      style={{ borderColor: 'var(--border-glass)' }}
+                      title={isAr ? 'حذف' : 'Delete'}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  )}
                 </div>
               </div>
             );

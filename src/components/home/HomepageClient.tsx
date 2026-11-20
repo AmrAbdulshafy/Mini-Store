@@ -180,9 +180,29 @@ export function HomepageClient({
           );
         })}
 
-        {/* Foreground Content */}
-        <div className="relative z-10 mx-auto w-full max-w-7xl px-5 py-16 sm:px-8 lg:px-12">
-          <div className="max-w-2xl space-y-6 text-white">
+        {/* Foreground Content with Dashboard-Controlled Transparent Glassy Blur Effect */}
+        {(() => {
+          const glassEnabled = activeSlide?.glass_enabled ?? true;
+          const blurPx = activeSlide?.glass_blur_px ?? 12;
+          const opacityPct = activeSlide?.glass_opacity ?? 35;
+          return (
+            <div className="relative z-10 mx-auto w-full max-w-7xl px-5 py-16 sm:px-8 lg:px-12">
+              <div
+                className={`max-w-2xl space-y-6 text-white transition-all duration-500 ${
+                  glassEnabled
+                    ? 'rounded-3xl border border-white/20 p-6 shadow-2xl sm:p-10'
+                    : ''
+                }`}
+                style={
+                  glassEnabled
+                    ? {
+                        backgroundColor: `rgba(16, 12, 15, ${Math.min(0.9, Math.max(0, opacityPct / 100))})`,
+                        backdropFilter: `blur(${blurPx}px)`,
+                        WebkitBackdropFilter: `blur(${blurPx}px)`,
+                      }
+                    : undefined
+                }
+              >
             <span className="inline-flex animate-fade-in items-center gap-2 rounded-full border border-white/20 bg-black/35 px-4 py-1.5 text-[11px] font-semibold tracking-[0.2em] text-[#E6C78B] uppercase backdrop-blur-md">
               <Sparkles className="h-3.5 w-3.5 text-[#E6C78B]" />
               {t.hero.badge}
@@ -235,8 +255,10 @@ export function HomepageClient({
             </div>
 
             <p className="text-xs text-white/70">{t.hero.noCheckoutNote}</p>
-          </div>
-        </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Carousel Controls when multiple active hero/video ads exist */}
         {heroSlides.length > 1 && (
