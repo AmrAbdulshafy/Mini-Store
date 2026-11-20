@@ -11,7 +11,7 @@ export function BackgroundVideoPlayer() {
   const pathname = usePathname();
   const { lang } = useApp();
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [muted, setMuted] = useState(true);
+  const [muted, setMuted] = useState(false);
   const userExplicitlyMutedRef = useRef(false);
 
   const isAdmin = pathname?.startsWith('/admin');
@@ -21,15 +21,18 @@ export function BackgroundVideoPlayer() {
     try {
       if (sessionStorage.getItem(USER_MUTED_KEY) === 'true') {
         userExplicitlyMutedRef.current = true;
+        if (videoRef.current) videoRef.current.muted = true;
+        return;
       }
     } catch {
       // ignore
     }
 
+    const vid = videoRef.current;
+    if (!vid) return;
+
     const tryAutoplayUnmuted = () => {
       if (userExplicitlyMutedRef.current) return;
-      const vid = videoRef.current;
-      if (!vid) return;
       vid.volume = 0.25;
       vid.muted = false;
       const p = vid.play();
@@ -39,20 +42,35 @@ export function BackgroundVideoPlayer() {
           cleanup();
         }).catch(() => {
           // Browser autoplay policy blocked unmuted playback before user gesture;
-          // play muted video immediately and unmute on first interaction.
+          // start muted video immediately and unmute on first interaction.
           vid.muted = true;
+          setMuted(true);
           vid.play().catch(() => {});
         });
       }
     };
 
-    const events = ['pointerdown', 'pointermove', 'scroll', 'touchstart', 'keydown', 'wheel', 'click'] as const;
+    const events = [
+      'pointerdown',
+      'pointermove',
+      'mousemove',
+      'scroll',
+      'touchstart',
+      'touchmove',
+      'keydown',
+      'wheel',
+      'click',
+    ] as const;
+
     const cleanup = () => {
       events.forEach((ev) => window.removeEventListener(ev, tryAutoplayUnmuted));
+      vid.removeEventListener('canplay', tryAutoplayUnmuted);
     };
 
     tryAutoplayUnmuted();
+    vid.addEventListener('canplay', tryAutoplayUnmuted, { once: true });
     events.forEach((ev) => window.addEventListener(ev, tryAutoplayUnmuted, { passive: true }));
+
     return cleanup;
   }, [isAdmin]);
 
@@ -61,7 +79,7 @@ export function BackgroundVideoPlayer() {
   const toggleMute = () => {
     const vid = videoRef.current;
     if (!vid) return;
-    if (muted) {
+    if (vid.muted || muted) {
       userExplicitlyMutedRef.current = false;
       try {
         sessionStorage.removeItem(USER_MUTED_KEY);
@@ -93,9 +111,9 @@ export function BackgroundVideoPlayer() {
           src="/videos/esraa-luxury-ad.mp4"
           poster="/images/hero-boutique.png"
           autoPlay
-          muted={muted}
           loop
           playsInline
+          onVolumeChange={(e) => setMuted(e.currentTarget.muted)}
           className="h-full w-full object-cover opacity-55"
         />
         <div
