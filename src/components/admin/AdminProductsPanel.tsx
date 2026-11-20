@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import {
   Archive,
+  Check,
   Eye,
   EyeOff,
   ImagePlus,
@@ -57,6 +58,27 @@ const emptyForm = {
   is_archived: false,
 };
 
+const PRESET_COLORS = [
+  '#141210',
+  '#F5ECE3',
+  '#D4B483',
+  '#8E3A59',
+  '#D993A6',
+  '#1E293B',
+  '#78350F',
+  '#A68A64',
+  '#065F46',
+  '#7F1D1D',
+];
+
+const PRESET_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '30ml', '50ml', '100ml', '150ml', 'One Size'];
+
+interface PendingUpload {
+  file: File;
+  previewUrl: string;
+  colorHex: string | null;
+}
+
 export function AdminProductsPanel({
   lang,
   products,
@@ -69,8 +91,33 @@ export function AdminProductsPanel({
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [existingImages, setExistingImages] = useState<ProductImage[]>([]);
-  const [newFiles, setNewFiles] = useState<File[]>([]);
+  const [pendingUploads, setPendingUploads] = useState<PendingUpload[]>([]);
+  const [customColor, setCustomColor] = useState('#8E3A59');
+  const [customSize, setCustomSize] = useState('');
   const [saving, setSaving] = useState(false);
+
+  const selectedColors = form.colors
+    .split(',')
+    .map((c) => c.trim())
+    .filter(Boolean);
+  const selectedSizes = form.sizes
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  const toggleColor = (hex: string) => {
+    const next = selectedColors.includes(hex)
+      ? selectedColors.filter((c) => c !== hex)
+      : [...selectedColors, hex];
+    setForm((prev) => ({ ...prev, colors: next.join(', ') }));
+  };
+
+  const toggleSize = (sz: string) => {
+    const next = selectedSizes.includes(sz)
+      ? selectedSizes.filter((s) => s !== sz)
+      : [...selectedSizes, sz];
+    setForm((prev) => ({ ...prev, sizes: next.join(', ') }));
+  };
 
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
@@ -90,7 +137,7 @@ export function AdminProductsPanel({
       category_id: categories[0]?.id || '',
     });
     setExistingImages([]);
-    setNewFiles([]);
+    setPendingUploads([]);
     setEditing(true);
   };
 
@@ -120,7 +167,7 @@ export function AdminProductsPanel({
       is_archived: p.is_archived,
     });
     setExistingImages(p.product_images || []);
-    setNewFiles([]);
+    setPendingUploads([]);
     setEditing(true);
   };
 
@@ -181,13 +228,13 @@ export function AdminProductsPanel({
         productId = data.id;
       }
 
-      for (let idx = 0; idx < newFiles.length; idx++) {
-        const file = newFiles[idx];
-        const ext = file.name.split('.').pop() || 'jpg';
+      for (let idx = 0; idx < pendingUploads.length; idx++) {
+        const item = pendingUploads[idx];
+        const ext = item.file.name.split('.').pop() || 'jpg';
         const storagePath = `products/${productId}/${Date.now()}-${idx}.${ext}`;
         const { error: uploadErr } = await supabase.storage
           .from('boutique-media')
-          .upload(storagePath, file, { upsert: true });
+          .upload(storagePath, item.file, { upsert: true });
         if (uploadErr) throw uploadErr;
 
         const { data: pub } = supabase.storage.from('boutique-media').getPublicUrl(storagePath);
@@ -195,6 +242,7 @@ export function AdminProductsPanel({
           product_id: productId,
           image_url: pub.publicUrl,
           storage_path: storagePath,
+          color_hex: item.colorHex || null,
           is_primary: existingImages.length === 0 && idx === 0,
           sort_order: existingImages.length + idx,
         });
@@ -248,6 +296,33 @@ export function AdminProductsPanel({
     await supabase.from('product_images').update({ is_primary: true }).eq('id', img.id);
     setExistingImages((prev) => prev.map((x) => ({ ...x, is_primary: x.id === img.id })));
     onNotify(lang === 'ar' ? 'تم تعيين الصورة الرئيسية' : 'Primary image updated');
+  };
+
+  const handleSetImageColor = async (img: ProductImage, colorHex: string | null) => {
+    const supabase = createClient();
+    const { error } = await supabase
+      .from('product_images')
+      .update({ color_hex: colorHex })
+      .eq('id', img.id);
+    if (error) {
+      onNotify(error.message, true);
+      return;
+    }
+    setExistingImages((prev) =>
+      prev.map((x) => (x.id === img.id ? { ...x, color_hex: colorHex } : x))
+    );
+    setProducts((prev) =>
+      prev.map((p) =>
+        p.id === img.product_id
+          ? {
+              ...p,
+              product_images: (p.product_images || []).map((x) =>
+                x.id === img.id ? { ...x, color_hex: colorHex } : x
+              ),
+            }
+          : p
+      )
+    );
   };
 
   const toggleFlag = async (
@@ -508,30 +583,6 @@ export function AdminProductsPanel({
             </div>
             <div>
               <label className="mb-1 block text-xs font-semibold">
-                {lang === 'ar' ? 'الألوان (مفصولة بفاصلة)' : 'Colors (comma-sep)'}
-              </label>
-              <input
-                value={form.colors}
-                onChange={(e) => setForm({ ...form, colors: e.target.value })}
-                placeholder="#8E3A59, #D4B483, #1A1016"
-                className="w-full rounded-xl border bg-transparent px-3 py-2"
-                style={{ borderColor: 'var(--border-glass)' }}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-semibold">
-                {lang === 'ar' ? 'المقاسات (مفصولة بفاصلة)' : 'Sizes (comma-sep)'}
-              </label>
-              <input
-                value={form.sizes}
-                onChange={(e) => setForm({ ...form, sizes: e.target.value })}
-                placeholder="S, M, L, XL"
-                className="w-full rounded-xl border bg-transparent px-3 py-2"
-                style={{ borderColor: 'var(--border-glass)' }}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-semibold">
                 {lang === 'ar' ? 'العرض / الأبعاد' : 'Width / Dimensions'}
               </label>
               <input
@@ -543,45 +594,246 @@ export function AdminProductsPanel({
               />
             </div>
           </div>
+          {/* Active Colors & Sizes with Check */}
+          <div className="grid gap-4 rounded-2xl border p-4 sm:grid-cols-2" style={{ borderColor: 'var(--border-glass)' }}>
+            <div className="space-y-2.5">
+              <label className="block text-xs font-semibold">
+                {lang === 'ar' ? 'الألوان المتاحة (اضغط للتفعيل)' : 'Active Colors (click to check)'}
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {Array.from(new Set([...PRESET_COLORS, ...selectedColors])).map((hex) => {
+                  const active = selectedColors.includes(hex);
+                  return (
+                    <button
+                      key={hex}
+                      type="button"
+                      onClick={() => toggleColor(hex)}
+                      title={hex}
+                      className={`flex h-8 w-8 items-center justify-center rounded-full border-2 transition-transform ${
+                        active
+                          ? 'scale-110 border-[var(--accent)] ring-2 ring-[var(--accent-soft)]'
+                          : 'border-white/30 opacity-65 hover:opacity-100'
+                      }`}
+                      style={{ backgroundColor: hex }}
+                    >
+                      {active && (
+                        <Check
+                          className="h-4 w-4 drop-shadow"
+                          style={{ color: hex.toLowerCase() === '#f5ece3' ? '#141210' : '#FFFFFF' }}
+                        />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="flex items-center gap-2 pt-1">
+                <input
+                  type="color"
+                  value={customColor}
+                  onChange={(e) => setCustomColor(e.target.value)}
+                  className="h-8 w-10 cursor-pointer rounded border bg-transparent"
+                  style={{ borderColor: 'var(--border-glass)' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!selectedColors.includes(customColor.toUpperCase()) && !selectedColors.includes(customColor)) {
+                      toggleColor(customColor.toUpperCase());
+                    }
+                  }}
+                  className="rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold hover:bg-[var(--bg-subtle)]"
+                  style={{ borderColor: 'var(--border-glass)' }}
+                >
+                  {lang === 'ar' ? '+ إضافة لون' : '+ Add Color'}
+                </button>
+              </div>
+            </div>
 
-          {/* Images */}
-          <div className="space-y-2 rounded-2xl border p-4" style={{ borderColor: 'var(--border-glass)' }}>
+            <div className="space-y-2.5">
+              <label className="block text-xs font-semibold">
+                {lang === 'ar' ? 'المقاسات المتاحة (اضغط للتفعيل)' : 'Active Sizes (click to check)'}
+              </label>
+              <div className="flex flex-wrap gap-1.5">
+                {Array.from(new Set([...PRESET_SIZES, ...selectedSizes])).map((sz) => {
+                  const active = selectedSizes.includes(sz);
+                  return (
+                    <button
+                      key={sz}
+                      type="button"
+                      onClick={() => toggleSize(sz)}
+                      className={`inline-flex items-center gap-1 rounded-xl border px-2.5 py-1 text-[11px] font-semibold transition-colors ${
+                        active
+                          ? 'border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent-strong)]'
+                          : 'border-[var(--border-glass)] opacity-65 hover:opacity-100'
+                      }`}
+                    >
+                      {active && <Check className="h-3 w-3" />}
+                      <span>{sz}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="flex items-center gap-2 pt-1">
+                <input
+                  value={customSize}
+                  onChange={(e) => setCustomSize(e.target.value)}
+                  placeholder={lang === 'ar' ? 'مقاس مخصص...' : 'Custom size...'}
+                  className="flex-1 rounded-lg border bg-transparent px-2.5 py-1.5 text-xs"
+                  style={{ borderColor: 'var(--border-glass)' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const clean = customSize.trim();
+                    if (clean && !selectedSizes.includes(clean)) {
+                      toggleSize(clean);
+                      setCustomSize('');
+                    }
+                  }}
+                  className="rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold hover:bg-[var(--bg-subtle)]"
+                  style={{ borderColor: 'var(--border-glass)' }}
+                >
+                  {lang === 'ar' ? '+ إضافة' : '+ Add'}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Images with per-image Color Picker */}
+          <div className="space-y-3 rounded-2xl border p-4" style={{ borderColor: 'var(--border-glass)' }}>
             <label className="flex items-center gap-2 text-xs font-semibold">
               <ImagePlus className="h-4 w-4 text-[var(--accent)]" />
-              <span>{lang === 'ar' ? 'صور المنتج (متعددة)' : 'Product Images (Multiple)'}</span>
+              <span>{lang === 'ar' ? 'صور المنتج (متعددة مع ربط اللون)' : 'Product Images (Pick color per picture)'}</span>
             </label>
             <input
               type="file"
               multiple
               accept="image/jpeg,image/png,image/webp,image/avif"
-              onChange={(e) => setNewFiles(Array.from(e.target.files || []))}
+              onChange={(e) => {
+                const files = Array.from(e.target.files || []);
+                setPendingUploads(
+                  files.map((file) => ({
+                    file,
+                    previewUrl: URL.createObjectURL(file),
+                    colorHex: null,
+                  }))
+                );
+              }}
               className="block w-full text-xs"
             />
+
+            {pendingUploads.length > 0 && (
+              <div className="space-y-1.5">
+                <p className="text-[11px] font-semibold opacity-75">
+                  {lang === 'ar' ? 'صور جديدة قيد الرفع:' : 'New images to upload:'}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {pendingUploads.map((item, idx) => (
+                    <div
+                      key={`${item.file.name}-${idx}`}
+                      className="flex w-28 flex-col gap-1.5 rounded-xl border p-1.5"
+                      style={{ borderColor: 'var(--border-glass)' }}
+                    >
+                      <div className="h-20 w-full overflow-hidden rounded-lg">
+                        <img src={item.previewUrl} alt="" className="h-full w-full object-cover" />
+                      </div>
+                      {selectedColors.length > 0 && (
+                        <div className="flex flex-wrap items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setPendingUploads((prev) =>
+                                prev.map((x, i) => (i === idx ? { ...x, colorHex: null } : x))
+                              )
+                            }
+                            className={`rounded border px-1 text-[9px] ${
+                              !item.colorHex ? 'border-[var(--accent)] font-bold' : 'opacity-60'
+                            }`}
+                            style={{ borderColor: 'var(--border-glass)' }}
+                          >
+                            {lang === 'ar' ? 'الكل' : 'All'}
+                          </button>
+                          {selectedColors.map((hex) => (
+                            <button
+                              key={hex}
+                              type="button"
+                              onClick={() =>
+                                setPendingUploads((prev) =>
+                                  prev.map((x, i) => (i === idx ? { ...x, colorHex: hex } : x))
+                                )
+                              }
+                              className={`h-4 w-4 rounded-full border ${
+                                item.colorHex === hex ? 'ring-2 ring-[var(--accent)]' : 'opacity-65'
+                              }`}
+                              style={{ backgroundColor: hex }}
+                              title={hex}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {existingImages.length > 0 && (
               <div className="flex flex-wrap gap-3 pt-2">
                 {existingImages.map((img) => (
-                  <div key={img.id} className="relative h-20 w-20 overflow-hidden rounded-xl border">
-                    <button type="button" onClick={() => setLightboxUrl(img.image_url)} className="h-full w-full">
-                      <img src={img.image_url} alt="" className="h-full w-full object-cover" />
-                    </button>
-                    <div className="absolute inset-x-0 bottom-0 flex justify-between bg-black/65 p-1">
-                      <button
-                        type="button"
-                        onClick={() => handleSetPrimaryImage(img)}
-                        className={`text-[10px] ${img.is_primary ? 'text-[#FFC247]' : 'text-white/70'}`}
-                        title="Primary"
-                      >
-                        ★
+                  <div
+                    key={img.id}
+                    className="flex w-28 flex-col gap-1.5 rounded-xl border p-1.5"
+                    style={{ borderColor: 'var(--border-glass)' }}
+                  >
+                    <div className="relative h-20 w-full overflow-hidden rounded-lg">
+                      <button type="button" onClick={() => setLightboxUrl(img.image_url)} className="h-full w-full">
+                        <img src={img.image_url} alt="" className="h-full w-full object-cover" />
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => setDeleteImgTarget(img)}
-                        className="text-[10px] text-rose-300"
-                        title="Delete"
-                      >
-                        ✕
-                      </button>
+                      <div className="absolute inset-x-0 bottom-0 flex justify-between bg-black/65 p-1">
+                        <button
+                          type="button"
+                          onClick={() => handleSetPrimaryImage(img)}
+                          className={`text-[10px] ${img.is_primary ? 'text-[#FFC247]' : 'text-white/70'}`}
+                          title={lang === 'ar' ? 'تعيين كصورة رئيسية' : 'Primary'}
+                        >
+                          ★
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDeleteImgTarget(img)}
+                          className="text-[10px] text-rose-300"
+                          title={lang === 'ar' ? 'حذف' : 'Delete'}
+                        >
+                          ✕
+                        </button>
+                      </div>
                     </div>
+                    {selectedColors.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => void handleSetImageColor(img, null)}
+                          className={`rounded border px-1 text-[9px] ${
+                            !img.color_hex ? 'border-[var(--accent)] font-bold' : 'opacity-60'
+                          }`}
+                          style={{ borderColor: 'var(--border-glass)' }}
+                        >
+                          {lang === 'ar' ? 'الكل' : 'All'}
+                        </button>
+                        {selectedColors.map((hex) => (
+                          <button
+                            key={hex}
+                            type="button"
+                            onClick={() => void handleSetImageColor(img, hex)}
+                            className={`h-4 w-4 rounded-full border ${
+                              img.color_hex === hex ? 'ring-2 ring-[var(--accent)]' : 'opacity-65'
+                            }`}
+                            style={{ backgroundColor: hex }}
+                            title={hex}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

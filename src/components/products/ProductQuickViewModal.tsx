@@ -219,7 +219,16 @@ export function ProductQuickViewModal({
                       <button
                         key={c}
                         type="button"
-                        onClick={() => setColorOverride(c)}
+                        onClick={() => {
+                          setColorOverride(c);
+                          const matchIdx = images.findIndex(
+                            (img) =>
+                              'color_hex' in img &&
+                              typeof img.color_hex === 'string' &&
+                              img.color_hex.toLowerCase() === c.toLowerCase()
+                          );
+                          if (matchIdx >= 0) setSelectedIdx(matchIdx);
+                        }}
                         title={c}
                         aria-label={`Color ${c}`}
                         className={`h-5 w-5 rounded-full border transition-transform ${

@@ -40,6 +40,7 @@ export interface ProductImage {
   storage_path: string | null;
   alt_ar: string | null;
   alt_en: string | null;
+  color_hex?: string | null;
   is_primary: boolean;
   sort_order: number;
   created_at: string;
@@ -154,6 +155,45 @@ export interface ChatMessage {
   body: string;
   created_at: string;
   commit_seq?: number;
+}
+
+export type OrderSource = 'whatsapp' | 'phone' | 'instagram' | 'in_store' | 'website_chat';
+export type OrderStatus = 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
+export type PaymentStatus = 'unpaid' | 'partial' | 'paid' | 'refunded';
+
+export interface OrderItem {
+  id: string;
+  order_id: string;
+  product_id: string | null;
+  product_name: string;
+  color_hex: string | null;
+  size_label: string | null;
+  quantity: number;
+  unit_price: number;
+  line_total: number;
+  created_at: string;
+}
+
+export interface Order {
+  id: string;
+  invoice_number: string;
+  inquiry_id: string | null;
+  customer_name: string;
+  customer_phone: string | null;
+  customer_address: string | null;
+  order_source: OrderSource;
+  status: OrderStatus;
+  payment_status: PaymentStatus;
+  subtotal: number;
+  discount_amount: number;
+  shipping_fee: number;
+  total_amount: number;
+  paid_amount: number;
+  currency: string;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+  order_items?: OrderItem[];
 }
 
 export interface AdminUser {

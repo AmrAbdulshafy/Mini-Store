@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   Mail,
   MapPin,
   MessageCircle,
@@ -31,8 +33,21 @@ export function HomepageClient({
   const { lang, setCollectionTheme, settings, t } = useApp();
   const ArrowIcon = lang === 'ar' ? ArrowLeft : ArrowRight;
 
-  const heroBanner = banners.find((b) => b.placement === 'hero');
-  const promoBanner = banners.find((b) => b.placement === 'promo');
+  const heroSlides = banners.filter(
+    (b) => b.is_active && (b.placement === 'hero' || b.placement === 'video_ad')
+  );
+  const [slideIdx, setSlideIdx] = useState(0);
+  const activeSlide =
+    heroSlides.length > 0 ? heroSlides[slideIdx % heroSlides.length] : null;
+  const promoBanner = banners.find((b) => b.placement === 'promo' && b.is_active);
+
+  useEffect(() => {
+    if (heroSlides.length <= 1) return;
+    const timer = setInterval(() => {
+      setSlideIdx((prev) => (prev + 1) % heroSlides.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, [heroSlides.length]);
 
   const featuredProducts = products.filter((p) => p.is_featured).slice(0, 4);
   const newArrivals = products.filter((p) => p.is_new_arrival).slice(0, 4);
@@ -111,79 +126,157 @@ export function HomepageClient({
 
   return (
     <div className="space-y-20 pb-12">
-      {/* HERO SECTION */}
-      <section className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8 lg:pt-10">
-        <div className="glass-card animate-reveal relative overflow-hidden rounded-3xl p-6 sm:p-10 lg:p-14">
-          <div className="grid items-center gap-10 lg:grid-cols-12">
-            <div className="space-y-6 lg:col-span-6">
-              <span className="inline-flex items-center gap-2 rounded-full border border-[var(--border-glass)] bg-[var(--accent-soft)] px-3.5 py-1 text-[11px] font-semibold tracking-[0.2em] text-[var(--accent-strong)] uppercase">
-                <Sparkles className="h-3 w-3 text-[var(--champagne)]" />
-                {t.hero.badge}
-              </span>
-
-              <h1 className="font-display text-gradient-luxury text-4xl font-bold leading-[1.12] tracking-tight sm:text-5xl lg:text-6xl">
-                {heroBanner
-                  ? lang === 'ar'
-                    ? heroBanner.title_ar
-                    : heroBanner.title_en
-                  : lang === 'ar'
-                    ? settings.store_name_ar
-                    : settings.store_name_en}
-              </h1>
-
-              <p className="max-w-xl text-base leading-relaxed text-[var(--text-secondary)]">
-                {heroBanner
-                  ? lang === 'ar'
-                    ? heroBanner.subtitle_ar
-                    : heroBanner.subtitle_en
-                  : lang === 'ar'
-                    ? settings.tagline_ar
-                    : settings.tagline_en}
-              </p>
-
-              <div className="flex flex-wrap items-center gap-3 pt-1">
-                <Link
-                  href={heroBanner?.cta_link || '/catalog'}
-                  className="cta-luxury inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-xs font-semibold tracking-wider uppercase"
-                >
-                  <span>
-                    {heroBanner
-                      ? lang === 'ar'
-                        ? heroBanner.cta_text_ar || t.hero.explore
-                        : heroBanner.cta_text_en || t.hero.explore
-                      : t.hero.explore}
-                  </span>
-                  <ArrowIcon className="h-4 w-4" />
-                </Link>
-
-                <a
-                  href={waGeneral}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl border border-[var(--border-glass)] bg-[var(--bg-subtle)] px-6 py-3.5 text-xs font-semibold tracking-wider uppercase transition-all hover:-translate-y-0.5 hover:border-[var(--border-strong)]"
-                >
-                  <MessageCircle className="h-4 w-4 text-[var(--accent)]" />
-                  <span>{t.hero.contactUs}</span>
-                </a>
-              </div>
-
-              <p className="text-xs text-[var(--text-muted)]">
-                {t.hero.noCheckoutNote}
-              </p>
-            </div>
-
-            <div className="lg:col-span-6">
-              <div className="animate-float-slow relative aspect-[16/11] overflow-hidden rounded-2xl border border-[var(--border-glass)] shadow-2xl">
-                <img
-                  src={heroBanner?.image_url || '/images/hero-boutique.png'}
-                  alt={lang === 'ar' ? settings.store_name_ar : settings.store_name_en}
-                  className="h-full w-full object-cover"
+      {/* FULL-WIDTH RESPONSIVE HERO & AD SLIDER */}
+      <section className="relative flex min-h-[72vh] w-full items-center overflow-hidden sm:min-h-[78vh] lg:min-h-[84vh]">
+        {/* Background Media Layer with Crossfade + Ken Burns Zoom */}
+        {(heroSlides.length > 0 ? heroSlides : [null]).map((slide, idx) => {
+          const isCurrent =
+            heroSlides.length === 0 ? true : idx === slideIdx % heroSlides.length;
+          const imgSrc = slide?.image_url || '/images/hero-boutique.png';
+          const isVideo = slide?.media_type === 'video' && Boolean(slide.video_url);
+          return (
+            <div
+              key={slide?.id || 'default-hero'}
+              className={`pointer-events-none absolute inset-0 transition-all duration-1000 ease-out ${
+                isCurrent ? 'z-0 scale-100 opacity-100' : 'z-0 scale-105 opacity-0'
+              }`}
+            >
+              {isVideo ? (
+                <video
+                  src={slide!.video_url!}
+                  poster={imgSrc}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="h-full w-full object-cover object-center"
                 />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
-              </div>
+              ) : (
+                <img
+                  src={imgSrc}
+                  alt={
+                    slide
+                      ? lang === 'ar'
+                        ? slide.title_ar
+                        : slide.title_en
+                      : lang === 'ar'
+                        ? settings.store_name_ar
+                        : settings.store_name_en
+                  }
+                  className={`h-full w-full object-cover object-center transition-transform duration-[6000ms] ease-out ${
+                    isCurrent ? 'scale-105' : 'scale-100'
+                  }`}
+                />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/30" />
+              <div
+                className="absolute inset-0 opacity-40"
+                style={{
+                  background:
+                    'radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--accent) 45%, transparent), transparent 60%)',
+                }}
+              />
             </div>
+          );
+        })}
+
+        {/* Foreground Content */}
+        <div className="relative z-10 mx-auto w-full max-w-7xl px-5 py-16 sm:px-8 lg:px-12">
+          <div className="max-w-2xl space-y-6 text-white">
+            <span className="inline-flex animate-fade-in items-center gap-2 rounded-full border border-white/20 bg-black/35 px-4 py-1.5 text-[11px] font-semibold tracking-[0.2em] text-[#E6C78B] uppercase backdrop-blur-md">
+              <Sparkles className="h-3.5 w-3.5 text-[#E6C78B]" />
+              {t.hero.badge}
+            </span>
+
+            <h1 className="font-display animate-reveal text-4xl font-bold leading-[1.12] tracking-tight text-white drop-shadow-lg sm:text-5xl lg:text-6xl">
+              {activeSlide
+                ? lang === 'ar'
+                  ? activeSlide.title_ar
+                  : activeSlide.title_en
+                : lang === 'ar'
+                  ? settings.store_name_ar
+                  : settings.store_name_en}
+            </h1>
+
+            <p className="animate-reveal max-w-xl text-base leading-relaxed text-white/85 drop-shadow sm:text-lg">
+              {activeSlide
+                ? lang === 'ar'
+                  ? activeSlide.subtitle_ar
+                  : activeSlide.subtitle_en
+                : lang === 'ar'
+                  ? settings.tagline_ar
+                  : settings.tagline_en}
+            </p>
+
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <Link
+                href={activeSlide?.cta_link || '/catalog'}
+                className="cta-luxury inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-xs font-semibold tracking-wider uppercase shadow-xl transition-transform duration-200 hover:-translate-y-0.5"
+              >
+                <span>
+                  {activeSlide
+                    ? lang === 'ar'
+                      ? activeSlide.cta_text_ar || t.hero.explore
+                      : activeSlide.cta_text_en || t.hero.explore
+                    : t.hero.explore}
+                </span>
+                <ArrowIcon className="h-4 w-4" />
+              </Link>
+
+              <a
+                href={waGeneral}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-black/35 px-6 py-3.5 text-xs font-semibold tracking-wider text-white uppercase backdrop-blur-md transition-all hover:-translate-y-0.5 hover:bg-white/15"
+              >
+                <MessageCircle className="h-4 w-4 text-[#E6C78B]" />
+                <span>{t.hero.contactUs}</span>
+              </a>
+            </div>
+
+            <p className="text-xs text-white/70">{t.hero.noCheckoutNote}</p>
           </div>
         </div>
+
+        {/* Carousel Controls when multiple active hero/video ads exist */}
+        {heroSlides.length > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={() =>
+                setSlideIdx((prev) => (prev - 1 + heroSlides.length) % heroSlides.length)
+              }
+              aria-label={lang === 'ar' ? 'الإعلان السابق' : 'Previous ad'}
+              className="absolute start-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/40 text-white backdrop-blur-md transition-all hover:scale-110 hover:bg-black/65 sm:start-6"
+            >
+              <ChevronLeft className="h-5 w-5 rtl:rotate-180" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setSlideIdx((prev) => (prev + 1) % heroSlides.length)}
+              aria-label={lang === 'ar' ? 'الإعلان التالي' : 'Next ad'}
+              className="absolute end-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/40 text-white backdrop-blur-md transition-all hover:scale-110 hover:bg-black/65 sm:end-6"
+            >
+              <ChevronRight className="h-5 w-5 rtl:rotate-180" />
+            </button>
+            <div className="absolute bottom-5 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2">
+              {heroSlides.map((s, idx) => {
+                const active = idx === slideIdx % heroSlides.length;
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => setSlideIdx(idx)}
+                    aria-label={`${lang === 'ar' ? 'إعلان' : 'Slide'} ${idx + 1}`}
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      active ? 'w-8 bg-[#E6C78B]' : 'w-2.5 bg-white/45 hover:bg-white/75'
+                    }`}
+                  />
+                );
+              })}
+            </div>
+          </>
+        )}
       </section>
 
       {/* THREE MAIN SHOPPING CATEGORIES */}

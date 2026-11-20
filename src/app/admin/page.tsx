@@ -10,6 +10,7 @@ import type {
   Conversation,
   HomepageBanner,
   Inquiry,
+  Order,
   Product,
   StoreSettings,
 } from '@/types/database';
@@ -33,6 +34,7 @@ export default async function AdminPage() {
     { data: banners },
     { data: settings },
     { data: adminUsers },
+    { data: orders },
   ] = await Promise.all([
     supabase
       .from('products')
@@ -48,6 +50,10 @@ export default async function AdminPage() {
     supabase.from('homepage_banners').select('*').order('sort_order', { ascending: true }),
     supabase.from('store_settings').select('*').eq('id', 1).single(),
     supabase.from('admin_users').select('*').order('created_at', { ascending: true }),
+    supabase
+      .from('orders')
+      .select('*, order_items(*)')
+      .order('created_at', { ascending: false }),
   ]);
 
   return (
@@ -61,6 +67,7 @@ export default async function AdminPage() {
       initialBanners={(banners || []) as HomepageBanner[]}
       initialSettings={settings as StoreSettings}
       initialAdminUsers={(adminUsers || []) as AdminUser[]}
+      initialOrders={(orders || []) as Order[]}
     />
   );
 }

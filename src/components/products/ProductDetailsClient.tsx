@@ -37,6 +37,10 @@ export function ProductDetailsClient({ product }: { product: Product }) {
           },
         ];
 
+  const colors = product.colors && product.colors.length > 0 ? product.colors : [];
+  const sizes = product.sizes && product.sizes.length > 0 ? product.sizes : [];
+  const [selectedColor, setSelectedColor] = useState<string | null>(colors[0] ?? null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(sizes[0] ?? null);
   const [activeImage, setActiveImage] = useState(images[0].image_url);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -55,7 +59,10 @@ export function ProductDetailsClient({ product }: { product: Product }) {
   const secondaryDescription = lang === 'ar' ? product.description_en : product.description_ar;
   const BackArrow = lang === 'ar' ? ArrowRight : ArrowLeft;
 
-  const waUrl = buildWhatsAppProductUrl(settings.whatsapp_number, product, lang);
+  const waUrl = buildWhatsAppProductUrl(settings.whatsapp_number, product, lang, undefined, {
+    color: selectedColor,
+    size: selectedSize,
+  });
 
   const handleShare = async () => {
     const url = window.location.href;
@@ -206,6 +213,76 @@ export function ProductDetailsClient({ product }: { product: Product }) {
                 </span>
               </div>
             </div>
+
+            {/* Colors & Sizes */}
+            {(colors.length > 0 || sizes.length > 0) && (
+              <div className="space-y-3 pt-1">
+                {colors.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-xs font-semibold opacity-75">
+                      {lang === 'ar' ? 'اللون:' : 'Color:'}
+                    </span>
+                    {colors.map((c) => {
+                      const isSel = selectedColor === c;
+                      return (
+                        <button
+                          key={c}
+                          type="button"
+                          onClick={() => {
+                            setSelectedColor(c);
+                            const match = images.find(
+                              (img) =>
+                                'color_hex' in img &&
+                                img.color_hex?.toLowerCase() === c.toLowerCase()
+                            );
+                            if (match) setActiveImage(match.image_url);
+                          }}
+                          className={`flex h-7 w-7 items-center justify-center rounded-full border-2 transition-transform ${
+                            isSel
+                              ? 'scale-110 border-[var(--accent)] ring-2 ring-[var(--accent-soft)]'
+                              : 'border-white/30 opacity-75 hover:opacity-100'
+                          }`}
+                          style={{ backgroundColor: c }}
+                          title={c}
+                        >
+                          {isSel && (
+                            <Check
+                              className="h-3.5 w-3.5 drop-shadow"
+                              style={{ color: c.toLowerCase() === '#f5ece3' ? '#141210' : '#FFFFFF' }}
+                            />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+                {sizes.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-xs font-semibold opacity-75">
+                      {lang === 'ar' ? 'المقاس:' : 'Size:'}
+                    </span>
+                    {sizes.map((s) => {
+                      const isSel = selectedSize === s;
+                      return (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => setSelectedSize(s)}
+                          className={`inline-flex items-center gap-1 rounded-xl border px-3 py-1 text-xs font-semibold transition-colors ${
+                            isSel
+                              ? 'border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent-strong)]'
+                              : 'border-[var(--border-glass)] opacity-75 hover:opacity-100'
+                          }`}
+                        >
+                          {isSel && <Check className="h-3 w-3" />}
+                          <span>{s}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Bilingual Descriptions */}
             <div className="space-y-3 pt-2">
