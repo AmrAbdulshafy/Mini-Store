@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft,
@@ -13,6 +13,8 @@ import {
   Send,
   Sparkles,
   Tag,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 import type { Collection, CollectionSlug, HomepageBanner, Product } from '@/types/database';
 import { useApp } from '@/components/providers/AppProvider';
@@ -47,6 +49,23 @@ export function HomepageClient({
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitState, setSubmitState] = useState<'idle' | 'success' | 'error'>('idle');
+  const bgAudioRef = useRef<HTMLAudioElement | null>(null);
+  const [musicMuted, setMusicMuted] = useState(true);
+
+  const toggleMusic = () => {
+    const audio = bgAudioRef.current;
+    if (!audio) return;
+    if (musicMuted) {
+      audio.volume = 0.22;
+      audio.muted = false;
+      audio.play().catch(() => {});
+      setMusicMuted(false);
+    } else {
+      audio.muted = true;
+      audio.pause();
+      setMusicMuted(true);
+    }
+  };
 
   const handleInquirySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -344,6 +363,7 @@ export function HomepageClient({
       {/* ANIMATED VIDEO ADS SHOWCASE */}
       {videoAds.length > 0 && (
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <audio ref={bgAudioRef} src="/audio/esraa-luxury-theme.mp3" loop preload="none" />
           <div className="mb-8 flex items-end justify-between gap-4">
             <div>
               <h2 className="font-display text-2xl font-bold sm:text-3xl">
@@ -371,9 +391,44 @@ export function HomepageClient({
                     muted
                     loop
                     playsInline
-                    controls
                     className="h-full w-full object-cover"
                   />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/15" />
+                  <button
+                    type="button"
+                    onClick={toggleMusic}
+                    aria-label={
+                      musicMuted
+                        ? lang === 'ar'
+                          ? 'تشغيل الموسيقى'
+                          : 'Unmute Music'
+                        : lang === 'ar'
+                          ? 'كتم الموسيقى'
+                          : 'Mute Music'
+                    }
+                    title={
+                      musicMuted
+                        ? lang === 'ar'
+                          ? 'تشغيل الموسيقى'
+                          : 'Unmute Music'
+                        : lang === 'ar'
+                          ? 'كتم الموسيقى'
+                          : 'Mute Music'
+                    }
+                    className="absolute bottom-4 end-4 z-10 flex items-center gap-2 rounded-full border border-white/25 bg-black/55 px-3.5 py-2 text-xs font-medium text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-black/75"
+                  >
+                    {musicMuted ? (
+                      <>
+                        <VolumeX className="h-4 w-4 text-[var(--accent)]" />
+                        <span>{lang === 'ar' ? 'تشغيل الصوت' : 'Unmute'}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Volume2 className="h-4 w-4 text-[var(--accent)]" />
+                        <span>{lang === 'ar' ? 'كتم الصوت' : 'Mute'}</span>
+                      </>
+                    )}
+                  </button>
                 </div>
                 <div className="flex flex-wrap items-center justify-between gap-4 p-5 sm:p-6">
                   <div className="space-y-1">
