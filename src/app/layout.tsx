@@ -34,8 +34,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: 'cover',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#F5F1EC' },
-    { media: '(prefers-color-scheme: dark)', color: '#191619' },
+    { media: '(prefers-color-scheme: light)', color: '#FDF7F8' },
+    { media: '(prefers-color-scheme: dark)', color: '#1A1016' },
   ],
 };
 
@@ -44,11 +44,11 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `${settings.store_name_ar} | ${settings.store_name_en}`,
     description: `${settings.tagline_en} — ${settings.tagline_ar}`,
-    applicationName: 'Esraa Secret',
+    applicationName: 'Esraa Boutique',
     appleWebApp: {
       capable: true,
       statusBarStyle: 'black-translucent',
-      title: 'Esraa Secret',
+      title: 'Esraa Boutique',
     },
     icons: {
       icon: [

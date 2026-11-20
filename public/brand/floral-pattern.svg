@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160" fill="none">
+  <g stroke="#B87A8C" stroke-width="0.9" stroke-opacity="0.16" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Top-left delicate blossom -->
+    <circle cx="36" cy="36" r="3"/>
+    <path d="M36 22C40 27 40 31 36 33C32 31 32 27 36 22Z"/>
+    <path d="M50 36C45 40 41 40 39 36C41 32 45 32 50 36Z"/>
+    <path d="M36 50C32 45 32 41 36 39C40 41 40 45 36 50Z"/>
+    <path d="M22 36C27 32 31 32 33 36C31 40 27 40 22 36Z"/>
+    <path d="M46 26C44 31 41 33 38 34C39 31 41 28 46 26Z"/>
+    <path d="M26 46C28 41 31 39 34 38C33 41 31 44 26 46Z"/>
+    <!-- Flowing botanical vine -->
+    <path d="M52 46C68 58 84 68 98 84"/>
+    <path d="M74 63C80 56 87 55 90 59C86 64 79 65 74 63Z"/>
+    <path d="M67 68C60 72 56 78 60 82C65 79 68 73 67 68Z"/>
+    <!-- Bottom-right rosebud -->
+    <circle cx="118" cy="116" r="3"/>
+    <path d="M118 100C123 106 123 111 118 113C113 111 113 106 118 100Z"/>
+    <path d="M134 116C128 121 123 121 121 116C123 111 128 111 134 116Z"/>
+    <path d="M118 132C113 126 113 121 118 119C123 121 123 126 118 132Z"/>
+    <path d="M102 116C108 111 113 111 115 116C113 121 108 121 102 116Z"/>
+    <!-- Subtle petal accents -->
+    <path d="M126 32C131 36 131 42 126 45C121 42 121 36 126 32Z"/>
+    <path d="M32 120C37 124 37 130 32 133C27 130 27 124 32 133"/>
+  </g>
+</svg>

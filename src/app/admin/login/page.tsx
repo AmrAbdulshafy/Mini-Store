@@ -69,7 +69,7 @@ export default function AdminLoginPage() {
         <div className="mb-6 flex flex-col items-center text-center">
           <EsraaEmblem className="mb-4 h-14 w-14 shadow-lg" />
           <h1 className="font-display text-2xl font-bold">
-            {lang === 'ar' ? 'دخول لوحة تحكم إسراء سيكريت' : 'Esraa Secret Admin Sign In'}
+            {lang === 'ar' ? 'دخول لوحة تحكم إسراء بوتيك' : 'Esraa Boutique Admin Sign In'}
           </h1>
           <p className="mt-1 text-xs text-[var(--text-secondary)]">
             {lang === 'ar'
@@ -88,7 +88,7 @@ export default function AdminLoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@esraasecret.com"
+              placeholder="admin@esraaboutique.com"
               className="w-full rounded-2xl border bg-transparent px-4 py-3 text-sm outline-none placeholder:text-[var(--text-secondary)]/60 focus:border-[var(--accent)]"
               style={{ borderColor: 'var(--border-glass)' }}
             />

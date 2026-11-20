@@ -2,15 +2,15 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Esraa Secret',
+    name: 'Esraa Boutique',
     short_name: 'Esraa',
-    description: "More Than a Store… It's a Secret of Beauty.",
+    description: 'More Than a Store… Feminine Elegance & Timeless Beauty.',
     start_url: '/',
     scope: '/',
     display: 'standalone',
     orientation: 'portrait',
-    background_color: '#F5F1EC',
-    theme_color: '#191619',
+    background_color: '#FDF7F8',
+    theme_color: '#8E3A59',
     lang: 'ar',
     dir: 'rtl',
     categories: ['shopping', 'lifestyle', 'beauty'],

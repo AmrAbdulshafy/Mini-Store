@@ -12,25 +12,43 @@ export function EsraaEmblem({ className = 'h-9 w-9' }: { className?: string }) {
       className={className}
       aria-hidden="true"
     >
-      <rect width="64" height="64" rx="6" fill="#191619" />
+      <rect width="64" height="64" rx="14" fill="#8E3A59" />
       <rect
         x="4"
         y="4"
         width="56"
         height="56"
-        rx="4"
-        stroke="#C4A779"
-        strokeWidth="1"
+        rx="11"
+        stroke="#E4C79B"
+        strokeWidth="1.1"
         strokeOpacity="0.65"
       />
+      {/* Delicate four-petal floral blossom */}
       <path
-        d="M32 15C25.5 22.5 21.5 28 21.5 34.5C21.5 40.6 26.2 45.5 32 45.5C37.8 45.5 42.5 40.6 42.5 34.5C42.5 28 38.5 22.5 32 15Z"
-        stroke="#F5F1EC"
+        d="M32 14C36 20 36 26 32 30C28 26 28 20 32 14Z"
+        stroke="#FDF7F8"
         strokeWidth="1.4"
-        strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx="32" cy="34.5" r="2" fill="#C4A779" />
+      <path
+        d="M32 50C28 44 28 38 32 34C36 38 36 44 32 50Z"
+        stroke="#FDF7F8"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M14 32C20 28 26 28 30 32C26 36 20 36 14 32Z"
+        stroke="#FDF7F8"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M50 32C44 36 38 36 34 32C38 28 44 28 50 32Z"
+        stroke="#FDF7F8"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+      <circle cx="32" cy="32" r="2.8" fill="#E4C79B" />
     </svg>
   );
 }
@@ -44,7 +62,7 @@ export function EsraaMonogram({ className = 'h-10 w-10' }: { className?: string 
       className={className}
       aria-hidden="true"
     >
-      <rect x="14" y="14" width="92" height="92" rx="6" stroke="currentColor" strokeOpacity="0.28" strokeWidth="1.2" />
+      <ellipse cx="60" cy="60" rx="48" ry="52" stroke="#C8A26E" strokeOpacity="0.55" strokeWidth="1.4" />
       <text
         x="60"
         y="73"
@@ -55,9 +73,9 @@ export function EsraaMonogram({ className = 'h-10 w-10' }: { className?: string 
         letterSpacing="4"
         fill="currentColor"
       >
-        ES
+        EB
       </text>
-      <circle cx="60" cy="25" r="2" fill="#C4A779" />
+      <circle cx="60" cy="20" r="2.4" fill="#C87A8D" />
     </svg>
   );
 }
@@ -71,14 +89,14 @@ export function BrandLogo({
 }) {
   return (
     <div className="flex items-center gap-3 group">
-      <EsraaEmblem className="h-9 w-9 shrink-0 transition-opacity duration-200 group-hover:opacity-85" />
+      <EsraaEmblem className="h-9 w-9 shrink-0 transition-transform duration-200 group-hover:scale-105" />
       <div className="leading-tight">
-        <span className="font-display block text-lg font-semibold tracking-[0.06em] text-[var(--text-primary)] sm:text-xl">
-          {lang === 'ar' ? 'إسراء سيكريت' : 'ESRAA SECRET'}
+        <span className="font-display block text-lg font-semibold tracking-[0.04em] text-[var(--text-primary)] sm:text-xl">
+          {lang === 'ar' ? 'إسراء بوتيك' : 'Esraa Boutique'}
         </span>
         {!compact && (
-          <span className="hidden text-[10px] font-medium tracking-[0.18em] text-[var(--text-secondary)] uppercase sm:block">
-            {lang === 'ar' ? 'أكثر من مجرد متجر... إنه سر الجمال' : "It's a Secret of Beauty"}
+          <span className="hidden text-[10px] font-medium tracking-[0.16em] text-[var(--accent)] uppercase sm:block">
+            {lang === 'ar' ? 'أناقة أنثوية وجمال لا ينتهي' : 'Feminine Elegance & Beauty'}
           </span>
         )}
       </div>

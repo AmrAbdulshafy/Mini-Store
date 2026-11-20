@@ -388,7 +388,7 @@ export function AdminDashboardClient({
             </button>
             <EsraaEmblem className="h-8 w-8 shrink-0" />
             <span className="font-display truncate text-sm font-bold sm:text-lg">
-              {lang === 'ar' ? 'لوحة تحكم إسراء سيكريت' : 'Esraa Secret Admin'}
+              {lang === 'ar' ? 'لوحة تحكم إسراء بوتيك' : 'Esraa Boutique Admin'}
             </span>
             <span className="hidden rounded-full bg-[var(--accent-soft)] px-2.5 py-0.5 text-[11px] font-semibold text-[var(--accent-strong)] md:inline">
               {currentAdmin.email}

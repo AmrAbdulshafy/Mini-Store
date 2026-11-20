@@ -3,13 +3,13 @@ import type { Category, Collection, HomepageBanner, Product, StoreSettings } fro
 
 const FALLBACK_SETTINGS: StoreSettings = {
   id: 1,
-  store_name_ar: 'إسراء سيكريت',
-  store_name_en: 'Esraa Secret',
-  tagline_ar: 'أكثر من مجرد متجر... إنه سر الجمال.',
-  tagline_en: "More Than a Store… It's a Secret of Beauty.",
+  store_name_ar: 'إسراء بوتيك',
+  store_name_en: 'Esraa Boutique',
+  tagline_ar: 'أكثر من مجرد متجر... أناقة أنثوية وجمال لا ينتهي.',
+  tagline_en: 'More Than a Store… Feminine Elegance & Timeless Beauty.',
   whatsapp_number: '201000000000',
   phone_number: '+20 100 000 0000',
-  email: 'hello@esraasecret.com',
+  email: 'hello@esraaboutique.com',
   address_ar: 'الزمالك، القاهرة، مصر',
   address_en: 'Zamalek, Cairo, Egypt',
   instagram_url: null,

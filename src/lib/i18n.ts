@@ -2,7 +2,7 @@ import type { AvailabilityStatus, CollectionSlug, Language } from '@/types/datab
 
 export const translations = {
   ar: {
-    brandFallback: 'إسراء سيكريت',
+    brandFallback: 'إسراء بوتيك',
     nav: {
       home: 'الرئيسية',
       catalog: 'الكتالوج',
@@ -44,9 +44,9 @@ export const translations = {
       newArrivalsSub: 'أحدث الإضافات في البوتيك',
       specialOffers: 'عروض خاصة',
       specialOffersSub: 'قطع مختارة بأسعار استثنائية لفترة محدودة',
-      aboutTitle: 'عن إسراء سيكريت',
+      aboutTitle: 'عن إسراء بوتيك',
       aboutBody:
-        'في إسراء سيكريت نؤمن بأن الجمال الحقيقي يكمن في التفاصيل. نجمع لكِ ولكَ بين مستحضرات التجميل المختارة، العطور النسائية والرجالية الراقية، والقطع النسيجية المطرزة يدوياً بشغف وإتقان.',
+        'في إسراء بوتيك نؤمن بأن الجمال الحقيقي يكمن في التفاصيل. نجمع لكِ ولكَ بين مستحضرات التجميل المختارة، العطور النسائية والرجالية الراقية، والقطع النسيجية المطرزة يدوياً بشغف وإتقان.',
       contactTitle: 'تواصل معنا مباشرة',
       contactSub: 'يسعدنا مساعدتك في اختيار المنتج أو العطر المناسب عبر واتساب أو الهاتف أو المحادثة الفورية.',
       viewAll: 'عرض الكل',
@@ -124,7 +124,7 @@ export const translations = {
       messagePlaceholder: 'اكتب رسالتك هنا...',
       send: 'إرسال',
       startNew: 'بدء محادثة جديدة',
-      welcome: 'مرحباً بك في إسراء سيكريت! كيف يمكننا مساعدتك اليوم؟',
+      welcome: 'مرحباً بك في إسراء بوتيك! كيف يمكننا مساعدتك اليوم؟',
       loading: 'جاري تحميل المحادثة...',
       retry: 'إعادة المحاولة',
       errorLoad: 'تعذر الاتصال بالمحادثة.',
@@ -146,7 +146,7 @@ export const translations = {
     },
   },
   en: {
-    brandFallback: 'Esraa Secret',
+    brandFallback: 'Esraa Boutique',
     nav: {
       home: 'Home',
       catalog: 'Catalog',
@@ -188,9 +188,9 @@ export const translations = {
       newArrivalsSub: 'Freshly added to the boutique',
       specialOffers: 'Special Offers',
       specialOffersSub: 'Curated pieces at seasonal value',
-      aboutTitle: 'About Esraa Secret',
+      aboutTitle: 'About Esraa Boutique',
       aboutBody:
-        'At Esraa Secret, true beauty lives in the details. We bring together curated makeup & beauty essentials, refined women’s and men’s perfumes, and hand-embroidered textile crafts made with artisanal care.',
+        'At Esraa Boutique, true beauty lives in the details. We bring together curated makeup & beauty essentials, refined women’s and men’s perfumes, and hand-embroidered textile crafts made with artisanal care.',
       contactTitle: 'Connect With Us Directly',
       contactSub: 'We are delighted to assist you with product or fragrance recommendations via WhatsApp, phone, or live guest chat.',
       viewAll: 'View All',
@@ -268,7 +268,7 @@ export const translations = {
       messagePlaceholder: 'Type your message...',
       send: 'Send',
       startNew: 'Start New Conversation',
-      welcome: 'Welcome to Esraa Secret! How can we help you today?',
+      welcome: 'Welcome to Esraa Boutique! How can we help you today?',
       loading: 'Loading conversation...',
       retry: 'Retry',
       errorLoad: 'Unable to connect to chat.',

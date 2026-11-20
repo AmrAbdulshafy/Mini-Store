@@ -225,12 +225,12 @@ export function PwaManager() {
           <div className="flex items-start justify-between gap-3">
             <div className="space-y-1">
               <p className="font-display text-sm font-semibold">
-                {lang === 'ar' ? 'تثبيت تطبيق إسراء سيكريت' : 'Install Esraa Secret'}
+                {lang === 'ar' ? 'تثبيت تطبيق إسراء بوتيك' : 'Install Esraa Boutique'}
               </p>
               <p className="text-xs text-[var(--text-secondary)]">
                 {lang === 'ar'
                   ? 'أضيفي المتجر إلى شاشتك الرئيسية لتصفح أسرع وتجربة تطبيق متكاملة.'
-                  : 'Add Esraa Secret to your home screen for faster, app-like browsing.'}
+                  : 'Add Esraa Boutique to your home screen for faster, app-like browsing.'}
               </p>
             </div>
             <button
