@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
+  Bell,
   ExternalLink,
   FolderTree,
   Image as ImageIcon,
@@ -31,6 +32,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { AdminProductsPanel } from '@/components/admin/AdminProductsPanel';
 import { AdminChatInbox } from '@/components/admin/AdminChatInbox';
 import { AdminMediaPanel } from '@/components/admin/AdminMediaPanel';
+import { useAdminChatNotifications } from '@/hooks/useAdminChatNotifications';
 import type {
   AdminUser,
   Category,
@@ -89,10 +91,58 @@ export function AdminDashboardClient({
   const [collections, setCollections] = useState(initialCollections);
   const [inquiries, setInquiries] = useState(initialInquiries);
   const [conversations, setConversations] = useState(initialConversations);
+  const [selectedChatId, setSelectedChatId] = useState<string | null>(initialConversations[0]?.id || null);
+  const [bellOpen, setBellOpen] = useState(false);
+  const bellRef = useRef<HTMLDivElement>(null);
   const [banners, setBanners] = useState(initialBanners);
   const [settingsForm, setSettingsForm] = useState<StoreSettings>(initialSettings);
   const [adminUsers, setAdminUsers] = useState(initialAdminUsers);
   const [toast, setToast] = useState<{ msg: string; isError?: boolean } | null>(null);
+
+  const openConversationFromNotification = useCallback((conversationId: string) => {
+    setSection('chat');
+    setSelectedChatId(conversationId);
+    setBellOpen(false);
+  }, []);
+
+  const {
+    notifications: chatNotifications,
+    latestGuestMessage,
+    browserPermission,
+    requestBrowserPermission,
+    dismissConversationNotifications,
+    clearAllNotifications,
+  } = useAdminChatNotifications({
+    lang,
+    conversations,
+    setConversations,
+    isChatSectionOpen: section === 'chat',
+    activeConversationId: selectedChatId,
+    onOpenConversation: (convId) => {
+      openConversationFromNotification(convId);
+    },
+  });
+
+  const handleSelectChat = useCallback(
+    (convId: string | null) => {
+      setSelectedChatId(convId);
+      if (convId) {
+        dismissConversationNotifications(convId);
+      }
+    },
+    [dismissConversationNotifications]
+  );
+
+  useEffect(() => {
+    if (!bellOpen) return;
+    const onOutside = (e: MouseEvent) => {
+      if (bellRef.current && !bellRef.current.contains(e.target as Node)) {
+        setBellOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onOutside);
+    return () => document.removeEventListener('mousedown', onOutside);
+  }, [bellOpen]);
 
   // Category modal state
   const [catModalOpen, setCatModalOpen] = useState(false);
@@ -401,6 +451,112 @@ export function AdminDashboardClient({
             </span>
           </div>
           <div className="flex items-center gap-2">
+            {/* Admin Guest Chat Notification Bell */}
+            <div ref={bellRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setBellOpen((prev) => !prev)}
+                className="relative flex h-8 w-8 items-center justify-center rounded-full border transition-colors hover:bg-[var(--accent-soft)]"
+                style={{ borderColor: 'var(--border-glass)' }}
+                aria-label={lang === 'ar' ? 'إشعارات رسائل العملاء' : 'Customer message notifications'}
+              >
+                <Bell className="h-4 w-4" />
+                {(unreadChats > 0 || chatNotifications.length > 0) && (
+                  <span className="absolute -top-1 -end-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-bold text-white">
+                    {Math.max(unreadChats, chatNotifications.length)}
+                  </span>
+                )}
+              </button>
+
+              {bellOpen && (
+                <div
+                  className="glass-card absolute end-0 z-50 mt-2 w-80 max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border shadow-2xl"
+                  style={{ borderColor: 'var(--border-glass)' }}
+                >
+                  <div className="flex items-center justify-between border-b px-4 py-3" style={{ borderColor: 'var(--border-glass)' }}>
+                    <span className="text-xs font-bold">
+                      {lang === 'ar' ? 'إشعارات المحادثات' : 'Chat Notifications'}
+                    </span>
+                    {chatNotifications.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={clearAllNotifications}
+                        className="text-[11px] font-medium text-[var(--accent-strong)] hover:underline"
+                      >
+                        {lang === 'ar' ? 'مسح الكل' : 'Clear'}
+                      </button>
+                    )}
+                  </div>
+
+                  {browserPermission === 'default' && (
+                    <div className="border-b bg-[var(--accent-soft)] px-4 py-2.5" style={{ borderColor: 'var(--border-glass)' }}>
+                      <button
+                        type="button"
+                        onClick={() => void requestBrowserPermission()}
+                        className="w-full text-start text-[11px] font-semibold text-[var(--accent-strong)] hover:underline"
+                      >
+                        {lang === 'ar'
+                          ? 'تفعيل إشعارات المتصفح عند العمل في الخلفية'
+                          : 'Enable browser notifications in background'}
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="max-h-72 overflow-y-auto divide-y" style={{ borderColor: 'var(--border-glass)' }}>
+                    {chatNotifications.length === 0 ? (
+                      <p className="px-4 py-6 text-center text-xs opacity-65">
+                        {unreadChats > 0
+                          ? lang === 'ar'
+                            ? `لديك ${unreadChats} رسالة غير مقروءة — اضغط لفتح المحادثات`
+                            : `${unreadChats} unread message(s) — click to open chat`
+                          : lang === 'ar'
+                            ? 'لا توجد إشعارات جديدة'
+                            : 'No new notifications'}
+                      </p>
+                    ) : (
+                      chatNotifications.map((item) => (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => {
+                            openConversationFromNotification(item.conversationId);
+                            dismissConversationNotifications(item.conversationId);
+                          }}
+                          className="flex w-full flex-col gap-1 px-4 py-3 text-start transition-colors hover:bg-[var(--accent-soft)]"
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-xs font-bold">
+                              {item.guestName || (lang === 'ar' ? 'زائر' : 'Guest')}
+                            </span>
+                            <span className="text-[10px] opacity-60">
+                              {new Date(item.createdAt).toLocaleTimeString(lang === 'ar' ? 'ar-EG' : 'en-US', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </span>
+                          </div>
+                          <p className="line-clamp-2 text-[11px] opacity-80">{item.preview}</p>
+                        </button>
+                      ))
+                    )}
+                  </div>
+
+                  <div className="border-t px-4 py-2.5" style={{ borderColor: 'var(--border-glass)' }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSection('chat');
+                        setBellOpen(false);
+                      }}
+                      className="w-full text-center text-xs font-semibold text-[var(--accent-strong)] hover:underline"
+                    >
+                      {lang === 'ar' ? 'فتح صندوق المحادثات' : 'Open Chat Inbox'}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <Link
               href="/"
               className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold hover:bg-[var(--accent-soft)]"
@@ -777,6 +933,9 @@ export function AdminDashboardClient({
               conversations={conversations}
               setConversations={setConversations}
               onNotify={notify}
+              selectedId={selectedChatId}
+              onSelectId={handleSelectChat}
+              latestIncomingMessage={latestGuestMessage}
             />
           )}
 

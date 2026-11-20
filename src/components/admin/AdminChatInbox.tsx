@@ -11,14 +11,28 @@ export function AdminChatInbox({
   conversations,
   setConversations,
   onNotify,
+  selectedId: controlledSelectedId,
+  onSelectId,
+  latestIncomingMessage,
 }: {
   lang: Language;
   adminId: string;
   conversations: Conversation[];
   setConversations: React.Dispatch<React.SetStateAction<Conversation[]>>;
   onNotify: (msg: string, isError?: boolean) => void;
+  selectedId?: string | null;
+  onSelectId?: (id: string | null) => void;
+  latestIncomingMessage?: ChatMessage | null;
 }) {
-  const [selectedId, setSelectedId] = useState<string | null>(conversations[0]?.id || null);
+  const [internalSelectedId, setInternalSelectedId] = useState<string | null>(conversations[0]?.id || null);
+  const selectedId = controlledSelectedId !== undefined ? controlledSelectedId : internalSelectedId;
+  const setSelectedId = useCallback(
+    (id: string | null) => {
+      if (onSelectId) onSelectId(id);
+      if (controlledSelectedId === undefined) setInternalSelectedId(id);
+    },
+    [onSelectId, controlledSelectedId]
+  );
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [reply, setReply] = useState('');
   const [sending, setSending] = useState(false);
@@ -51,6 +65,15 @@ export function AdminChatInbox({
       clearInterval(interval);
     };
   }, [selectedId, loadMessages]);
+
+  // Immediately refresh open conversation when a Realtime guest message arrives
+  useEffect(() => {
+    if (!latestIncomingMessage || latestIncomingMessage.conversation_id !== selectedId) return;
+    const timer = setTimeout(() => {
+      void loadMessages(selectedId);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [latestIncomingMessage, selectedId, loadMessages]);
 
   const handleSendReply = async (e: React.FormEvent) => {
     e.preventDefault();
