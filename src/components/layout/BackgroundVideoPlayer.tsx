@@ -26,7 +26,7 @@ export function BackgroundVideoPlayer() {
       // ignore
     }
 
-    const tryUnmuteOnInteraction = () => {
+    const tryAutoplayUnmuted = () => {
       if (userExplicitlyMutedRef.current) return;
       const vid = videoRef.current;
       if (!vid) return;
@@ -38,18 +38,21 @@ export function BackgroundVideoPlayer() {
           setMuted(false);
           cleanup();
         }).catch(() => {
-          // Browser blocked unmute on this event (e.g. scroll without gesture); keep muted until tap/click
+          // Browser autoplay policy blocked unmuted playback before user gesture;
+          // play muted video immediately and unmute on first interaction.
           vid.muted = true;
+          vid.play().catch(() => {});
         });
       }
     };
 
-    const events = ['pointerdown', 'touchstart', 'keydown', 'wheel', 'click'] as const;
+    const events = ['pointerdown', 'pointermove', 'scroll', 'touchstart', 'keydown', 'wheel', 'click'] as const;
     const cleanup = () => {
-      events.forEach((ev) => window.removeEventListener(ev, tryUnmuteOnInteraction));
+      events.forEach((ev) => window.removeEventListener(ev, tryAutoplayUnmuted));
     };
 
-    events.forEach((ev) => window.addEventListener(ev, tryUnmuteOnInteraction, { passive: true }));
+    tryAutoplayUnmuted();
+    events.forEach((ev) => window.addEventListener(ev, tryAutoplayUnmuted, { passive: true }));
     return cleanup;
   }, [isAdmin]);
 
