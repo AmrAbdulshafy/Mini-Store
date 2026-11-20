@@ -49,20 +49,19 @@ export function HomepageClient({
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitState, setSubmitState] = useState<'idle' | 'success' | 'error'>('idle');
-  const bgAudioRef = useRef<HTMLAudioElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const [musicMuted, setMusicMuted] = useState(true);
 
   const toggleMusic = () => {
-    const audio = bgAudioRef.current;
-    if (!audio) return;
+    const vid = videoRef.current;
+    if (!vid) return;
     if (musicMuted) {
-      audio.volume = 0.22;
-      audio.muted = false;
-      audio.play().catch(() => {});
+      vid.volume = 0.25;
+      vid.muted = false;
+      vid.play().catch(() => {});
       setMusicMuted(false);
     } else {
-      audio.muted = true;
-      audio.pause();
+      vid.muted = true;
       setMusicMuted(true);
     }
   };
@@ -363,7 +362,6 @@ export function HomepageClient({
       {/* ANIMATED VIDEO ADS SHOWCASE */}
       {videoAds.length > 0 && (
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <audio ref={bgAudioRef} src="/audio/esraa-luxury-theme.mp3" loop preload="none" />
           <div className="mb-8 flex items-end justify-between gap-4">
             <div>
               <h2 className="font-display text-2xl font-bold sm:text-3xl">
@@ -385,10 +383,11 @@ export function HomepageClient({
               >
                 <div className="relative aspect-video w-full overflow-hidden bg-black/60">
                   <video
+                    ref={idx === 0 ? videoRef : undefined}
                     src={ad.video_url || undefined}
                     poster={ad.image_url || undefined}
                     autoPlay
-                    muted
+                    muted={idx === 0 ? musicMuted : true}
                     loop
                     playsInline
                     className="h-full w-full object-cover"
