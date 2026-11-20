@@ -15,80 +15,80 @@
     </g>
   </defs>
 
-  <g opacity="0.65">
+  <g opacity="0.28">
     <!-- Leaves -->
-    <use href="#leaf" transform="translate(48 64) rotate(-35) scale(1.1)" fill="#4B7B72" />
-    <use href="#leaf" transform="translate(178 46) rotate(25) scale(0.9)" fill="#4B7B72" />
-    <use href="#leaf" transform="translate(244 176) rotate(-55) scale(1.15)" fill="#4B7B72" />
-    <use href="#leaf" transform="translate(88 228) rotate(35) scale(1.0)" fill="#4B7B72" />
-    <use href="#leaf" transform="translate(198 274) rotate(-20) scale(0.95)" fill="#4B7B72" />
+    <use href="#leaf" transform="translate(48 64) rotate(-35) scale(1.1)" fill="#355C54" />
+    <use href="#leaf" transform="translate(178 46) rotate(25) scale(0.9)" fill="#355C54" />
+    <use href="#leaf" transform="translate(244 176) rotate(-55) scale(1.15)" fill="#355C54" />
+    <use href="#leaf" transform="translate(88 228) rotate(35) scale(1.0)" fill="#355C54" />
+    <use href="#leaf" transform="translate(198 274) rotate(-20) scale(0.95)" fill="#355C54" />
 
     <!-- Large Rose & Blush Flowers -->
     <g transform="translate(72 68) rotate(12) scale(1.25)">
-      <use href="#f5" fill="#F46296" />
-      <circle cx="0" cy="0" r="4.5" fill="#FFF2C6" />
+      <use href="#f5" fill="#C24372" />
+      <circle cx="0" cy="0" r="4.5" fill="#D4AF6A" />
     </g>
 
     <g transform="translate(226 112) rotate(-18) scale(1.35)">
-      <use href="#f5" fill="#F99FB8" />
-      <circle cx="0" cy="0" r="4.8" fill="#FFF7EC" />
+      <use href="#f5" fill="#B96B84" />
+      <circle cx="0" cy="0" r="4.8" fill="#E6D5C8" />
     </g>
 
     <g transform="translate(114 248) rotate(28) scale(1.28)">
-      <use href="#f5" fill="#F46296" />
-      <circle cx="0" cy="0" r="4.5" fill="#FFE082" />
+      <use href="#f5" fill="#C24372" />
+      <circle cx="0" cy="0" r="4.5" fill="#D4AF6A" />
     </g>
 
     <g transform="translate(268 258) rotate(-8) scale(1.15)">
-      <use href="#f5" fill="#F99FB8" />
-      <circle cx="0" cy="0" r="4.2" fill="#FFF7EC" />
+      <use href="#f5" fill="#B96B84" />
+      <circle cx="0" cy="0" r="4.2" fill="#E6D5C8" />
     </g>
 
     <!-- Medium Powder Blue & Lavender Flowers -->
     <g transform="translate(158 134) rotate(18) scale(0.95)">
-      <use href="#f5" fill="#C6E0EA" />
-      <circle cx="0" cy="0" r="4" fill="#FFE082" />
+      <use href="#f5" fill="#6C8E9B" />
+      <circle cx="0" cy="0" r="4" fill="#D4AF6A" />
     </g>
 
     <g transform="translate(36 168) rotate(-22) scale(0.92)">
-      <use href="#f5" fill="#D2B4E8" />
-      <circle cx="0" cy="0" r="3.8" fill="#FFF7EC" />
+      <use href="#f5" fill="#8768A6" />
+      <circle cx="0" cy="0" r="3.8" fill="#E6D5C8" />
     </g>
 
     <g transform="translate(274 44) rotate(15) scale(0.88)">
-      <use href="#f5" fill="#C6E0EA" />
-      <circle cx="0" cy="0" r="3.8" fill="#F46296" />
+      <use href="#f5" fill="#6C8E9B" />
+      <circle cx="0" cy="0" r="3.8" fill="#C24372" />
     </g>
 
     <g transform="translate(192 208) rotate(-14) scale(0.9)">
-      <use href="#f5" fill="#FFF2EE" />
-      <circle cx="0" cy="0" r="3.8" fill="#F46296" />
+      <use href="#f5" fill="#C7A68F" />
+      <circle cx="0" cy="0" r="3.8" fill="#C24372" />
     </g>
 
     <!-- Small Accent Blossoms -->
     <g transform="translate(152 34) rotate(8) scale(0.62)">
-      <use href="#f5" fill="#F99FB8" />
-      <circle cx="0" cy="0" r="4.2" fill="#FFF7EC" />
+      <use href="#f5" fill="#B96B84" />
+      <circle cx="0" cy="0" r="4.2" fill="#E6D5C8" />
     </g>
 
     <g transform="translate(102 152) rotate(-30) scale(0.58)">
-      <use href="#f5" fill="#F46296" />
-      <circle cx="0" cy="0" r="4.2" fill="#FFE082" />
+      <use href="#f5" fill="#C24372" />
+      <circle cx="0" cy="0" r="4.2" fill="#D4AF6A" />
     </g>
 
     <g transform="translate(292 162) rotate(20) scale(0.6)">
-      <use href="#f5" fill="#D2B4E8" />
-      <circle cx="0" cy="0" r="4" fill="#FFF7EC" />
+      <use href="#f5" fill="#8768A6" />
+      <circle cx="0" cy="0" r="4" fill="#E6D5C8" />
     </g>
 
     <g transform="translate(42 288) rotate(14) scale(0.65)">
-      <use href="#f5" fill="#C6E0EA" />
-      <circle cx="0" cy="0" r="4" fill="#FFE082" />
+      <use href="#f5" fill="#6C8E9B" />
+      <circle cx="0" cy="0" r="4" fill="#D4AF6A" />
     </g>
 
     <g transform="translate(190 294) rotate(-16) scale(0.58)">
-      <use href="#f5" fill="#F46296" />
-      <circle cx="0" cy="0" r="4" fill="#FFF7EC" />
+      <use href="#f5" fill="#C24372" />
+      <circle cx="0" cy="0" r="4" fill="#E6D5C8" />
     </g>
   </g>
 </svg>
