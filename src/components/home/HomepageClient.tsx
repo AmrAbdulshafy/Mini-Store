@@ -33,6 +33,9 @@ export function HomepageClient({
 
   const heroBanner = banners.find((b) => b.placement === 'hero');
   const promoBanner = banners.find((b) => b.placement === 'promo');
+  const videoAds = banners.filter(
+    (b) => b.is_active && (b.placement === 'video_ad' || b.media_type === 'video') && b.video_url
+  );
 
   const featuredProducts = products.filter((p) => p.is_featured).slice(0, 4);
   const newArrivals = products.filter((p) => p.is_new_arrival).slice(0, 4);
@@ -291,7 +294,7 @@ export function HomepageClient({
       {/* PROMOTIONAL CAMPAIGN AD BANNER */}
       {promoBanner && (
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="glass-card editorial-sheen group overflow-hidden rounded-lg bg-[var(--bg-subtle)]">
+          <div className="glass-card card-modern editorial-sheen animate-reveal group overflow-hidden rounded-2xl bg-[var(--bg-subtle)]">
             <div className="grid items-center gap-0 lg:grid-cols-12">
               <div className="space-y-4 p-7 sm:p-10 lg:col-span-7 lg:p-12">
                 <div className="flex items-center gap-3">
@@ -334,6 +337,71 @@ export function HomepageClient({
                 <div className="absolute inset-0 bg-gradient-to-t from-[#191619]/35 via-transparent to-transparent" />
               </div>
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* ANIMATED VIDEO ADS SHOWCASE */}
+      {videoAds.length > 0 && (
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-8 flex items-end justify-between gap-4">
+            <div>
+              <h2 className="font-display text-2xl font-bold sm:text-3xl">
+                {lang === 'ar' ? 'إعلانات الفيديو الحصرية' : 'Exclusive Video Campaigns'}
+              </h2>
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                {lang === 'ar'
+                  ? 'عروض مرئية مختارة لأحدث إصدارات البوتيك'
+                  : 'Curated motion spotlights from our latest boutique drops'}
+              </p>
+            </div>
+          </div>
+          <div className={`grid gap-6 ${videoAds.length > 1 ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
+            {videoAds.map((ad, idx) => (
+              <div
+                key={ad.id}
+                className="glass-card card-modern animate-glow-pulse animate-reveal overflow-hidden rounded-2xl"
+                style={{ animationDelay: `${idx * 90}ms` }}
+              >
+                <div className="relative aspect-video w-full overflow-hidden bg-black/60">
+                  <video
+                    src={ad.video_url || undefined}
+                    poster={ad.image_url || undefined}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    controls
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="flex flex-wrap items-center justify-between gap-4 p-5 sm:p-6">
+                  <div className="space-y-1">
+                    <h3 className="font-display text-xl font-semibold">
+                      {lang === 'ar' ? ad.title_ar : ad.title_en}
+                    </h3>
+                    {(ad.subtitle_ar || ad.subtitle_en) && (
+                      <p className="text-xs text-[var(--text-secondary)]">
+                        {lang === 'ar' ? ad.subtitle_ar : ad.subtitle_en}
+                      </p>
+                    )}
+                  </div>
+                  {ad.cta_link && (
+                    <Link
+                      href={ad.cta_link}
+                      className="cta-luxury inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-xs font-semibold tracking-wide"
+                    >
+                      <span>
+                        {lang === 'ar'
+                          ? ad.cta_text_ar || t.sections.viewAll
+                          : ad.cta_text_en || t.sections.viewAll}
+                      </span>
+                      <ArrowIcon className="h-3.5 w-3.5" />
+                    </Link>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </section>
       )}

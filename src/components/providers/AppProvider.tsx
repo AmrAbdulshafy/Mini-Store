@@ -9,7 +9,6 @@ export type DarkPalette =
   | 'dark-pink'
   | 'dark-violet'
   | 'dark-velvet'
-  | 'dark-emerald'
   | 'obsidian-gold';
 
 export const DARK_PALETTES: {
@@ -23,7 +22,6 @@ export const DARK_PALETTES: {
   { id: 'dark-pink', labelAr: 'وردي داكن', labelEn: 'Dark Pink', swatch: '#F472B6', bg: '#1F0D18' },
   { id: 'dark-violet', labelAr: 'أرجواني داكن', labelEn: 'Dark Violet', swatch: '#C084FC', bg: '#140F22' },
   { id: 'dark-velvet', labelAr: 'مخمل قرمزي', labelEn: 'Dark Velvet', swatch: '#FB7185', bg: '#1D0B11' },
-  { id: 'dark-emerald', labelAr: 'زمردي ليلي', labelEn: 'Dark Emerald', swatch: '#5EEAD4', bg: '#0B1A16' },
   { id: 'obsidian-gold', labelAr: 'أوبسيديان ذهبي', labelEn: 'Obsidian Gold', swatch: '#E2B874', bg: '#111014' },
 ];
 

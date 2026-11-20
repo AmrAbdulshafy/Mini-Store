@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Check, Heart, MessageCircle, Phone, Share2, Sparkles } from 'lucide-react';
+import { Check, Heart, MessageCircle, Minus, Phone, Plus, Ruler, Share2, Sparkles } from 'lucide-react';
 import type { Product } from '@/types/database';
 import { Modal } from '@/components/ui/Modal';
 import { useApp } from '@/components/providers/AppProvider';
@@ -12,14 +12,41 @@ export function ProductQuickViewModal({
   product,
   open,
   onClose,
+  initialColor = null,
+  initialSize = null,
+  initialQuantity = 1,
 }: {
   product: Product | null;
   open: boolean;
   onClose: () => void;
+  initialColor?: string | null;
+  initialSize?: string | null;
+  initialQuantity?: number;
 }) {
   const { lang, isFavorite, toggleFavorite, settings, t } = useApp();
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [copied, setCopied] = useState(false);
+
+  const colors = product?.colors && product.colors.length > 0 ? product.colors : [];
+  const sizes = product?.sizes && product.sizes.length > 0 ? product.sizes : [];
+  const stockCount =
+    typeof product?.stock_quantity === 'number'
+      ? Math.max(0, product.stock_quantity)
+      : product?.availability_status === 'out_of_stock'
+        ? 0
+        : 10;
+  const isOutOfStock = stockCount === 0 || product?.availability_status === 'out_of_stock';
+
+  const [colorOverride, setColorOverride] = useState<string | null>(null);
+  const [sizeOverride, setSizeOverride] = useState<string | null>(null);
+  const [qtyOverride, setQtyOverride] = useState<number | null>(null);
+
+  const selectedColor = colorOverride ?? initialColor ?? colors[0] ?? null;
+  const selectedSize = sizeOverride ?? initialSize ?? sizes[0] ?? null;
+  const quantity = Math.min(
+    Math.max(1, qtyOverride ?? initialQuantity),
+    Math.max(1, stockCount)
+  );
 
   if (!product) return null;
 
@@ -38,11 +65,19 @@ export function ProductQuickViewModal({
   const secondaryName = lang === 'ar' ? product.name_en : product.name_ar;
   const description = lang === 'ar' ? product.description_ar : product.description_en;
   const secondaryDescription = lang === 'ar' ? product.description_en : product.description_ar;
+  const widthInfo = product.width_cm || product.dimensions;
   const fav = isFavorite(product.id);
-  const waUrl = buildWhatsAppProductUrl(settings.whatsapp_number, product, lang);
+  const waUrl = buildWhatsAppProductUrl(settings.whatsapp_number, product, lang, undefined, {
+    color: selectedColor,
+    size: selectedSize,
+    quantity,
+  });
 
   const handleClose = () => {
     setSelectedIdx(0);
+    setColorOverride(null);
+    setSizeOverride(null);
+    setQtyOverride(null);
     onClose();
   };
 
@@ -138,7 +173,13 @@ export function ProductQuickViewModal({
               <div>
                 <span className="block opacity-65">{t.product.availability}</span>
                 <span className="mt-0.5 block font-semibold">
-                  {t.product.status[product.availability_status]}
+                  {isOutOfStock
+                    ? lang === 'ar'
+                      ? 'غير متوفر (0)'
+                      : 'Out of Stock (0)'
+                    : lang === 'ar'
+                      ? `${t.product.status[product.availability_status]} (${stockCount})`
+                      : `${t.product.status[product.availability_status]} (${stockCount})`}
                 </span>
               </div>
               <div>
@@ -165,6 +206,99 @@ export function ProductQuickViewModal({
               </div>
             </div>
 
+            {/* Variants & Stock-Validated Quantity */}
+            <div
+              className="space-y-3 rounded-2xl border p-4 text-xs"
+              style={{ borderColor: 'var(--border-glass)', background: 'var(--bg-subtle)' }}
+            >
+              {colors.length > 0 && (
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[var(--text-muted)]">{lang === 'ar' ? 'اللون:' : 'Color:'}</span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {colors.map((c) => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => setColorOverride(c)}
+                        title={c}
+                        aria-label={`Color ${c}`}
+                        className={`h-5 w-5 rounded-full border transition-transform ${
+                          selectedColor === c
+                            ? 'scale-115 border-white ring-2 ring-[var(--accent)]'
+                            : 'border-white/25 opacity-80 hover:opacity-100'
+                        }`}
+                        style={{ backgroundColor: c }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {sizes.length > 0 && (
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[var(--text-muted)]">{lang === 'ar' ? 'المقاس:' : 'Size:'}</span>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {sizes.map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => setSizeOverride(s)}
+                        className={`rounded-lg border px-2.5 py-1 text-xs font-semibold transition-colors ${
+                          selectedSize === s
+                            ? 'border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent-strong)]'
+                            : 'border-[var(--border-glass)] text-[var(--text-secondary)] hover:bg-[var(--bg-surface)]'
+                        }`}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {widthInfo && (
+                <div className="flex items-center justify-between gap-2">
+                  <span className="flex items-center gap-1 text-[var(--text-muted)]">
+                    <Ruler className="h-3.5 w-3.5" />
+                    {lang === 'ar' ? 'العرض / الأبعاد:' : 'Width / Dimensions:'}
+                  </span>
+                  <span className="font-semibold text-[var(--text-primary)]">{widthInfo}</span>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[var(--text-muted)]">{lang === 'ar' ? 'الكمية:' : 'Quantity:'}</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={isOutOfStock || quantity <= 1}
+                    onClick={() => setQtyOverride(Math.max(1, quantity - 1))}
+                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border-glass)] transition-colors hover:bg-[var(--bg-surface)] disabled:cursor-not-allowed disabled:opacity-40"
+                    aria-label="Decrease quantity"
+                  >
+                    <Minus className="h-3.5 w-3.5" />
+                  </button>
+                  <span className="min-w-7 text-center text-sm font-bold">
+                    {isOutOfStock ? 0 : quantity}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={isOutOfStock || quantity >= stockCount}
+                    onClick={() => setQtyOverride(Math.min(stockCount, quantity + 1))}
+                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border-glass)] transition-colors hover:bg-[var(--bg-surface)] disabled:cursor-not-allowed disabled:opacity-40"
+                    aria-label="Increase quantity"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+              {!isOutOfStock && quantity >= stockCount && (
+                <p className="text-end text-[11px] text-amber-300">
+                  {lang === 'ar' ? `الحد الأقصى المتاح (${stockCount})` : `Max stock reached (${stockCount})`}
+                </p>
+              )}
+            </div>
+
             <div className="space-y-2.5">
               <p className="text-sm leading-relaxed text-[var(--text-primary)]">
                 {description || secondaryDescription}
@@ -181,15 +315,21 @@ export function ProductQuickViewModal({
           </div>
 
           <div className="space-y-2.5 border-t pt-4" style={{ borderColor: 'var(--border-glass)' }}>
-            <a
-              href={waUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="cta-luxury flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-xs font-semibold tracking-wide shadow-lg"
-            >
-              <MessageCircle className="h-4 w-4" />
-              <span>{t.product.orderWhatsApp}</span>
-            </a>
+            {isOutOfStock ? (
+              <span className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-[var(--border-glass)] bg-[var(--disabled-bg)] px-5 py-3.5 text-xs font-semibold text-[var(--disabled-text)]">
+                {lang === 'ar' ? 'غير متوفر حالياً' : 'Out of Stock'}
+              </span>
+            ) : (
+              <a
+                href={waUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="cta-luxury flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-xs font-semibold tracking-wide shadow-lg"
+              >
+                <MessageCircle className="h-4 w-4" />
+                <span>{t.product.orderWhatsApp}</span>
+              </a>
+            )}
 
             <div className="grid grid-cols-3 gap-2">
               <a

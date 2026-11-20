@@ -46,6 +46,10 @@ const emptyForm = {
   category_id: '',
   collection_id: '',
   availability_status: 'in_stock' as AvailabilityStatus,
+  stock_quantity: '10',
+  colors: '',
+  sizes: '',
+  width_cm: '',
   is_featured: false,
   is_new_arrival: false,
   is_special_offer: false,
@@ -105,6 +109,10 @@ export function AdminProductsPanel({
       category_id: p.category_id || '',
       collection_id: p.collection_id || '',
       availability_status: p.availability_status,
+      stock_quantity: String(typeof p.stock_quantity === 'number' ? p.stock_quantity : 10),
+      colors: Array.isArray(p.colors) ? p.colors.join(', ') : '',
+      sizes: Array.isArray(p.sizes) ? p.sizes.join(', ') : '',
+      width_cm: p.width_cm || p.dimensions || '',
       is_featured: p.is_featured,
       is_new_arrival: p.is_new_arrival,
       is_special_offer: p.is_special_offer,
@@ -141,6 +149,16 @@ export function AdminProductsPanel({
         category_id: form.category_id || null,
         collection_id: form.collection_id || null,
         availability_status: form.availability_status,
+        stock_quantity: Math.max(0, parseInt(form.stock_quantity, 10) || 0),
+        colors: form.colors
+          .split(',')
+          .map((c) => c.trim())
+          .filter(Boolean),
+        sizes: form.sizes
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean),
+        width_cm: form.width_cm.trim() || null,
         is_featured: form.is_featured,
         is_new_arrival: form.is_new_arrival,
         is_special_offer: form.is_special_offer,
@@ -471,6 +489,58 @@ export function AdminProductsPanel({
                 />
                 Visible
               </label>
+            </div>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-4">
+            <div>
+              <label className="mb-1 block text-xs font-semibold">
+                {lang === 'ar' ? 'الكمية المتاحة (Stock)' : 'Stock Quantity'}
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={form.stock_quantity}
+                onChange={(e) => setForm({ ...form, stock_quantity: e.target.value })}
+                className="w-full rounded-xl border bg-transparent px-3 py-2"
+                style={{ borderColor: 'var(--border-glass)' }}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-semibold">
+                {lang === 'ar' ? 'الألوان (مفصولة بفاصلة)' : 'Colors (comma-sep)'}
+              </label>
+              <input
+                value={form.colors}
+                onChange={(e) => setForm({ ...form, colors: e.target.value })}
+                placeholder="#8E3A59, #D4B483, #1A1016"
+                className="w-full rounded-xl border bg-transparent px-3 py-2"
+                style={{ borderColor: 'var(--border-glass)' }}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-semibold">
+                {lang === 'ar' ? 'المقاسات (مفصولة بفاصلة)' : 'Sizes (comma-sep)'}
+              </label>
+              <input
+                value={form.sizes}
+                onChange={(e) => setForm({ ...form, sizes: e.target.value })}
+                placeholder="S, M, L, XL"
+                className="w-full rounded-xl border bg-transparent px-3 py-2"
+                style={{ borderColor: 'var(--border-glass)' }}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-semibold">
+                {lang === 'ar' ? 'العرض / الأبعاد' : 'Width / Dimensions'}
+              </label>
+              <input
+                value={form.width_cm}
+                onChange={(e) => setForm({ ...form, width_cm: e.target.value })}
+                placeholder="45 × 30 cm"
+                className="w-full rounded-xl border bg-transparent px-3 py-2"
+                style={{ borderColor: 'var(--border-glass)' }}
+              />
             </div>
           </div>
 

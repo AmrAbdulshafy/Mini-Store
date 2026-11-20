@@ -104,7 +104,8 @@ export function AdminDashboardClient({
   const [bannerModalOpen, setBannerModalOpen] = useState(false);
   const [editingBannerId, setEditingBannerId] = useState<string | null>(null);
   const [bannerForm, setBannerForm] = useState({
-    placement: 'hero' as 'hero' | 'promo' | 'offer',
+    placement: 'hero' as 'hero' | 'promo' | 'offer' | 'video_ad',
+    media_type: 'image' as 'image' | 'video',
     title_ar: '',
     title_en: '',
     subtitle_ar: '',
@@ -113,6 +114,7 @@ export function AdminDashboardClient({
     cta_text_en: 'Explore Now',
     cta_link: '/catalog',
     image_url: '/images/hero-boutique.png',
+    video_url: '',
   });
   const [deleteBannerTarget, setDeleteBannerTarget] = useState<HomepageBanner | null>(null);
 
@@ -273,6 +275,7 @@ export function AdminDashboardClient({
     setEditingBannerId(null);
     setBannerForm({
       placement: 'hero',
+      media_type: 'image',
       title_ar: '',
       title_en: '',
       subtitle_ar: '',
@@ -281,6 +284,7 @@ export function AdminDashboardClient({
       cta_text_en: 'Explore Now',
       cta_link: '/catalog',
       image_url: '/images/hero-boutique.png',
+      video_url: '',
     });
     setBannerModalOpen(true);
   };
@@ -289,6 +293,7 @@ export function AdminDashboardClient({
     setEditingBannerId(b.id);
     setBannerForm({
       placement: b.placement,
+      media_type: b.media_type || (b.placement === 'video_ad' ? 'video' : 'image'),
       title_ar: b.title_ar,
       title_en: b.title_en,
       subtitle_ar: b.subtitle_ar || '',
@@ -297,6 +302,7 @@ export function AdminDashboardClient({
       cta_text_en: b.cta_text_en || '',
       cta_link: b.cta_link || '/catalog',
       image_url: b.image_url || '/images/hero-boutique.png',
+      video_url: b.video_url || '',
     });
     setBannerModalOpen(true);
   };
@@ -823,20 +829,50 @@ export function AdminDashboardClient({
                       <label className="mb-1 block text-xs font-semibold">Placement</label>
                       <select
                         value={bannerForm.placement}
-                        onChange={(e) => setBannerForm({ ...bannerForm, placement: e.target.value as 'hero' | 'promo' | 'offer' })}
+                        onChange={(e) => {
+                          const nextPlacement = e.target.value as 'hero' | 'promo' | 'offer' | 'video_ad';
+                          setBannerForm({
+                            ...bannerForm,
+                            placement: nextPlacement,
+                            media_type: nextPlacement === 'video_ad' ? 'video' : bannerForm.media_type,
+                          });
+                        }}
                         className="w-full rounded-xl border bg-[var(--bg-page)] px-3 py-2"
                         style={{ borderColor: 'var(--border-glass)' }}
                       >
                         <option value="hero">Hero</option>
                         <option value="promo">Promo</option>
                         <option value="offer">Offer</option>
+                        <option value="video_ad">Video Ad (Animated Section)</option>
                       </select>
                     </div>
                     <div>
-                      <label className="mb-1 block text-xs font-semibold">Image URL</label>
+                      <label className="mb-1 block text-xs font-semibold">Media Type</label>
+                      <select
+                        value={bannerForm.media_type}
+                        onChange={(e) => setBannerForm({ ...bannerForm, media_type: e.target.value as 'image' | 'video' })}
+                        className="w-full rounded-xl border bg-[var(--bg-page)] px-3 py-2"
+                        style={{ borderColor: 'var(--border-glass)' }}
+                      >
+                        <option value="image">Image</option>
+                        <option value="video">Video</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold">Image / Poster URL</label>
                       <input
                         value={bannerForm.image_url}
                         onChange={(e) => setBannerForm({ ...bannerForm, image_url: e.target.value })}
+                        className="w-full rounded-xl border bg-transparent px-3 py-2"
+                        style={{ borderColor: 'var(--border-glass)' }}
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold">Video URL (.mp4 / .webm)</label>
+                      <input
+                        value={bannerForm.video_url}
+                        onChange={(e) => setBannerForm({ ...bannerForm, video_url: e.target.value })}
+                        placeholder="https://.../ad-video.mp4"
                         className="w-full rounded-xl border bg-transparent px-3 py-2"
                         style={{ borderColor: 'var(--border-glass)' }}
                       />

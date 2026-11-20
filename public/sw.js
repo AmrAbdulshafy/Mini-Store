@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'esraa-boutique-v3';
+const CACHE_VERSION = 'esraa-boutique-v4';
 const OFFLINE_URL = '/offline';
 
 const PRECACHE_ASSETS = [
@@ -8,7 +8,6 @@ const PRECACHE_ASSETS = [
   '/icons/apple-touch-icon.png',
   '/brand/logo-icon.svg',
   '/brand/logo-primary.svg',
-  '/brand/floral-pattern.svg',
 ];
 
 function isSensitiveOrExcluded(url) {

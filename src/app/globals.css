@@ -90,24 +90,6 @@
   --focus-ring: #FB7185;
 }
 
-[data-palette="dark-emerald"] {
-  --bg-page: #0B1A16;
-  --bg-surface: rgba(16, 36, 31, 0.84);
-  --bg-elevated: rgba(13, 30, 26, 0.88);
-  --bg-subtle: rgba(22, 48, 41, 0.88);
-  --border-glass: rgba(94, 234, 212, 0.2);
-  --border-strong: rgba(94, 234, 212, 0.42);
-  --accent: #5EEAD4;
-  --accent-strong: #99F6E4;
-  --accent-soft: rgba(94, 234, 212, 0.14);
-  --accent-secondary: #D4B483;
-  --champagne: #D4B483;
-  --btn-primary-bg: #5EEAD4;
-  --btn-primary-text: #0B1A16;
-  --btn-primary-hover: #99F6E4;
-  --focus-ring: #5EEAD4;
-}
-
 [data-palette="obsidian-gold"] {
   --bg-page: #111014;
   --bg-surface: rgba(26, 24, 30, 0.85);
@@ -135,19 +117,6 @@ body {
   color: var(--text-primary);
   padding-bottom: env(safe-area-inset-bottom);
   transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  pointer-events: none;
-  background-image: url('/brand/floral-pattern.svg');
-  background-repeat: repeat;
-  background-size: 240px 240px;
-  opacity: 0.86;
-  filter: brightness(0.88) contrast(1.06);
 }
 
 body::after {
@@ -283,6 +252,42 @@ body::after {
 
 .animate-modal-out {
   animation: modalPanelOut 0.16s ease-in both;
+}
+
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 var(--accent-soft), 0 18px 42px -14px rgba(0, 0, 0, 0.65);
+  }
+  50% {
+    box-shadow: 0 0 28px 2px var(--accent-soft), 0 22px 48px -14px rgba(0, 0, 0, 0.75);
+  }
+}
+
+.animate-float-slow {
+  animation: floatSlow 5.5s ease-in-out infinite;
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+.card-modern {
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.28s ease, box-shadow 0.32s ease;
+}
+
+.card-modern:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-strong);
+  box-shadow: 0 24px 56px -18px rgba(0, 0, 0, 0.78), 0 0 24px -6px var(--accent-soft);
 }
 
 @media (prefers-reduced-motion: reduce) {

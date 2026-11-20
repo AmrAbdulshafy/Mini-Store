@@ -59,6 +59,11 @@ export interface Product {
   category_id: string | null;
   collection_id: string | null;
   availability_status: AvailabilityStatus;
+  stock_quantity?: number;
+  colors?: string[];
+  sizes?: string[];
+  width_cm?: string | null;
+  dimensions?: string | null;
   is_featured: boolean;
   is_new_arrival: boolean;
   is_special_offer: boolean;
@@ -96,7 +101,7 @@ export interface StoreSettings {
 
 export interface HomepageBanner {
   id: string;
-  placement: 'hero' | 'promo' | 'offer';
+  placement: 'hero' | 'promo' | 'offer' | 'video_ad';
   collection_id: string | null;
   title_ar: string;
   title_en: string;
@@ -106,6 +111,8 @@ export interface HomepageBanner {
   cta_text_en: string | null;
   cta_link: string | null;
   image_url: string | null;
+  video_url?: string | null;
+  media_type?: 'image' | 'video';
   is_active: boolean;
   sort_order: number;
   created_at: string;
