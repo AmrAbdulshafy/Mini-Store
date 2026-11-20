@@ -33,7 +33,6 @@ export function PwaManager() {
     const ios =
       /iphone|ipad|ipod/i.test(window.navigator.userAgent) ||
       (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1);
-    const mobile = ios || /android/i.test(window.navigator.userAgent);
 
     const initFrame = requestAnimationFrame(() => {
       setIsStandalone(standalone);
@@ -78,21 +77,19 @@ export function PwaManager() {
       // ignore
     }
 
-    // Show discreet install banner on mobile (iOS/Android) after 3s if not standalone & not dismissed
-    let mobileTimer: ReturnType<typeof setTimeout> | null = null;
-    if (!standalone && !isDismissed && mobile) {
-      mobileTimer = setTimeout(() => {
+    // Show discreet install banner on iOS Safari after 4s (iOS never fires beforeinstallprompt)
+    let iosTimer: ReturnType<typeof setTimeout> | null = null;
+    if (!standalone && !isDismissed && ios) {
+      iosTimer = setTimeout(() => {
         setShowBanner(true);
-      }, 3000);
+      }, 4000);
     }
 
     const onBeforeInstall = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       if (!standalone && !isDismissed) {
-        setTimeout(() => {
-          setShowBanner(true);
-        }, 3000);
+        setShowBanner(true);
       }
     };
     window.addEventListener('beforeinstallprompt', onBeforeInstall);
@@ -107,7 +104,7 @@ export function PwaManager() {
 
     return () => {
       cancelAnimationFrame(initFrame);
-      if (mobileTimer) clearTimeout(mobileTimer);
+      if (iosTimer) clearTimeout(iosTimer);
       window.removeEventListener('online', onOnline);
       window.removeEventListener('offline', onOffline);
       window.removeEventListener('beforeinstallprompt', onBeforeInstall);
