@@ -92,7 +92,7 @@ export function Modal({
     >
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-[#190D25]/65 backdrop-blur-md"
+        className="fixed inset-0 bg-[#191619]/60 backdrop-blur-sm"
         onClick={() => {
           if (closeOnBackdrop) onClose();
         }}
@@ -103,7 +103,7 @@ export function Modal({
       <div
         ref={panelRef}
         tabIndex={-1}
-        className={`glass-card relative z-10 flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-[2rem] sm:rounded-[2rem] outline-none ${maxWidthClass} ${
+        className={`glass-card relative z-10 flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-2xl sm:rounded-lg shadow-2xl outline-none ${maxWidthClass} ${
           closing ? 'animate-modal-out' : 'animate-modal-in'
         }`}
       >

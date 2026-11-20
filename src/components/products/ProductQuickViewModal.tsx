@@ -50,7 +50,7 @@ export function ProductQuickViewModal({
       <div className="grid gap-6 sm:grid-cols-12">
         {/* Image Gallery */}
         <div className="space-y-3 sm:col-span-6">
-          <div className="aspect-square overflow-hidden rounded-3xl bg-[var(--bg-subtle)]">
+          <div className="aspect-square overflow-hidden rounded-lg bg-[var(--bg-subtle)]">
             <img src={activeImage} alt={name} className="h-full w-full object-cover" />
           </div>
           {images.length > 1 && (
@@ -60,8 +60,8 @@ export function ProductQuickViewModal({
                   key={img.id}
                   type="button"
                   onClick={() => setSelectedIdx(idx)}
-                  className={`h-14 w-14 shrink-0 overflow-hidden rounded-xl border-2 transition-all ${
-                    selectedIdx === idx ? 'border-[var(--es-fuchsia)] scale-105' : 'border-transparent opacity-65'
+                  className={`h-14 w-14 shrink-0 overflow-hidden rounded-md border transition-opacity ${
+                    selectedIdx === idx ? 'border-[var(--accent)] opacity-100' : 'border-transparent opacity-60'
                   }`}
                 >
                   <img src={img.image_url} alt="" className="h-full w-full object-cover" />
@@ -75,17 +75,17 @@ export function ProductQuickViewModal({
         <div className="flex flex-col justify-between space-y-5 sm:col-span-6">
           <div className="space-y-3">
             <div className="flex items-baseline gap-3">
-              <span className="text-2xl font-bold text-[var(--es-fuchsia)]">
+              <span className="text-xl font-semibold text-[var(--text-primary)]">
                 {formatPrice(Number(product.price), product.currency || settings.currency, lang)}
               </span>
               {product.previous_price && Number(product.previous_price) > Number(product.price) && (
-                <span className="text-sm line-through opacity-55">
+                <span className="text-sm text-[var(--text-muted)] line-through">
                   {formatPrice(Number(product.previous_price), product.currency || settings.currency, lang)}
                 </span>
               )}
             </div>
 
-            <span className="inline-block rounded-full bg-[var(--accent-soft)] px-3 py-1 text-xs font-semibold text-[var(--accent-strong)]">
+            <span className="inline-block rounded-sm border border-[var(--border-glass)] bg-[var(--bg-subtle)] px-2.5 py-1 text-xs font-medium text-[var(--text-secondary)]">
               {t.product.status[product.availability_status]}
             </span>
 
@@ -99,7 +99,7 @@ export function ProductQuickViewModal({
               href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-5 py-3 text-xs font-bold text-white shadow-md transition-colors hover:bg-emerald-700"
+              className="cta-luxury flex w-full items-center justify-center gap-2 rounded-md px-5 py-3 text-xs font-semibold tracking-wide"
             >
               <MessageCircle className="h-4 w-4" />
               <span>{t.product.orderWhatsApp}</span>
@@ -108,8 +108,7 @@ export function ProductQuickViewModal({
             <div className="grid grid-cols-3 gap-2">
               <a
                 href={`tel:${settings.phone_number}`}
-                className="flex items-center justify-center gap-1.5 rounded-2xl border py-2.5 text-xs font-semibold hover:bg-[var(--accent-soft)]"
-                style={{ borderColor: 'var(--border-glass)' }}
+                className="flex items-center justify-center gap-1.5 rounded-md border border-[var(--border-glass)] py-2.5 text-xs font-medium hover:bg-[var(--bg-subtle)]"
               >
                 <Phone className="h-3.5 w-3.5 text-[var(--accent)]" />
                 <span>{t.product.callNow}</span>
@@ -118,20 +117,16 @@ export function ProductQuickViewModal({
               <button
                 type="button"
                 onClick={() => toggleFavorite(product.id)}
-                className={`flex items-center justify-center gap-1.5 rounded-2xl border py-2.5 text-xs font-semibold ${
-                  fav ? 'bg-rose-500/15 text-rose-500' : 'hover:bg-[var(--accent-soft)]'
-                }`}
-                style={{ borderColor: 'var(--border-glass)' }}
+                className="flex items-center justify-center gap-1.5 rounded-md border border-[var(--border-glass)] py-2.5 text-xs font-medium hover:bg-[var(--bg-subtle)]"
               >
-                <Heart className={`h-3.5 w-3.5 ${fav ? 'fill-rose-500' : ''}`} />
+                <Heart className={`h-3.5 w-3.5 ${fav ? 'fill-[#542D3A] text-[#542D3A] dark:fill-[#C4A779] dark:text-[#C4A779]' : ''}`} />
                 <span>{lang === 'ar' ? 'المفضلة' : 'Save'}</span>
               </button>
 
               <Link
                 href={`/products/${product.slug}`}
                 onClick={onClose}
-                className="flex items-center justify-center gap-1.5 rounded-2xl border py-2.5 text-xs font-semibold hover:bg-[var(--accent-soft)]"
-                style={{ borderColor: 'var(--border-glass)' }}
+                className="flex items-center justify-center gap-1.5 rounded-md border border-[var(--border-glass)] py-2.5 text-xs font-medium hover:bg-[var(--bg-subtle)]"
               >
                 <ExternalLink className="h-3.5 w-3.5" />
                 <span>{lang === 'ar' ? 'الصفحة' : 'Full Page'}</span>

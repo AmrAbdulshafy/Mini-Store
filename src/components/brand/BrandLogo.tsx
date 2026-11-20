@@ -12,25 +12,25 @@ export function EsraaEmblem({ className = 'h-9 w-9' }: { className?: string }) {
       className={className}
       aria-hidden="true"
     >
-      <rect width="64" height="64" rx="14" fill="#141210" />
+      <rect width="64" height="64" rx="6" fill="#191619" />
       <rect
         x="4"
         y="4"
         width="56"
         height="56"
-        rx="11"
-        stroke="#C2A273"
+        rx="4"
+        stroke="#C4A779"
         strokeWidth="1"
         strokeOpacity="0.65"
       />
       <path
         d="M32 15C25.5 22.5 21.5 28 21.5 34.5C21.5 40.6 26.2 45.5 32 45.5C37.8 45.5 42.5 40.6 42.5 34.5C42.5 28 38.5 22.5 32 15Z"
-        stroke="#F6F3EE"
-        strokeWidth="1.5"
+        stroke="#F5F1EC"
+        strokeWidth="1.4"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx="32" cy="34.5" r="2" fill="#C2A273" />
+      <circle cx="32" cy="34.5" r="2" fill="#C4A779" />
     </svg>
   );
 }
@@ -44,7 +44,7 @@ export function EsraaMonogram({ className = 'h-10 w-10' }: { className?: string 
       className={className}
       aria-hidden="true"
     >
-      <ellipse cx="60" cy="60" rx="48" ry="52" stroke="currentColor" strokeOpacity="0.3" strokeWidth="1.2" />
+      <rect x="14" y="14" width="92" height="92" rx="6" stroke="currentColor" strokeOpacity="0.28" strokeWidth="1.2" />
       <text
         x="60"
         y="73"
@@ -57,7 +57,7 @@ export function EsraaMonogram({ className = 'h-10 w-10' }: { className?: string 
       >
         ES
       </text>
-      <circle cx="60" cy="20" r="2.2" fill="#9A7B4F" />
+      <circle cx="60" cy="25" r="2" fill="#C4A779" />
     </svg>
   );
 }
@@ -71,9 +71,9 @@ export function BrandLogo({
 }) {
   return (
     <div className="flex items-center gap-3 group">
-      <EsraaEmblem className="h-9 w-9 shrink-0 transition-opacity duration-200 group-hover:opacity-90" />
+      <EsraaEmblem className="h-9 w-9 shrink-0 transition-opacity duration-200 group-hover:opacity-85" />
       <div className="leading-tight">
-        <span className="font-display block text-lg font-semibold tracking-wide text-[var(--text-primary)] sm:text-xl">
+        <span className="font-display block text-lg font-semibold tracking-[0.06em] text-[var(--text-primary)] sm:text-xl">
           {lang === 'ar' ? 'إسراء سيكريت' : 'ESRAA SECRET'}
         </span>
         {!compact && (

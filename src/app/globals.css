@@ -3,37 +3,80 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* Esraa Secret — Elite Global Luxury Palette (Light: Porcelain & Obsidian) */
-  --es-ink: #141210;
-  --es-champagne: #9A7B4F;
-  --es-rose-muted: #A86F79;
+  /* Esraa Secret — Quiet Luxury Semantic Token System (Light: Warm Ivory & Obsidian) */
+  --es-obsidian: #191619;
+  --es-ivory: #F5F1EC;
+  --es-wine: #542D3A;
+  --es-rose: #AD858C;
+  --es-champagne: #C4A779;
+  --es-stone: #D9D1C9;
 
-  --bg-page: #FAF8F5;
-  --bg-elevated: rgba(255, 255, 255, 0.92);
-  --bg-subtle: #F2EDE6;
-  --text-primary: #141210;
-  --text-secondary: #68625B;
-  --border-glass: rgba(20, 18, 16, 0.11);
-  --accent: #141210;
-  --accent-strong: #000000;
-  --accent-soft: rgba(20, 18, 16, 0.06);
-  --accent-secondary: #9A7B4F;
-  --champagne: #9A7B4F;
+  /* Surfaces & Backgrounds */
+  --bg-page: #F5F1EC;
+  --bg-surface: #FFFFFF;
+  --bg-elevated: rgba(245, 241, 236, 0.94);
+  --bg-subtle: #ECE5DD;
+
+  /* Text Hierarchy */
+  --text-primary: #191619;
+  --text-secondary: #5B5357;
+  --text-muted: #847B7F;
+
+  /* Borders & Dividers */
+  --border-glass: #D9D1C9;
+  --border-strong: rgba(25, 22, 25, 0.28);
+
+  /* Controlled Brand Accents */
+  --accent: #542D3A;
+  --accent-strong: #3E202A;
+  --accent-soft: rgba(84, 45, 58, 0.08);
+  --accent-secondary: #AD858C;
+  --champagne: #C4A779;
+
+  /* Interactive Buttons & States */
+  --btn-primary-bg: #191619;
+  --btn-primary-text: #F5F1EC;
+  --btn-primary-hover: #542D3A;
+  --focus-ring: #542D3A;
+  --disabled-bg: #E5DFD8;
+  --disabled-text: #9A9195;
+
+  /* Semantic Status */
+  --status-success: #2F5D46;
+  --status-warning: #8A6528;
+  --status-error: #8C2D3B;
 }
 
-/* Dark Mode — Deep Obsidian & Warm Ivory */
+/* Dark Mode — Deep Obsidian (#191619) Foundation */
 .dark {
-  --bg-page: #0E0D0C;
-  --bg-elevated: rgba(23, 21, 20, 0.92);
-  --bg-subtle: #181614;
-  --text-primary: #F6F3EE;
-  --text-secondary: #A59E95;
-  --border-glass: rgba(246, 243, 238, 0.12);
-  --accent: #F6F3EE;
-  --accent-strong: #FFFFFF;
-  --accent-soft: rgba(246, 243, 238, 0.08);
-  --accent-secondary: #C2A273;
-  --champagne: #C2A273;
+  --bg-page: #191619;
+  --bg-surface: #221E22;
+  --bg-elevated: rgba(34, 30, 34, 0.94);
+  --bg-subtle: #2A2429;
+
+  --text-primary: #F5F1EC;
+  --text-secondary: #C8BFC3;
+  --text-muted: #93898E;
+
+  --border-glass: rgba(217, 209, 201, 0.16);
+  --border-strong: rgba(217, 209, 201, 0.34);
+
+  --accent: #C4A779;
+  --accent-strong: #D6BD94;
+  --accent-soft: rgba(196, 167, 121, 0.12);
+  --accent-secondary: #AD858C;
+  --champagne: #C4A779;
+
+  --btn-primary-bg: #F5F1EC;
+  --btn-primary-text: #191619;
+  --btn-primary-hover: #C4A779;
+  --focus-ring: #C4A779;
+  --disabled-bg: #2E292E;
+  --disabled-text: #6E6569;
+
+  --status-success: #6AA887;
+  --status-warning: #D1A964;
+  --status-error: #D97B88;
 }
 
 html {
@@ -46,32 +89,43 @@ body {
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
+/* Accessible visible focus ring */
+*:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
 .glass-card {
-  background: var(--bg-elevated);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--bg-surface);
   border: 1px solid var(--border-glass);
 }
 
 .glass-nav {
   background: var(--bg-elevated);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border-glass);
 }
 
 .cta-luxury {
-  background-color: var(--accent);
-  color: var(--bg-page);
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  transition: background-color 0.22s ease, color 0.22s ease, transform 0.2s ease;
 }
 
-.cta-luxury:hover {
-  opacity: 0.88;
+.cta-luxury:hover:not(:disabled) {
+  background-color: var(--btn-primary-hover);
+  color: #F5F1EC;
 }
 
-.cta-luxury:active {
+.cta-luxury:active:not(:disabled) {
   transform: scale(0.99);
+}
+
+.cta-luxury:disabled {
+  background-color: var(--disabled-bg);
+  color: var(--disabled-text);
+  cursor: not-allowed;
 }
 
 .font-display {
@@ -122,7 +176,7 @@ body {
 }
 
 .animate-reveal {
-  animation: fadeSlideUp 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: fadeSlideUp 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .animate-modal-in {

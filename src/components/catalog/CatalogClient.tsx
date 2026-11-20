@@ -96,7 +96,7 @@ export function CatalogClient({
       </div>
 
       {/* Filter Bar */}
-      <div className="glass-card mb-8 space-y-4 rounded-3xl p-4 sm:p-6">
+      <div className="glass-card mb-8 space-y-4 rounded-lg p-4 sm:p-6">
         <div className="grid gap-3 md:grid-cols-12">
           {/* Search */}
           <div className="relative md:col-span-5">

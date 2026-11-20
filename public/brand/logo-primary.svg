@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 72" fill="none">
   <g transform="translate(4, 4)">
-    <rect width="64" height="64" rx="14" fill="#141210"/>
-    <rect x="4" y="4" width="56" height="56" rx="11" stroke="#C2A273" stroke-width="1" stroke-opacity="0.65"/>
-    <path d="M32 15C25.5 22.5 21.5 28 21.5 34.5C21.5 40.6 26.2 45.5 32 45.5C37.8 45.5 42.5 40.6 42.5 34.5C42.5 28 38.5 22.5 32 15Z" stroke="#F6F3EE" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="32" cy="34.5" r="2" fill="#C2A273"/>
+    <rect width="64" height="64" rx="6" fill="#191619"/>
+    <rect x="4" y="4" width="56" height="56" rx="4" stroke="#C4A779" stroke-width="1" stroke-opacity="0.65"/>
+    <path d="M32 15C25.5 22.5 21.5 28 21.5 34.5C21.5 40.6 26.2 45.5 32 45.5C37.8 45.5 42.5 40.6 42.5 34.5C42.5 28 38.5 22.5 32 15Z" stroke="#F5F1EC" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="32" cy="34.5" r="2" fill="#C4A779"/>
   </g>
-  <text x="84" y="36" font-family="Georgia, 'Times New Roman', serif" font-size="24" font-weight="600" letter-spacing="3" fill="#141210">ESRAA SECRET</text>
-  <text x="85" y="54" font-family="sans-serif" font-size="9" letter-spacing="3" fill="#68625B">IT'S A SECRET OF BEAUTY</text>
+  <text x="84" y="36" font-family="Georgia, 'Times New Roman', serif" font-size="23" font-weight="600" letter-spacing="3.5" fill="#191619">ESRAA SECRET</text>
+  <text x="85" y="54" font-family="sans-serif" font-size="9" letter-spacing="3" fill="#5B5357">IT'S A SECRET OF BEAUTY</text>
 </svg>

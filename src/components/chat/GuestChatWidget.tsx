@@ -118,7 +118,7 @@ export function GuestChatWidget() {
   return (
     <div className="fixed bottom-5 end-5 z-50">
       {open ? (
-        <div className="glass-card flex h-[480px] w-[340px] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-3xl shadow-2xl sm:w-[370px]">
+        <div className="glass-card flex h-[480px] w-[340px] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-xl shadow-2xl sm:w-[370px]">
           {/* Header */}
           <div className="flex items-center justify-between bg-[#141210] px-4 py-3.5 text-[#F6F3EE] dark:bg-[#221F1D]">
             <div>
@@ -255,7 +255,7 @@ export function GuestChatWidget() {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="cta-luxury flex items-center gap-2.5 rounded-full px-5 py-3.5 text-sm font-semibold shadow-lg"
+          className="cta-luxury flex items-center gap-2.5 rounded-md px-4 py-3 text-xs font-semibold tracking-wider uppercase shadow-lg"
         >
           <MessageSquare className="h-4 w-4" />
           <span className="hidden sm:inline">{t.chat.title}</span>

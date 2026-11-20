@@ -91,17 +91,17 @@ export function ProductDetailsClient({ product }: { product: Product }) {
         <span>{t.product.backToCatalog}</span>
       </Link>
 
-      <div className="glass-card grid gap-8 rounded-[2rem] p-5 sm:p-8 lg:grid-cols-12 lg:p-10">
+      <div className="glass-card grid gap-8 rounded-lg p-5 sm:p-8 lg:grid-cols-12 lg:p-10">
         {/* Image Gallery */}
         <div className="space-y-4 lg:col-span-6">
           <button
             type="button"
             onClick={() => setLightboxOpen(true)}
-            className="relative block w-full aspect-square overflow-hidden rounded-3xl bg-[var(--bg-subtle)] cursor-zoom-in group"
+            className="relative block w-full aspect-square overflow-hidden rounded-lg bg-[var(--bg-subtle)] cursor-zoom-in group"
           >
-            <img src={activeImage} alt={name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+            <img src={activeImage} alt={name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
             {discountPct && (
-              <span className="absolute top-4 start-4 rounded-full bg-rose-600 px-3 py-1 text-xs font-bold text-white shadow">
+              <span className="absolute top-4 start-4 rounded-sm bg-[#542D3A] px-3 py-1 text-xs font-medium text-[#F5F1EC]">
                 -{discountPct}%
               </span>
             )}
@@ -230,17 +230,16 @@ export function ProductDetailsClient({ product }: { product: Product }) {
               href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex w-full items-center justify-center gap-2.5 rounded-2xl bg-emerald-600 px-6 py-4 text-sm font-bold text-white shadow-lg transition-colors hover:bg-emerald-700"
+              className="cta-luxury flex w-full items-center justify-center gap-2.5 rounded-md px-6 py-3.5 text-sm font-semibold tracking-wide"
             >
-              <MessageCircle className="h-5 w-5" />
+              <MessageCircle className="h-4 w-4" />
               <span>{t.product.orderWhatsApp}</span>
             </a>
 
             <div className="grid grid-cols-3 gap-2.5">
               <a
                 href={`tel:${settings.phone_number}`}
-                className="flex items-center justify-center gap-2 rounded-2xl border py-3 text-xs font-semibold transition-colors hover:bg-[var(--accent-soft)]"
-                style={{ borderColor: 'var(--border-glass)' }}
+                className="flex items-center justify-center gap-2 rounded-md border border-[var(--border-glass)] py-3 text-xs font-medium transition-colors hover:bg-[var(--bg-subtle)]"
               >
                 <Phone className="h-4 w-4 text-[var(--accent)]" />
                 <span>{t.product.callNow}</span>
@@ -249,12 +248,9 @@ export function ProductDetailsClient({ product }: { product: Product }) {
               <button
                 type="button"
                 onClick={() => toggleFavorite(product.id)}
-                className={`flex items-center justify-center gap-2 rounded-2xl border py-3 text-xs font-semibold transition-colors ${
-                  fav ? 'bg-rose-500/15 text-rose-600 dark:text-rose-300' : 'hover:bg-[var(--accent-soft)]'
-                }`}
-                style={{ borderColor: 'var(--border-glass)' }}
+                className="flex items-center justify-center gap-2 rounded-md border border-[var(--border-glass)] py-3 text-xs font-medium transition-colors hover:bg-[var(--bg-subtle)]"
               >
-                <Heart className={`h-4 w-4 ${fav ? 'fill-rose-500 text-rose-500' : ''}`} />
+                <Heart className={`h-4 w-4 ${fav ? 'fill-[#542D3A] text-[#542D3A] dark:fill-[#C4A779] dark:text-[#C4A779]' : ''}`} />
                 <span className="truncate">
                   {fav ? t.product.removeFromFavorites : t.product.addToFavorites}
                 </span>
@@ -263,10 +259,9 @@ export function ProductDetailsClient({ product }: { product: Product }) {
               <button
                 type="button"
                 onClick={handleShare}
-                className="flex items-center justify-center gap-2 rounded-2xl border py-3 text-xs font-semibold transition-colors hover:bg-[var(--accent-soft)]"
-                style={{ borderColor: 'var(--border-glass)' }}
+                className="flex items-center justify-center gap-2 rounded-md border border-[var(--border-glass)] py-3 text-xs font-medium transition-colors hover:bg-[var(--bg-subtle)]"
               >
-                {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Share2 className="h-4 w-4" />}
+                {copied ? <Check className="h-4 w-4 text-[var(--status-success)]" /> : <Share2 className="h-4 w-4" />}
                 <span>{copied ? t.product.copied : t.product.share}</span>
               </button>
             </div>

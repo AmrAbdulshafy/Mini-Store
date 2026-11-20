@@ -84,15 +84,15 @@ export function HomepageClient({
     <div className="space-y-20 pb-12">
       {/* HERO SECTION */}
       <section className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8 lg:pt-10">
-        <div className="glass-card relative overflow-hidden rounded-[2rem] p-6 sm:p-10 lg:p-14">
+        <div className="glass-card relative overflow-hidden rounded-lg p-6 sm:p-10 lg:p-14">
           <div className="grid items-center gap-10 lg:grid-cols-12">
             <div className="space-y-6 lg:col-span-6">
-              <span className="inline-flex items-center gap-2 rounded-full bg-[var(--accent-soft)] px-4 py-1.5 text-xs font-semibold text-[var(--accent-strong)]">
-                <Sparkles className="h-3.5 w-3.5" />
+              <span className="inline-flex items-center gap-2 border-b border-[var(--champagne)] pb-1 text-[11px] font-semibold tracking-[0.2em] text-[var(--accent)] uppercase">
+                <Sparkles className="h-3 w-3 text-[var(--champagne)]" />
                 {t.hero.badge}
               </span>
 
-              <h1 className="font-display text-3xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-[3.25rem]">
+              <h1 className="font-display text-3xl font-semibold leading-tight tracking-tight sm:text-5xl">
                 {heroBanner
                   ? lang === 'ar'
                     ? heroBanner.title_ar
@@ -102,7 +102,7 @@ export function HomepageClient({
                     : settings.store_name_en}
               </h1>
 
-              <p className="max-w-xl text-base leading-relaxed text-[var(--text-secondary)] sm:text-lg">
+              <p className="max-w-xl text-base leading-relaxed text-[var(--text-secondary)]">
                 {heroBanner
                   ? lang === 'ar'
                     ? heroBanner.subtitle_ar
@@ -115,7 +115,7 @@ export function HomepageClient({
               <div className="flex flex-wrap items-center gap-3 pt-1">
                 <Link
                   href={heroBanner?.cta_link || '/catalog'}
-                  className="cta-luxury inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold"
+                  className="cta-luxury inline-flex items-center gap-2 rounded-md px-7 py-3.5 text-xs font-semibold tracking-wider uppercase"
                 >
                   <span>
                     {heroBanner
@@ -131,27 +131,25 @@ export function HomepageClient({
                   href={waGeneral}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border bg-[var(--bg-page)]/70 px-6 py-3.5 text-sm font-semibold transition-colors hover:bg-[var(--accent-soft)]"
-                  style={{ borderColor: 'var(--border-glass)' }}
+                  className="inline-flex items-center gap-2 rounded-md border border-[var(--border-glass)] bg-[var(--bg-page)] px-6 py-3.5 text-xs font-semibold tracking-wider uppercase transition-colors hover:bg-[var(--bg-subtle)]"
                 >
-                  <MessageCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                  <MessageCircle className="h-4 w-4 text-[var(--accent)]" />
                   <span>{t.hero.contactUs}</span>
                 </a>
               </div>
 
-              <p className="text-xs text-[var(--text-secondary)] opacity-85">
+              <p className="text-xs text-[var(--text-muted)]">
                 {t.hero.noCheckoutNote}
               </p>
             </div>
 
             <div className="lg:col-span-6">
-              <div className="relative aspect-[16/11] overflow-hidden rounded-3xl shadow-2xl">
+              <div className="relative aspect-[16/11] overflow-hidden rounded-lg border border-[var(--border-glass)]">
                 <img
                   src={heroBanner?.image_url || '/images/hero-boutique.png'}
                   alt={lang === 'ar' ? settings.store_name_ar : settings.store_name_en}
                   className="h-full w-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
               </div>
             </div>
           </div>
@@ -228,12 +226,6 @@ export function HomepageClient({
             const name = lang === 'ar' ? col.name_ar : col.name_en;
             const desc = lang === 'ar' ? col.description_ar : col.description_en;
             const slug = col.slug as CollectionSlug;
-            const swatch =
-              slug === 'women'
-                ? 'from-[#f4d2d8] via-[#e8d5c4] to-[#d9c2ea]'
-                : slug === 'men'
-                  ? 'from-[#1f334d] via-[#2c3542] to-[#5e6b4c]'
-                  : 'from-[#f1e9dc] via-[#9ab395] to-[#c06c4d]';
 
             return (
               <Link
@@ -241,19 +233,18 @@ export function HomepageClient({
                 href={`/catalog?collection=${col.slug}`}
                 onMouseEnter={() => setCollectionTheme(slug)}
                 onClick={() => setCollectionTheme(slug)}
-                className="glass-card group relative overflow-hidden rounded-3xl p-5 transition-all duration-300 hover:-translate-y-1.5"
+                className="glass-card group relative overflow-hidden rounded-lg p-5 transition-colors duration-200 hover:border-[var(--border-strong)]"
               >
-                <div className="aspect-[16/10] overflow-hidden rounded-2xl bg-[var(--bg-subtle)]">
+                <div className="aspect-[16/10] overflow-hidden rounded-md bg-[var(--bg-subtle)]">
                   <img
                     src={col.hero_image_url || `/images/collection-${col.slug}.svg`}
                     alt={name}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                   />
                 </div>
                 <div className="mt-4 space-y-2">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-display text-xl font-bold">{name}</h3>
-                    <span className={`h-3 w-10 rounded-full bg-gradient-to-r ${swatch}`} />
+                    <h3 className="font-display text-xl font-semibold">{name}</h3>
                   </div>
                   <p className="line-clamp-2 text-xs leading-relaxed text-[var(--text-secondary)]">
                     {desc}
@@ -296,20 +287,14 @@ export function HomepageClient({
       {/* PROMOTIONAL BANNER */}
       {promoBanner && (
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div
-            className="glass-card relative overflow-hidden rounded-[2rem] p-7 sm:p-10"
-            style={{
-              background:
-                'linear-gradient(135deg, var(--accent-soft), var(--champagne))',
-            }}
-          >
+          <div className="glass-card rounded-lg bg-[var(--bg-subtle)] p-7 sm:p-10">
             <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
               <div className="max-w-2xl space-y-2.5">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--bg-page)]/80 px-3 py-1 text-xs font-semibold text-[var(--accent-strong)]">
-                  <Tag className="h-3.5 w-3.5" />
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-[0.18em] text-[var(--accent)] uppercase">
+                  <Tag className="h-3.5 w-3.5 text-[var(--champagne)]" />
                   {t.product.offerBadge}
                 </span>
-                <h2 className="font-display text-2xl font-bold sm:text-3xl">
+                <h2 className="font-display text-2xl font-semibold sm:text-3xl">
                   {lang === 'ar' ? promoBanner.title_ar : promoBanner.title_en}
                 </h2>
                 <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
@@ -318,8 +303,7 @@ export function HomepageClient({
               </div>
               <Link
                 href={promoBanner.cta_link || '/catalog?offer=true'}
-                className="shrink-0 rounded-full px-7 py-3.5 text-sm font-semibold text-white shadow-md transition-transform hover:scale-105"
-                style={{ backgroundColor: 'var(--accent)' }}
+                className="cta-luxury shrink-0 rounded-md px-7 py-3.5 text-xs font-semibold tracking-wider uppercase"
               >
                 {lang === 'ar'
                   ? promoBanner.cta_text_ar || t.sections.viewAll
@@ -382,9 +366,9 @@ export function HomepageClient({
       <section id="contact" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-8 lg:grid-cols-12">
           {/* Brand Intro + Direct Channels */}
-          <div className="glass-card flex flex-col justify-between rounded-3xl p-7 sm:p-9 lg:col-span-6">
+          <div className="glass-card flex flex-col justify-between rounded-lg p-7 sm:p-9 lg:col-span-6">
             <div className="space-y-4">
-              <h2 className="font-display text-2xl font-bold sm:text-3xl">
+              <h2 className="font-display text-2xl font-semibold sm:text-3xl">
                 {t.sections.aboutTitle}
               </h2>
               <p className="text-sm leading-relaxed text-[var(--text-secondary)] sm:text-base">
@@ -397,17 +381,16 @@ export function HomepageClient({
                 href={waGeneral}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 rounded-2xl bg-emerald-600 px-4 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-700"
+                className="cta-luxury flex items-center justify-center gap-2.5 rounded-md px-4 py-3.5 text-xs font-semibold tracking-wider uppercase"
               >
-                <MessageCircle className="h-5 w-5" />
+                <MessageCircle className="h-4 w-4" />
                 <span>{t.contact.whatsapp}</span>
               </a>
               <a
                 href={`tel:${settings.phone_number}`}
-                className="flex items-center gap-3 rounded-2xl border px-4 py-3.5 text-sm font-semibold transition-colors hover:bg-[var(--accent-soft)]"
-                style={{ borderColor: 'var(--border-glass)' }}
+                className="flex items-center justify-center gap-2.5 rounded-md border border-[var(--border-glass)] px-4 py-3.5 text-xs font-semibold transition-colors hover:bg-[var(--bg-subtle)]"
               >
-                <Phone className="h-5 w-5 text-[var(--accent)]" />
+                <Phone className="h-4 w-4 text-[var(--accent)]" />
                 <span dir="ltr">{settings.phone_number}</span>
               </a>
               <div className="flex items-center gap-2.5 text-xs text-[var(--text-secondary)] pt-2">
@@ -422,7 +405,7 @@ export function HomepageClient({
           </div>
 
           {/* Quick Inquiry Form */}
-          <div className="glass-card rounded-3xl p-7 sm:p-9 lg:col-span-6">
+          <div className="glass-card rounded-lg p-7 sm:p-9 lg:col-span-6">
             <h2 className="font-display text-2xl font-bold">{t.contact.formTitle}</h2>
             <p className="mt-1 text-sm text-[var(--text-secondary)]">{t.sections.contactSub}</p>
 
@@ -473,8 +456,7 @@ export function HomepageClient({
               <button
                 type="submit"
                 disabled={submitting || !message.trim()}
-                className="inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-semibold text-white transition-opacity disabled:opacity-50"
-                style={{ backgroundColor: 'var(--accent)' }}
+                className="cta-luxury inline-flex items-center gap-2 rounded-md px-7 py-3 text-xs font-semibold tracking-wider uppercase"
               >
                 <Send className="h-4 w-4" />
                 <span>{submitting ? t.contact.sending : t.contact.submit}</span>
