@@ -48,8 +48,8 @@ export default function AdminLoginPage() {
         await supabase.auth.signOut();
         setError(
           lang === 'ar'
-            ? 'هذا الحساب غير مسجل كمسؤول نشط في لوحة التحكم.'
-            : 'This account is not authorized as an active administrator.'
+            ? 'هذا الحساب غير مصرح له بالدخول.'
+            : 'This account is not authorized to sign in.'
         );
         return;
       }
@@ -69,12 +69,12 @@ export default function AdminLoginPage() {
         <div className="mb-6 flex flex-col items-center text-center">
           <EsraaEmblem className="mb-4 h-14 w-14 shadow-lg" />
           <h1 className="font-display text-2xl font-bold">
-            {lang === 'ar' ? 'دخول لوحة تحكم إسراء بوتيك' : 'Esraa Boutique Admin Sign In'}
+            {lang === 'ar' ? 'تسجيل الدخول' : 'Login'}
           </h1>
           <p className="mt-1 text-xs text-[var(--text-secondary)]">
             {lang === 'ar'
-              ? 'الوصول مقتصر على مسؤولي المتجر المعتمدين فقط'
-              : 'Restricted to authorized store administrators'}
+              ? 'مرحباً بك في إسراء بوتيك'
+              : 'Welcome to Esraa Boutique'}
           </p>
         </div>
 
@@ -88,7 +88,7 @@ export default function AdminLoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@esraaboutique.com"
+              placeholder="name@example.com"
               className="w-full rounded-2xl border bg-transparent px-4 py-3 text-sm outline-none placeholder:text-[var(--text-secondary)]/60 focus:border-[var(--accent)]"
               style={{ borderColor: 'var(--border-glass)' }}
             />
@@ -129,7 +129,7 @@ export default function AdminLoginPage() {
                   : 'Signing in...'
                 : lang === 'ar'
                   ? 'تسجيل الدخول'
-                  : 'Sign In'}
+                  : 'Login'}
             </span>
           </button>
         </form>
